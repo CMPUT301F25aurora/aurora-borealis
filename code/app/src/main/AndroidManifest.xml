@@ -12,6 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Aurora">
 
+        <activity
+            android:name=".EventsActivity"
+            android:exported="false" />
+  
         <activity android:name=".OrganizerActivity" />
         <activity android:name=".EntrantActivity" />
         <activity android:name=".SignUpActivity" />
@@ -24,9 +28,11 @@
         <!-- New welcome screen is the launcher -->
         <activity
             android:name=".WelcomeActivity"
+
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
