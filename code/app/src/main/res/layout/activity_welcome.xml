@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/welcomeRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_gradient"
+    android:gravity="center_horizontal"
+    android:padding="24dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Center block with logo and text -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Circular logo -->
+        <ImageView
+            android:id="@+id/welcomeLogo"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:background="@drawable/logo_circle_mask"
+            android:src="@drawable/aurora_logo"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:contentDescription="Aurora Chance Logo" />
+
+        <!-- Gradient title AURORA -->
+        <com.example.aurora.GradientTextView
+            android:id="@+id/welcomeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AURORA"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1"
+            android:layout_marginTop="24dp" />
+
+        <!-- Gradient title CHANCE -->
+        <com.example.aurora.GradientTextView
+            android:id="@+id/welcomeTitle2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CHANCE"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:letterSpacing="0.1" />
+
+        <!-- Tagline -->
+        <TextView
+            android:id="@+id/welcomeSubtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connecting moments that matter"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- Bottom pill button -->
+    <TextView
+        android:id="@+id/tapAnywhere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/bg_welcome_button"
+        android:paddingLeft="22dp"
+        android:paddingRight="22dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:text="Tap anywhere to continue"
+        android:textColor="@android:color/white"
+        android:textSize="13sp"
+        android:drawableLeft="@drawable/dot_white"
+        android:drawablePadding="8dp" />
+</LinearLayout>
