@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -33,40 +34,54 @@ public class LoginActivity extends AppCompatActivity {
     }
    // get user info entered and see if it matches info for a user in firestore db
     private void loginUser() {
-        String email = loginEmail.getText().toString().trim();
+        String input = loginEmail.getText().toString().trim(); //can be email or phone
         String password = loginPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+        if (input.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter both email/phone and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
         db.collection("users")
-                .whereEqualTo("email", email)
+                .whereEqualTo("email", input)
                 .whereEqualTo("password", password)
                 .get()
                 .addOnSuccessListener(query -> {
-                    //return invalid if no user info matches ones entered in firestore
-                    if (query.isEmpty()) {
-                        Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                        return;
+                    if (!query.isEmpty()) {
+                        handleLogin(query.getDocuments().get(0));
+                    } else {
+                        // If not found, try phone-based login
+                        db.collection("users")
+                                .whereEqualTo("phone", input)
+                                .whereEqualTo("password", password)
+                                .get()
+                                .addOnSuccessListener(phoneQuery -> {
+                                    if (!phoneQuery.isEmpty()) {
+                                        handleLogin(phoneQuery.getDocuments().get(0));
+                                    } else {
+                                        Toast.makeText(this, "Invalid email/phone or password", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
-
-                        // look into matching user and get role
-                    QueryDocumentSnapshot doc = (QueryDocumentSnapshot) query.getDocuments().get(0);
-                    String role = doc.getString("role");
-
-                            //start correct activity based on role
-                            if ("organizer".equals(role)) {
-                                startActivity(new Intent(this, OrganizerActivity.class));
-                            } else {
-                                startActivity(new Intent(this, EntrantActivity.class));
-                            }
-                            finish();
-
-                    })
-
+                })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
+    private void handleLogin(DocumentSnapshot doc) {
+        String role = doc.getString("role");
+
+        Toast.makeText(this, "Welcome " + doc.getString("name"), Toast.LENGTH_SHORT).show();
+
+        if ("organizer".equalsIgnoreCase(role)) {
+            startActivity(new Intent(this, OrganizerActivity.class));
+        } else {
+            startActivity(new Intent(this, EventsActivity.class));
+        }
+        finish();
+    }
 }
+
+

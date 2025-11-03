@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">aurora</string>
+    <string name="app_name">Aurora Chance</string>
+
+    <!-- Added for EventsActivity -->
+    <string name="discover_events">Discover Events</string>
+    <string name="search_events_hint">Search events...</string>
+    <string name="search_icon">Search icon</string>
+    <string name="logout">Logout</string>
 </resources>
