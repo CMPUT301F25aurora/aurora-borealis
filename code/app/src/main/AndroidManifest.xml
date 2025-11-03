@@ -11,17 +11,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Aurora">
+
         <activity android:name=".OrganizerActivity" />
         <activity android:name=".EntrantActivity" />
         <activity android:name=".SignUpActivity" />
 
-        <activity android:name=".LoginActivity"
+        <!-- Login screen (no longer launcher) -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <!-- New welcome screen is the launcher -->
+        <activity
+            android:name=".WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
