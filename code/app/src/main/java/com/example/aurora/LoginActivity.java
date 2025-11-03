@@ -13,7 +13,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
     private Button loginButton;
-    private Button createAccountButton;
+    private TextView createAccountButton;
     private FirebaseFirestore db;
 
     @Override
