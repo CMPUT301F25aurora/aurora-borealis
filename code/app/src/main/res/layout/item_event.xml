@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/white"
+    android:elevation="4dp"
+    android:padding="12dp"
+    android:layout_margin="8dp">
+
+    <!-- Event Image -->
+    <!--android:id="@+id/eventImage" (should be under image View)-->
+    <ImageView
+
+        android:layout_width="0dp"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Event Title -->
+    <!-- app:layout_constraintTop_toBottomOf="@id/eventImage" (should be under android:textColor="#000000" -->
+    <TextView
+        android:id="@+id/eventTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Sample Event Title"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Event Date -->
+    <TextView
+        android:id="@+id/eventDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="June 15, 2025 • 6:00 PM"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        app:layout_constraintTop_toBottomOf="@id/eventTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="4dp" />
+
+    <!-- Event Location -->
+    <TextView
+        android:id="@+id/eventLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Central Park Amphitheater"
+        android:textSize="14sp"
+        android:textColor="#555555"
+        app:layout_constraintTop_toBottomOf="@id/eventDate"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="2dp" />
+
+    <!-- View Details Button -->
+    <Button
+        android:id="@+id/btnViewDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View Details"
+        android:backgroundTint="#2196F3"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/eventLocation"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- Join Waiting List Button -->
+    <Button
+        android:id="@+id/btnJoin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join Waiting List"
+        android:backgroundTint="#4CAF50"
+        android:textColor="@android:color/white"
+        app:layout_constraintTop_toBottomOf="@id/eventLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

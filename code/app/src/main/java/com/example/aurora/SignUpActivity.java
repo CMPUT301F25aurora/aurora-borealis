@@ -5,19 +5,14 @@ import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.HashMap;
 import java.util.Map;
 
-// activity for user signup screen
 public class SignUpActivity extends AppCompatActivity {
 
-    private EditText signupName;
-    private EditText signupEmail;
-    private EditText signupPassword;
+    private EditText signupName, signupEmail, signupPhone, signupPassword;
     private RadioGroup radioGroupRole;
     private Button signupButton;
-
     private FirebaseFirestore db;
 
     @Override
@@ -27,32 +22,41 @@ public class SignUpActivity extends AppCompatActivity {
 
         signupName = findViewById(R.id.Name);
         signupEmail = findViewById(R.id.Email);
+        signupPhone = findViewById(R.id.Phone);
+        signupPassword = findViewById(R.id.Password);
         radioGroupRole = findViewById(R.id.Role);
         signupButton = findViewById(R.id.SignUpButton);
-        signupPassword = findViewById(R.id.Password);
         db = FirebaseFirestore.getInstance();
 
         signupButton.setOnClickListener(v -> saveUser());
+
+        // Optional: back to login
+        findViewById(R.id.backToLoginButton).setOnClickListener(v ->
+                startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
     }
 
-    // gets info user enters and stores it in firestore under a new user
     private void saveUser() {
         String name = signupName.getText().toString().trim();
         String email = signupEmail.getText().toString().trim();
+        String phone = signupPhone.getText().toString().trim();
         String password = signupPassword.getText().toString().trim();
         int selectedId = radioGroupRole.getCheckedRadioButtonId();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty()) {
             Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
             return;
         }
-         // user role
+        if (phone.length() != 10 || !phone.matches("\\d{10}")) {
+            Toast.makeText(this, "Phone number must be exactly 10 digits", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String role = (selectedId == R.id.Organizer) ? "organizer" : "entrant";
 
-        //save info in firestore
         Map<String, Object> user = new HashMap<>();
         user.put("name", name);
         user.put("email", email);
+        user.put("phone", phone);
         user.put("password", password);
         user.put("role", role);
 
