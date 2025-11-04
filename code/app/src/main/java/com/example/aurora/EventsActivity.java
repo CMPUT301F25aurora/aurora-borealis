@@ -45,7 +45,7 @@ public class EventsActivity extends AppCompatActivity {
     private void loadEvents() {
         db.collection("events")
                 .get()
-                .addOnSuccessListener(query -> {
+                .addOnSuccessListener(query ->{
                     eventList.clear();
                     for (QueryDocumentSnapshot doc : query) {
                         Event event = doc.toObject(Event.class);
