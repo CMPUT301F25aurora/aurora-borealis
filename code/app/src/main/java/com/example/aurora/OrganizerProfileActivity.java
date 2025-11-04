@@ -1,5 +1,12 @@
 package com.example.aurora;
-
+/**
+ * This activity displays the organizer’s profile information.
+ * Shows name, email, phone, and total active events.
+ * Fetches organizer data from Firestore using their email.
+ * Allows the organizer to delete their account.
+ * On delete, removes the user's Firestore document and redirects to LoginActivity.
+ * Includes a back button to return to OrganizerActivity.
+ */
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,11 +38,10 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_profile);
 
-        // Initialize Firebase
+
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // Initialize UI
         backButton = findViewById(R.id.backButton);
         profileName = findViewById(R.id.profileName);
         profileEmail = findViewById(R.id.profileEmail);
@@ -45,22 +51,16 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         activeEventsCount = findViewById(R.id.activeEventsCount);
         deleteAccountButton = findViewById(R.id.deleteAccountButton);
 
-        // Back Button
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerProfileActivity.this, OrganizerActivity.class);
             startActivity(intent);
             finish();
         });
-
-        // Fetch Profile Data
         loadProfileData();
-
-        // Delete Account
         deleteAccountButton.setOnClickListener(v -> showDeleteDialog());
     }
-
     private void loadProfileData() {
-        // We don't need FirebaseAuth if user data is passed via intent
+
         String fullName = getIntent().getStringExtra("fullName");
         String email = getIntent().getStringExtra("email");
         String phone = getIntent().getStringExtra("phone");
@@ -71,7 +71,6 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         profileHeaderName.setText(fullName != null ? fullName : "Event Organizer");
         profileHeaderRole.setText("Event Organizer");
 
-        // Optionally, fetch extra fields from Firestore if you need
         db.collection("organizers")
                 .whereEqualTo("email", email)
                 .get()
@@ -83,9 +82,6 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
-
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Account")
@@ -94,19 +90,15 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show();
     }
-
     private void deleteAccount() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Get email passed from intent (or from prefs)
         String email = getIntent().getStringExtra("email");
-
         if (email == null || email.isEmpty()) {
             Toast.makeText(this, "No user email found.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Delete Firestore doc by matching email
         db.collection("users")
                 .whereEqualTo("email", email)
                 .get()

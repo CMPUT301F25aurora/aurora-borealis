@@ -1,5 +1,10 @@
 package com.example.aurora;
-
+/**
+ * This activity is the main dashboard for organizers.
+ * Displays a list of all events fetched from Firestore.
+ * Allows organizers to create new events.
+ * Includes bottom navigation buttons for Home, Profile, and Notifications.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -26,29 +31,24 @@ public class OrganizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
 
-        // Initialize UI
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
         eventListContainer = findViewById(R.id.eventListContainer);
 
         db = FirebaseFirestore.getInstance();
 
-        // Temporary toast for My Events
         myEventsButton.setOnClickListener(v ->
                 Toast.makeText(this, "My Events clicked", Toast.LENGTH_SHORT).show());
 
-        // Open Create Event screen
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, CreateEventActivity.class);
             startActivity(intent);
         });
 
-        // 🔽 Bottom navigation setup
         TextView bottomHome = findViewById(R.id.bottomHome);
         TextView bottomProfile = findViewById(R.id.bottomProfile);
         TextView bottomAlerts = findViewById(R.id.bottomAlerts);
 
-        // 🏠 Home button (reloads OrganizerActivity)
         bottomHome.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -56,19 +56,16 @@ public class OrganizerActivity extends AppCompatActivity {
             finish();
         });
 
-        // 👤 Profile button (opens OrganizerProfileActivity)
         bottomProfile.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerProfileActivity.class);
             startActivity(intent);
         });
 
-        // 🔔 Notifications button (opens OrganizerNotificationsActivity)
         bottomAlerts.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class);
             startActivity(intent);
         });
 
-        // Load all events from Firestore
         loadEventsFromFirebase();
     }
 
@@ -90,9 +87,8 @@ public class OrganizerActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error loading events: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
     private void addEventCard(DocumentSnapshot doc) {
-        // Inflate reusable layout for event card
+
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
 
@@ -101,7 +97,7 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
 
-        // Extract data safely
+
         String titleText = doc.getString("title");
         String dateText = doc.getString("date");
         Long maxSpots = doc.getLong("maxSpots");
