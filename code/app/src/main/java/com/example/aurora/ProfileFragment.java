@@ -1,5 +1,16 @@
 package com.example.aurora;
-
+/**
+ * Fragment that displays and manages the user's profile.
+ * Loads user data from Firestore (name, email, phone, role, stats).
+ * Allows editing and saving profile details.
+ * Lets the user enable/disable notifications.
+ * Supports deleting the account (removes user from Firestore and returns to login).
+ * Listens for notifications and shows them as Toasts if enabled.
+ */
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,10 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
@@ -23,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileFragment extends Fragment {
-
     private FirebaseFirestore db;
     private DocumentReference userRef;
 
@@ -59,30 +71,102 @@ public class ProfileFragment extends Fragment {
         resolveAndLoad();
 
         editToggle.setOnClickListener(x -> setEditing(true));
+
+
         btnSave.setOnClickListener(x -> saveProfile());
         btnEventHistory.setOnClickListener(x -> Toast.makeText(getContext(),"Event History coming soon",Toast.LENGTH_SHORT).show());
-        btnNotifSettings.setOnClickListener(x -> Toast.makeText(getContext(),"Notification Settings coming soon",Toast.LENGTH_SHORT).show());
-        btnDelete.setOnClickListener(x -> Toast.makeText(getContext(),"Delete Account coming soon",Toast.LENGTH_SHORT).show());
-    }
 
-    private void resolveAndLoad() {
-        FirebaseUser fu = FirebaseAuth.getInstance().getCurrentUser();
-        String em = fu != null ? fu.getEmail() : requireActivity().getSharedPreferences("aurora_prefs", getContext().MODE_PRIVATE).getString("user_email", null);
-        Query q = db.collection("users").whereEqualTo("email", em).limit(1);
-        q.get().addOnSuccessListener(snap -> {
-            if (!snap.isEmpty()) {
-                userRef = snap.getDocuments().get(0).getReference();
-                loadProfile();
-            } else {
-                Map<String,Object> init = new HashMap<>();
-                init.put("email", em);
-                init.put("role","Entrant");
-                init.put("joinedCount",0);
-                init.put("winsCount",0);
-                userRef = db.collection("users").document();
-                userRef.set(init, SetOptions.merge()).addOnSuccessListener(v->loadProfile());
+        btnNotifSettings.setOnClickListener(x -> {
+            if (userRef == null) {
+                Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            userRef.get().addOnSuccessListener(doc -> {
+                Boolean current = doc.getBoolean("notificationsEnabled");
+                boolean newValue = current == null || !current; // toggle
+
+                Map<String, Object> update = new HashMap<>();
+                update.put("notificationsEnabled", newValue);
+
+                userRef.update(update)
+                        .addOnSuccessListener(unused -> {
+                            String label = newValue ? "Notifications Enabled" : "Notifications Disabled";
+                            btnNotifSettings.setText(label);
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), "Failed to update setting", Toast.LENGTH_SHORT).show());
+            });
         });
+
+        btnDelete.setOnClickListener(x -> {
+            if (userRef == null) {
+                Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            userRef.delete()
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(requireContext(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
+        });
+    }
+    private void resolveAndLoad() {
+
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        String email;
+        if (currentUser != null) {
+            email = currentUser.getEmail();
+        } else {
+            email = requireActivity()
+                    .getSharedPreferences("aurora_prefs", getContext().MODE_PRIVATE)
+                    .getString("user_email", null);
+        }
+
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(getContext(), "No user email found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(result -> {
+
+                    if (!result.isEmpty()) {
+                        userRef = result.getDocuments().get(0).getReference();
+                        loadProfile();
+                    }
+                    else {
+
+                        Map<String, Object> newUser = new HashMap<>();
+                        newUser.put("email", email);
+                        newUser.put("role", "Entrant");
+                        newUser.put("joinedCount", 0);
+                        newUser.put("winsCount", 0);
+                        newUser.put("notificationsEnabled", true);
+
+                        db.collection("users")
+                                .add(newUser)
+                                .addOnSuccessListener(ref -> {
+
+                                    userRef = ref;
+
+                                    loadProfile();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(getContext(), "Error creating profile", Toast.LENGTH_SHORT).show());
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Error loading user", Toast.LENGTH_SHORT).show());
     }
 
     private void loadProfile() {
@@ -101,6 +185,13 @@ public class ProfileFragment extends Fragment {
             roleBadge.setText(TextUtils.isEmpty(role)?"Entrant":role);
             joinedCount.setText(String.valueOf(j==null?0:j));
             winsCount.setText(String.valueOf(w==null?0:w));
+
+            Boolean notificationsEnabled = doc.getBoolean("notificationsEnabled");
+            if (notificationsEnabled == null || notificationsEnabled) {
+                btnNotifSettings.setText("Notifications Enabled");
+            } else {
+                btnNotifSettings.setText("Notifications Disabled");
+            }
         });
     }
 
@@ -129,4 +220,5 @@ public class ProfileFragment extends Fragment {
         btnSave.setVisibility(editing ? View.VISIBLE : View.GONE);
         editToggle.setVisibility(editing ? View.GONE : View.VISIBLE);
     }
+
 }

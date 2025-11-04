@@ -1,3 +1,15 @@
+/**
+ * EventDetailsActivity.java
+ *
+ * Displays full details for a single event and lets the entrant join/leave the waiting list.
+ * - Fetches the event document from Firestore (collection: "events") using the provided eventId.
+ * - Binds title, date/time, description, location, registration window, and banner UI.
+ * - Formats times in Mountain Time (America/Edmonton) and shows a "criteria" dialog on demand.
+ * - Uses the device ANDROID_ID as a simple uid; updates the "waitingList" field via arrayUnion/arrayRemove.
+ * - Updates UI state (button label, joined badge, stats) after join/leave actions.
+ */
+
+
 package com.example.aurora;
 
 import android.annotation.SuppressLint;
@@ -22,15 +34,20 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
+import androidx.appcompat.app.AlertDialog;
+
+
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
     private String uid;
-
     private ImageView banner;
     private TextView title, subtitle, timeView, about, regWindow, joinedBadge, stats, location;
     private Button btnJoinLeave;
-
     private final List<String> currentWaitingList = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
@@ -38,6 +55,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
+
+        View criteriaBtn = findViewById(R.id.btnCriteria);
+        if (criteriaBtn != null) {
+            criteriaBtn.setOnClickListener(v -> showCriteriaDialog());
+        }
 
         // Try to get event ID from intent or deep link
         eventId = getIntent().getStringExtra("eventId");
@@ -67,6 +89,22 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         loadEvent();
         btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
+        Button btnCriteria = findViewById(R.id.btnCriteria);
+        btnCriteria.setOnClickListener(v -> showCriteriaDialog());
+    }
+
+    private void showCriteriaDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_criteria, null, false);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+        View close = dialogView.findViewById(R.id.btnGotIt);
+        if (close != null) close.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     private void loadEvent() {
@@ -80,7 +118,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void bindEvent(DocumentSnapshot d) {
         if (d == null || !d.exists()) return;
 
-        // Title / Date
         String titleStr = nz(d.getString("title"));
         if (titleStr.isEmpty()) titleStr = nz(d.getString("name"));
 
@@ -90,7 +127,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         title.setText(titleStr);
         subtitle.setText(dateStr);
 
-        // Location
         String locStr = nz(d.getString("location"));
         if (locStr.isEmpty()) {
             String ln = nz(d.getString("locationName"));
@@ -99,12 +135,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
         location.setText(locStr);
 
-        // Description
         String aboutStr = nz(d.getString("description"));
         if (aboutStr.isEmpty()) aboutStr = nz(d.getString("notes"));
         about.setText(aboutStr);
 
-        // Time (startAt/endAt -> "h:mm a MST")
         Timestamp startTs = d.getTimestamp("startAt");
         Timestamp endTs = d.getTimestamp("endAt");
         if (startTs != null && endTs != null) {
@@ -119,7 +153,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             timeView.setVisibility(TextView.GONE);
         }
 
-        // Registration window
         Timestamp regOpen = d.getTimestamp("registrationOpensAt");
         Timestamp regClose = d.getTimestamp("registrationClosesAt");
         if (regOpen != null || regClose != null) {
@@ -133,7 +166,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             regWindow.setText("");
         }
 
-        // Waiting list
         List<String> wl = (List<String>) d.get("waitingList");
         currentWaitingList.clear();
         if (wl != null) currentWaitingList.addAll(wl);

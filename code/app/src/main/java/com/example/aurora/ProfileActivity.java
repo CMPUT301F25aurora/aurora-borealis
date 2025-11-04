@@ -1,5 +1,11 @@
 package com.example.aurora;
-
+/**
+ * This screen shows and edits the user's profile.
+ * Loads the user's info (name, email, phone, role, stats) from Firestore.
+ * Allows editing and saving updated info.
+ * If no profile exists, it creates one automatically.
+ * Uses Firebase Authentication to find which user is logged in.
+ */
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -58,7 +64,6 @@ public class ProfileActivity extends AppCompatActivity {
         btnNotifSettings.setOnClickListener(v -> Toast.makeText(this, "Notification Settings coming soon", Toast.LENGTH_SHORT).show());
         btnDelete.setOnClickListener(v -> Toast.makeText(this, "Delete Account coming soon", Toast.LENGTH_SHORT).show());
     }
-
     private void resolveAndLoad() {
         FirebaseUser fu = FirebaseAuth.getInstance().getCurrentUser();
         String authEmail = fu != null ? fu.getEmail() : null;
@@ -70,7 +75,6 @@ public class ProfileActivity extends AppCompatActivity {
             else Toast.makeText(this, "No logged-in user found", Toast.LENGTH_SHORT).show();
         }
     }
-
     private void queryByEmail(String em) {
         Query q = db.collection("users").whereEqualTo("email", em).limit(1);
         q.get().addOnSuccessListener(snap -> {

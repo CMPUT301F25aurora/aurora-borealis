@@ -1,5 +1,9 @@
 package com.example.aurora;
-
+/**
+ * Activity for creating a new user account.
+ * Handles input validation, account creation with Firebase Authentication,
+ * and saves user details to Firestore before redirecting to the correct screen.
+ */
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
@@ -13,13 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
-
     private EditText signupName, signupEmail, signupPhone, signupPassword;
     private RadioGroup radioGroupRole;
     private Button signupButton;
     private FirebaseFirestore db;
-
-    private FirebaseAuth mAuth; // NEW
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +35,13 @@ public class SignUpActivity extends AppCompatActivity {
         radioGroupRole = findViewById(R.id.Role);
         signupButton = findViewById(R.id.SignUpButton);
         db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance(); // NEW
+        mAuth = FirebaseAuth.getInstance();
 
         signupButton.setOnClickListener(v -> saveUser());
 
-        // Optional: back to login
         findViewById(R.id.backToLoginButton).setOnClickListener(v ->
                 startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
     }
-
     private void saveUser() {
         String name = signupName.getText().toString().trim();
         String email = signupEmail.getText().toString().trim();
@@ -60,21 +60,21 @@ public class SignUpActivity extends AppCompatActivity {
 
         String role = (selectedId == R.id.Organizer) ? "organizer" : "entrant";
 
-        // NEW: Use Firebase Authentication to ensure unique accounts
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // NEW: Account created successfully, now store user info in Firestore
-                        FirebaseUser firebaseUser = mAuth.getCurrentUser(); // NEW
+
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
                         Map<String, Object> user = new HashMap<>();
                         user.put("name", name);
                         user.put("email", email);
                         user.put("phone", phone);
                         user.put("role", role);
+                        user.put("password", password);
 
-
-                        db.collection("users").add(user)
+                        String uid = firebaseUser.getUid();
+                        db.collection("users").document(uid).set(user)
                                 .addOnSuccessListener(docRef -> {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
                                     Intent intent;
@@ -89,7 +89,6 @@ public class SignUpActivity extends AppCompatActivity {
                                     intent.putExtra("userPhone", phone);
                                     intent.putExtra("userRole", role);
 
-                                    // ✅ NEW: store for later access (used by OrganizerProfileActivity)
                                     getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
                                             .edit()
                                             .putString("userName", name)
@@ -104,7 +103,6 @@ public class SignUpActivity extends AppCompatActivity {
                                 .addOnFailureListener(e ->
                                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
-
                 });
     }
 }

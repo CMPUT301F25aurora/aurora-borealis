@@ -1,3 +1,17 @@
+/**
+ * LoginActivity.java
+ *
+ * Handles user authentication for the Aurora app.
+ * - Allows users to log in using either email or phone number with their password.
+ * - Verifies credentials by querying the "users" collection in Firestore.
+ * - On successful login, user details (name, email, role, etc.) are saved to SharedPreferences.
+ * - Redirects users based on their role:
+ *      - Organizers → OrganizerActivity
+ *      - Entrants → EntrantNavigationActivity
+ * - Displays appropriate Toast messages for success, invalid credentials, or errors.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;

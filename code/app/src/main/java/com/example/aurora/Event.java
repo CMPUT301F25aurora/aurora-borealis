@@ -1,10 +1,23 @@
+/**
+ * Event.java
+ *
+ * This class represents an event in the Aurora app.
+ * It stores key event information such as title, description, dates, location,
+ * poster URL, and a waiting list of entrant IDs.
+ *
+ * The Event class serves as a data model for reading and writing event details
+ * to and from Firestore, and is used by both organizers and entrants
+ * to display and manage event information.
+ */
+
+
 package com.example.aurora;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Event {
-    private String eventId; // This will hold the Firestore document ID
+    private String eventId;
     private String title;
     private String description;
     private String date;
@@ -16,10 +29,9 @@ public class Event {
     private String deepLink;
 
     public Event() {
-        // Default constructor required for Firestore
+
     }
 
-    // Constructor for testing (optional)
     public Event(String eventId, String title, String date, String location, String posterUrl) {
         this.eventId = eventId;
         this.title = title;
@@ -29,7 +41,6 @@ public class Event {
         this.waitingList = new ArrayList<>();
     }
 
-    // Getters and setters
     public String getEventId() { return eventId; }
     public void setEventId(String eventId) { this.eventId = eventId; }
 
