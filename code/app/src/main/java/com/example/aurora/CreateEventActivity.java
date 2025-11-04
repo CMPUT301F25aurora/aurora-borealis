@@ -1,14 +1,21 @@
 package com.example.aurora;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +50,6 @@ public class CreateEventActivity extends AppCompatActivity {
         imagePreview = findViewById(R.id.imagePreview);
         createEventButton = findViewById(R.id.createEventButton);
 
-
         createEventButton.setOnClickListener(v -> uploadEvent());
     }
 
@@ -71,7 +77,57 @@ public class CreateEventActivity extends AppCompatActivity {
 
         db.collection("events")
                 .add(event)
-                .addOnSuccessListener(ref -> Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(ref -> {
+                    Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
+
+                    // Generate deep link and store in Firestore
+                    String eventId = ref.getId();
+                    String deepLink = "aurora://event/" + eventId;
+
+                    Map<String, Object> linkData = new HashMap<>();
+                    linkData.put("deepLink", deepLink);
+
+                    db.collection("events").document(eventId)
+                            .set(linkData, SetOptions.merge());
+
+                    // Show QR code popup
+                    showQrPopup(deepLink);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
+    // Generates QR bitmap and shows it in a popup dialog
+    private void showQrPopup(String deepLink) {
+        if (deepLink == null || deepLink.isEmpty()) {
+            Toast.makeText(this, "No QR code available for this event", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            QRCodeWriter writer = new QRCodeWriter();
+            BitMatrix bitMatrix = writer.encode(deepLink, BarcodeFormat.QR_CODE, 800, 800);
+            Bitmap bitmap = Bitmap.createBitmap(800, 800, Bitmap.Config.RGB_565);
+            for (int x = 0; x < 800; x++) {
+                for (int y = 0; y < 800; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+
+            ImageView qrView = new ImageView(this);
+            qrView.setImageBitmap(bitmap);
+            qrView.setPadding(40, 40, 40, 40);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("🎟️ Event QR Code")
+                    .setView(qrView)
+                    .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+                    .show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

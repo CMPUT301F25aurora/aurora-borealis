@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,7 +39,18 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
+        // Try to get event ID from intent or deep link
         eventId = getIntent().getStringExtra("eventId");
+        if (eventId == null) {
+            eventId = DeepLinkUtil.extractEventIdFromIntent(getIntent());
+        }
+
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         uid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
 
