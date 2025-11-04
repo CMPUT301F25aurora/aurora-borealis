@@ -195,7 +195,11 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="👤"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:textColor="#444" />
 
         <TextView
             android:id="@+id/bottomAlerts"

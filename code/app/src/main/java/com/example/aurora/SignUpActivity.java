@@ -73,28 +73,35 @@ public class SignUpActivity extends AppCompatActivity {
                         user.put("phone", phone);
                         user.put("role", role);
 
-                        // NEW: Store user under their unique Auth UID
-                        db.collection("users").document(firebaseUser.getUid())
-                                .set(user)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
-                                    if (role.equals("organizer")) {
-                                        startActivity(new Intent(this, OrganizerActivity.class));
-                                    } else {
-                                        startActivity(new Intent(this, EntrantActivity.class));
-                                    }
-                                    finish();
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Error saving user: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
+        db.collection("users").add(user)
+                .addOnSuccessListener(docRef -> {
+                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+                    Intent intent;
+                    if (role.equals("organizer")) {
+                        intent = new Intent(this, OrganizerActivity.class);
                     } else {
-                        // NEW: Handle duplicate email exception (from StackOverflow citation)
-                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                            Toast.makeText(this, "Email already in use!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(this, "Signup failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
+                        intent = new Intent(this, EntrantActivity.class);
                     }
-                });
-    }
+
+                    intent.putExtra("userName", name);
+                    intent.putExtra("userEmail", email);
+                    intent.putExtra("userPhone", phone);
+                    intent.putExtra("userRole", role);
+
+                    // ✅ NEW: store for later access (used by OrganizerProfileActivity)
+                    getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
+                            .edit()
+                            .putString("userName", name)
+                            .putString("userEmail", email)
+                            .putString("userPhone", phone)
+                            .putString("userRole", role)
+                            .apply();
+
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
 }
