@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_purple"
+
     android:padding="0dp">
 
     <!-- Top App Bar -->
@@ -175,30 +175,37 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:background="#F3E5F5"
-        android:elevation="8dp">
+        android:elevation="8dp"
+        android:weightSum="3"
+        android:paddingHorizontal="32dp">
 
         <TextView
             android:id="@+id/bottomHome"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="🏠"
-            android:textSize="20sp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/bottomProfile"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="👤"
-            android:textSize="20sp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp" />
+            android:textSize="24sp" />
 
         <TextView
             android:id="@+id/bottomAlerts"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="🔔"
-            android:textSize="20sp" />
+            android:textSize="24sp" />
     </LinearLayout>
+
 
 </LinearLayout>

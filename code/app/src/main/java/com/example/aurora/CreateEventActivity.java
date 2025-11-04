@@ -27,6 +27,9 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
+        Button backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
+
         db = FirebaseFirestore.getInstance();
 
         eventName = findViewById(R.id.eventName);

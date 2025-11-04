@@ -12,6 +12,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <!-- 🔙 Back Button -->
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⬅️ Back"
+            android:backgroundTint="#B39DDB"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="16dp"
+            android:textStyle="bold" />
+
         <TextView
             android:id="@+id/createTitle"
             android:layout_width="wrap_content"
