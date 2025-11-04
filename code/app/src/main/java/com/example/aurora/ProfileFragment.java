@@ -1,5 +1,9 @@
 package com.example.aurora;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -12,10 +16,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
@@ -59,10 +65,54 @@ public class ProfileFragment extends Fragment {
         resolveAndLoad();
 
         editToggle.setOnClickListener(x -> setEditing(true));
+
+
         btnSave.setOnClickListener(x -> saveProfile());
         btnEventHistory.setOnClickListener(x -> Toast.makeText(getContext(),"Event History coming soon",Toast.LENGTH_SHORT).show());
-        btnNotifSettings.setOnClickListener(x -> Toast.makeText(getContext(),"Notification Settings coming soon",Toast.LENGTH_SHORT).show());
-        btnDelete.setOnClickListener(x -> Toast.makeText(getContext(),"Delete Account coming soon",Toast.LENGTH_SHORT).show());
+
+        btnNotifSettings.setOnClickListener(x -> {
+            if (userRef == null) {
+                Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            userRef.get().addOnSuccessListener(doc -> {
+                Boolean current = doc.getBoolean("notificationsEnabled");
+                boolean newValue = current == null || !current; // toggle
+
+                Map<String, Object> update = new HashMap<>();
+                update.put("notificationsEnabled", newValue);
+
+                userRef.update(update)
+                        .addOnSuccessListener(unused -> {
+                            String label = newValue ? "Notifications Enabled" : "Notifications Disabled";
+                            btnNotifSettings.setText(label);
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), "Failed to update setting", Toast.LENGTH_SHORT).show());
+            });
+        });
+
+
+
+        btnDelete.setOnClickListener(x -> {
+            if (userRef == null) {
+                Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            userRef.delete()
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(requireContext(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
+        });
+
     }
 
     private void resolveAndLoad() {
@@ -79,6 +129,8 @@ public class ProfileFragment extends Fragment {
                 init.put("role","Entrant");
                 init.put("joinedCount",0);
                 init.put("winsCount",0);
+                init.put("notificationsEnabled", true);
+
                 userRef = db.collection("users").document();
                 userRef.set(init, SetOptions.merge()).addOnSuccessListener(v->loadProfile());
             }
@@ -101,6 +153,13 @@ public class ProfileFragment extends Fragment {
             roleBadge.setText(TextUtils.isEmpty(role)?"Entrant":role);
             joinedCount.setText(String.valueOf(j==null?0:j));
             winsCount.setText(String.valueOf(w==null?0:w));
+
+            Boolean notificationsEnabled = doc.getBoolean("notificationsEnabled");
+            if (notificationsEnabled == null || notificationsEnabled) {
+                btnNotifSettings.setText("Notifications Enabled");
+            } else {
+                btnNotifSettings.setText("Notifications Disabled");
+            }
         });
     }
 
@@ -129,4 +188,52 @@ public class ProfileFragment extends Fragment {
         btnSave.setVisibility(editing ? View.VISIBLE : View.GONE);
         editToggle.setVisibility(editing ? View.GONE : View.VISIBLE);
     }
+    private void listenForNotifications() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+        String email = user.getEmail();
+
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(users -> {
+                    if (users.isEmpty()) return;
+
+                    Boolean enabled = users.getDocuments().get(0).getBoolean("notificationsEnabled");
+                    if (enabled != null && !enabled) {
+                        db.collection("notifications")
+                                .whereEqualTo("userEmail", email)
+                                .get()
+                                .addOnSuccessListener(notifs -> {
+                                    for (var n : notifs.getDocuments())
+                                        n.getReference().delete();
+                                });
+                        return;
+                    }
+
+                    db.collection("notifications")
+                            .whereEqualTo("userEmail", email)
+                            .addSnapshotListener((snap, e) -> {
+                                if (e != null || snap == null) return;
+                                for (var n : snap.getDocuments()) {
+                                    String title = n.getString("title");
+                                    String msg = n.getString("message");
+
+                                    Toast.makeText(
+                                            getContext(),
+                                            (title != null ? title + ": " : "") + msg,
+                                            Toast.LENGTH_LONG
+                                    ).show();
+
+                                    n.getReference().delete(); // remove after showing
+                                }
+                            });
+                });
+    }
+
+
+
+
+
 }
