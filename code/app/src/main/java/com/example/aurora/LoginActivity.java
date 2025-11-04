@@ -1,15 +1,16 @@
 package com.example.aurora;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-//class for login screen on app startup
 public class LoginActivity extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
@@ -32,9 +33,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(v -> loginUser());
         createAccountButton.setOnClickListener(v -> startActivity(new Intent(this, SignUpActivity.class)));
     }
-   // get user info entered and see if it matches info for a user in firestore db
+
     private void loginUser() {
-        String input = loginEmail.getText().toString().trim(); //can be email or phone
+        String input = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
         if (input.isEmpty() || password.isEmpty()) {
@@ -50,7 +51,6 @@ public class LoginActivity extends AppCompatActivity {
                     if (!query.isEmpty()) {
                         handleLogin(query.getDocuments().get(0));
                     } else {
-                        // If not found, try phone-based login
                         db.collection("users")
                                 .whereEqualTo("phone", input)
                                 .whereEqualTo("password", password)
@@ -72,16 +72,24 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleLogin(DocumentSnapshot doc) {
         String role = doc.getString("role");
+        String email = doc.getString("email");
+        String name = doc.getString("name");
 
-        Toast.makeText(this, "Welcome " + doc.getString("name"), Toast.LENGTH_SHORT).show();
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        sp.edit()
+                .putString("user_email", email == null ? "" : email)
+                .putString("user_name", name == null ? "" : name)
+                .putString("user_role", role == null ? "" : role)
+                .putString("user_doc_id", doc.getId())
+                .apply();
+
+        Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
 
         if ("organizer".equalsIgnoreCase(role)) {
             startActivity(new Intent(this, OrganizerActivity.class));
         } else {
-            startActivity(new Intent(this, EventsActivity.class));
+            startActivity(new Intent(this, EntrantNavigationActivity.class));
         }
         finish();
     }
 }
-
-

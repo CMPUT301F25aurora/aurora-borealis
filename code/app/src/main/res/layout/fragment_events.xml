@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    tools:context=".EventsFragment">
+
+    <TextView
+        android:id="@+id/discoverTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Discover Events"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/searchEvents"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search events..."
+        android:padding="12dp"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="8dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="8dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <Button android:id="@+id/btnAll" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnMusic" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Music" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnSports" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sports" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnEducation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Education" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnArts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Arts" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnTechnology" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Technology" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerEvents"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="8dp" />
+
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#D32F2F"
+        android:textColor="@android:color/white" />
+</LinearLayout>

@@ -2,17 +2,24 @@ package com.example.aurora;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import android.provider.Settings;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
@@ -20,10 +27,10 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String uid;
 
     private ImageView banner;
-    private TextView title, subtitle, about, regWindow, joinedBadge, stats, location;
+    private TextView title, subtitle, timeView, about, regWindow, joinedBadge, stats, location;
     private Button btnJoinLeave;
 
-    private List<String> currentWaitingList = new ArrayList<>();
+    private final List<String> currentWaitingList = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -38,6 +45,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         banner = findViewById(R.id.imgBanner);
         title = findViewById(R.id.txtTitle);
         subtitle = findViewById(R.id.txtSubtitle);
+        timeView = findViewById(R.id.txtTime);
         about = findViewById(R.id.txtAbout);
         regWindow = findViewById(R.id.txtRegWindow);
         joinedBadge = findViewById(R.id.txtJoinedBadge);
@@ -50,20 +58,73 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void loadEvent() {
-        db.collection("events").document(eventId).get().addOnSuccessListener(this::bindEvent);
+        db.collection("events").document(eventId)
+                .get()
+                .addOnSuccessListener(this::bindEvent);
     }
 
+    private static String nz(String s) { return s == null ? "" : s; }
+
     private void bindEvent(DocumentSnapshot d) {
-        Event e = d.toObject(Event.class);
-        if (e == null) return;
+        if (d == null || !d.exists()) return;
 
-        currentWaitingList = e.getWaitingList() == null ? new ArrayList<>() : e.getWaitingList();
+        // Title / Date
+        String titleStr = nz(d.getString("title"));
+        if (titleStr.isEmpty()) titleStr = nz(d.getString("name"));
 
-        title.setText(e.getTitle() == null ? "" : e.getTitle());
-        subtitle.setText(e.getDate() == null ? "" : e.getDate());
-        location.setText(e.getLocation() == null ? "" : e.getLocation());
-        about.setText(e.getDescription() == null ? "" : e.getDescription());
-        regWindow.setText(e.getStartDate() == null && e.getEndDate() == null ? "" : ("Registration: " + (e.getStartDate() == null ? "" : e.getStartDate()) + " — " + (e.getEndDate() == null ? "" : e.getEndDate())));
+        String dateStr = nz(d.getString("date"));
+        if (dateStr.isEmpty()) dateStr = nz(d.getString("dateDisplay"));
+
+        title.setText(titleStr);
+        subtitle.setText(dateStr);
+
+        // Location
+        String locStr = nz(d.getString("location"));
+        if (locStr.isEmpty()) {
+            String ln = nz(d.getString("locationName"));
+            String la = nz(d.getString("locationAddress"));
+            locStr = (ln + (la.isEmpty() ? "" : ", " + la)).trim();
+        }
+        location.setText(locStr);
+
+        // Description
+        String aboutStr = nz(d.getString("description"));
+        if (aboutStr.isEmpty()) aboutStr = nz(d.getString("notes"));
+        about.setText(aboutStr);
+
+        // Time (startAt/endAt -> "h:mm a MST")
+        Timestamp startTs = d.getTimestamp("startAt");
+        Timestamp endTs = d.getTimestamp("endAt");
+        if (startTs != null && endTs != null) {
+            SimpleDateFormat tfmt = new SimpleDateFormat("h:mm a 'MST'", Locale.CANADA);
+            tfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton")); // Mountain Time
+            String s = tfmt.format(startTs.toDate());
+            String e = tfmt.format(endTs.toDate());
+            timeView.setText(s + " – " + e);
+            timeView.setVisibility(TextView.VISIBLE);
+        } else {
+            timeView.setText("");
+            timeView.setVisibility(TextView.GONE);
+        }
+
+        // Registration window
+        Timestamp regOpen = d.getTimestamp("registrationOpensAt");
+        Timestamp regClose = d.getTimestamp("registrationClosesAt");
+        if (regOpen != null || regClose != null) {
+            SimpleDateFormat dfmt = new SimpleDateFormat("MMM d, yyyy h:mm a 'MST'", Locale.CANADA);
+            dfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton"));
+            String openS = regOpen == null ? "" : dfmt.format(regOpen.toDate());
+            String closeS = regClose == null ? "" : dfmt.format(regClose.toDate());
+            regWindow.setText(("Registration: " + openS +
+                    (closeS.isEmpty() ? "" : " — " + closeS)).trim());
+        } else {
+            regWindow.setText("");
+        }
+
+        // Waiting list
+        List<String> wl = (List<String>) d.get("waitingList");
+        currentWaitingList.clear();
+        if (wl != null) currentWaitingList.addAll(wl);
         stats.setText("Waiting List: " + currentWaitingList.size());
 
         boolean joined = currentWaitingList.contains(uid);

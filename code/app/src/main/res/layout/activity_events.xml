@@ -1,102 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA"
+    android:padding="8dp"
     tools:context=".EventsActivity">
 
-    <!-- Header -->
-    <LinearLayout
+    <TextView
+        android:id="@+id/discoverTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Discover Events"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/searchEvents"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@drawable/bg_header_gradient">
+        android:layout_height="wrap_content"
+        android:hint="Search events..."
+        android:padding="12dp"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="8dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/discover_events"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:layout_marginTop="20dp" />
-
-        <!-- Search bar -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_search"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:layout_marginTop="16dp"
-            android:elevation="3dp"
-            android:gravity="center_vertical">
-
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@android:drawable/ic_menu_search"
-                app:tint="@android:color/darker_gray"
-                android:contentDescription="@string/search_icon" />
-
-            <EditText
-                android:id="@+id/searchEvents"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/search_events_hint"
-                android:inputType="text"
-                android:background="@null"
-                android:paddingStart="8dp"
-                android:textColor="#000"
-                android:textColorHint="#999"
-                android:autofillHints="search" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Category filter -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:scrollbars="none"
-        android:padding="8dp">
+        android:paddingHorizontal="8dp"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <Button android:id="@+id/chipAll" android:text="All" style="@style/CategoryChip" />
-            <Button android:id="@+id/chipMusic" android:text="Music" style="@style/CategoryChip" />
-            <Button android:id="@+id/chipSports" android:text="Sports" style="@style/CategoryChip" />
-            <Button android:id="@+id/chipEducation" android:text="Education" style="@style/CategoryChip" />
-            <Button android:id="@+id/chipArts" android:text="Arts" style="@style/CategoryChip" />
-            <Button android:id="@+id/chipTechnology" android:text="Technology" style="@style/CategoryChip" />
+            <Button
+                android:id="@+id/btnAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="All"
+                android:layout_margin="4dp"
+                android:backgroundTint="#6750A4"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnMusic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Music"
+                android:layout_margin="4dp"
+                android:backgroundTint="#6750A4"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnSports"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sports"
+                android:layout_margin="4dp"
+                android:backgroundTint="#6750A4"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnEducation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Education"
+                android:layout_margin="4dp"
+                android:backgroundTint="#6750A4"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnArts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Arts"
+                android:layout_margin="4dp"
+                android:backgroundTint="#6750A4"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnTechnology"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Technology"
+                android:layout_margin="4dp"
+                android:backgroundTint="#6750A4"
+                android:textColor="@android:color/white" />
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- Events list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEvents"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        tools:listitem="@layout/item_event" />
+        android:layout_marginTop="8dp" />
 
-    <!-- Logout Button -->
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/logout"
-        android:textColor="@android:color/white"
-        android:backgroundTint="#E53935"
-        android:layout_margin="16dp" />
+        android:text="Logout"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#D32F2F"
+        android:textColor="@android:color/white" />
+
+    <include layout="@layout/view_bottom_nav_entrant"/>
 </LinearLayout>
