@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -68,6 +69,17 @@ public class SignUpActivity extends AppCompatActivity {
         db.collection("users").add(user)
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+
+                    // 🔹 LOG: user registered
+                    Map<String, Object> log = new HashMap<>();
+                    log.put("type", "user_registered");
+                    log.put("message", "User registered: " + email);
+                    log.put("timestamp", FieldValue.serverTimestamp());
+                    log.put("userId", docRef.getId());
+                    log.put("userEmail", email);
+                    log.put("userRole", role);
+
+                    db.collection("logs").add(log);
 
                     Intent intent;
                     if ("organizer".equals(role)) {

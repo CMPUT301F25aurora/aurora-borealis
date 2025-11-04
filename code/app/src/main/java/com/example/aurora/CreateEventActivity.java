@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -43,7 +44,6 @@ public class CreateEventActivity extends AppCompatActivity {
         imagePreview = findViewById(R.id.imagePreview);
         createEventButton = findViewById(R.id.createEventButton);
 
-
         createEventButton.setOnClickListener(v -> uploadEvent());
     }
 
@@ -60,18 +60,37 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void saveEventData() {
+        String name = eventName.getText().toString().trim();
+
         Map<String, Object> event = new HashMap<>();
-        event.put("name", eventName.getText().toString());
+        event.put("title", name); // use "title" to match your other events
         event.put("description", eventDescription.getText().toString());
         event.put("startDate", eventStart.getText().toString());
         event.put("endDate", eventEnd.getText().toString());
         event.put("registrationStart", registrationStart.getText().toString());
         event.put("registrationEnd", registrationEnd.getText().toString());
         event.put("capacity", maxCapacity.getText().toString());
+        // optional starter waitingList array
+        event.put("waitingList", new java.util.ArrayList<String>());
 
         db.collection("events")
                 .add(event)
-                .addOnSuccessListener(ref -> Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(ref -> {
+                    Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
+
+                    // 🔹 LOG: event created
+                    Map<String, Object> log = new HashMap<>();
+                    log.put("type", "event_created");
+                    log.put("message", "Event created: " + name);
+                    log.put("timestamp", FieldValue.serverTimestamp());
+                    log.put("eventId", ref.getId());
+                    log.put("eventTitle", name);
+
+                    db.collection("logs").add(log);
+
+                    finish(); // go back if you want
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }
