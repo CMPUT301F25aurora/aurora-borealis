@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F8F9FA"
+    tools:context=".EventsActivity">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/bg_header_gradient">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/discover_events"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:layout_marginTop="20dp" />
+
+        <!-- Search bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_search"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:layout_marginTop="16dp"
+            android:elevation="3dp"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@android:drawable/ic_menu_search"
+                app:tint="@android:color/darker_gray"
+                android:contentDescription="@string/search_icon" />
+
+            <EditText
+                android:id="@+id/searchEvents"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/search_events_hint"
+                android:inputType="text"
+                android:background="@null"
+                android:paddingStart="8dp"
+                android:textColor="#000"
+                android:textColorHint="#999"
+                android:autofillHints="search" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Category filter -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:scrollbars="none"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button android:id="@+id/chipAll" android:text="All" style="@style/CategoryChip" />
+            <Button android:id="@+id/chipMusic" android:text="Music" style="@style/CategoryChip" />
+            <Button android:id="@+id/chipSports" android:text="Sports" style="@style/CategoryChip" />
+            <Button android:id="@+id/chipEducation" android:text="Education" style="@style/CategoryChip" />
+            <Button android:id="@+id/chipArts" android:text="Arts" style="@style/CategoryChip" />
+            <Button android:id="@+id/chipTechnology" android:text="Technology" style="@style/CategoryChip" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Events list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerEvents"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        tools:listitem="@layout/item_event" />
+
+    <!-- Logout Button -->
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/logout"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#E53935"
+        android:layout_margin="16dp" />
+</LinearLayout>
