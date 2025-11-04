@@ -25,6 +25,7 @@
         </activity>
 
         <!-- App screens -->
+        <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
         <activity android:name=".CreateEventActivity" android:exported="false" />
         <activity android:name=".EventsActivity" android:exported="false" />
         <activity android:name=".EventDetailsActivity" android:exported="false" />
