@@ -1,71 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    card_view:cardCornerRadius="12dp"
-    card_view:cardElevation="3dp">
+    android:background="@drawable/rounded_card"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginTop="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/adminProfileName"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="User name"
-            android:textStyle="bold"
+            android:layout_weight="1"
+            android:text="Sarah Johnson"
             android:textSize="16sp"
-            android:textColor="#222222" />
-
-        <TextView
-            android:id="@+id/adminProfileEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="user@example.com"
-            android:textSize="13sp"
-            android:textColor="#666666"
-            android:layout_marginTop="2dp" />
+            android:textStyle="bold"
+            android:textColor="#111111" />
 
         <TextView
             android:id="@+id/adminProfileRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organizer"
+            android:text="Entrant"
             android:textSize="12sp"
-            android:textColor="#009688"
-            android:layout_marginTop="2dp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end"
-            android:layout_marginTop="8dp">
-
-            <Button
-                android:id="@+id/btnViewProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="View"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#2196F3" />
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp" />
-
-            <Button
-                android:id="@+id/btnRemoveProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Remove"
-                android:textColor="@android:color/white"
-                android:backgroundTint="#E53935" />
-        </LinearLayout>
+            android:textColor="#333333"
+            android:background="#EDE7F6"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp" />
     </LinearLayout>
-</androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/adminProfileEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="email@example.com"
+        android:textColor="#555555"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/adminProfileRemoveButton"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:text="Remove Profile"
+        android:textAllCaps="false"
+        android:backgroundTint="#FFCDD2"
+        android:textColor="#C62828" />
+</LinearLayout>
