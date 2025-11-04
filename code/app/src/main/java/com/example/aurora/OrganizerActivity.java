@@ -26,6 +26,7 @@ public class OrganizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
 
+        // Top buttons
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
         eventListContainer = findViewById(R.id.eventListContainer);
@@ -37,6 +38,28 @@ public class OrganizerActivity extends AppCompatActivity {
 
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, CreateEventActivity.class);
+            startActivity(intent);
+        });
+
+        // Bottom navigation
+        TextView bottomHome = findViewById(R.id.bottomHome);
+        TextView bottomProfile = findViewById(R.id.bottomProfile);
+        TextView bottomAlerts = findViewById(R.id.bottomAlerts);
+
+        bottomHome.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+
+        bottomProfile.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerActivity.this, OrganizerProfileActivity.class);
+            startActivity(intent);
+        });
+
+        bottomAlerts.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class);
             startActivity(intent);
         });
 
@@ -84,7 +107,7 @@ public class OrganizerActivity extends AppCompatActivity {
         if (maxSpots == null) {
             String capStr = doc.getString("capacity");
             try {
-                maxSpots = capStr == null || capStr.isEmpty()
+                maxSpots = (capStr == null || capStr.isEmpty())
                         ? 0L
                         : Long.parseLong(capStr);
             } catch (NumberFormatException e) {
@@ -111,7 +134,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
         if (lowerCategory.equals("arts")) {
             emoji = "🎨";
-        } else if (lowerCategory.equals("sport")) {
+        } else if (lowerCategory.equals("sport") || lowerCategory.equals("sports")) {
             emoji = "⚽";
         } else if (lowerCategory.equals("music")) {
             emoji = "🎵";

@@ -2,9 +2,15 @@ package com.example.aurora;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +36,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         signupButton.setOnClickListener(v -> saveUser());
 
-        // Optional: back to login
         findViewById(R.id.backToLoginButton).setOnClickListener(v ->
                 startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
     }
@@ -57,17 +62,26 @@ public class SignUpActivity extends AppCompatActivity {
         user.put("name", name);
         user.put("email", email);
         user.put("phone", phone);
-        user.put("password", password);
+        user.put("password", password);   // needed so Login can query
         user.put("role", role);
 
         db.collection("users").add(user)
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
-                    if (role.equals("organizer")) {
-                        startActivity(new Intent(this, OrganizerActivity.class));
+
+                    Intent intent;
+                    if ("organizer".equals(role)) {
+                        intent = new Intent(this, OrganizerActivity.class);
                     } else {
-                        startActivity(new Intent(this, EntrantActivity.class));
+                        intent = new Intent(this, EntrantNavigationActivity.class);
                     }
+
+                    intent.putExtra("userName", name);
+                    intent.putExtra("userEmail", email);
+                    intent.putExtra("userPhone", phone);
+                    intent.putExtra("userRole", role);
+
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e ->
