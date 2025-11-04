@@ -1,3 +1,13 @@
+/**
+ * AlertsFragment.java
+ *
+ * This fragment is responsible for displaying the alerts section of the Aurora app.
+ * It inflates the layout defined in fragment_alerts.xml when the fragment’s view is created.
+ * Fragments like this are used to modularize the UI, allowing the alerts screen to be
+ * reused within different activities or navigation components.
+ */
+
+
 package com.example.aurora;
 
 import android.os.Bundle;

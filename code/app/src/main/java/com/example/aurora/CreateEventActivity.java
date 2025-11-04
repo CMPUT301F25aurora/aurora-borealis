@@ -1,3 +1,16 @@
+/**
+ * CreateEventActivity.java
+ *
+ * This activity allows organizers to create new events in the Aurora app.
+ * It provides input fields for event details such as name, description, dates,
+ * registration period, and maximum capacity. Users can also upload a poster image.
+ *
+ * When the "Create Event" button is clicked, the entered event information
+ * is validated and then uploaded to the Firestore database under the "events" collection.
+ * Successful uploads show a confirmation message, while errors display a toast with details.
+ */
+
+
 package com.example.aurora;
 
 import android.os.Bundle;

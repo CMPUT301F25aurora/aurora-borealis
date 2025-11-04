@@ -1,3 +1,19 @@
+/**
+ * OrganizerActivity.java
+ *
+ * Main screen for organizers in the Aurora app.
+ * - Displays all events retrieved from Firestore ("events" collection) in a vertical list of cards.
+ * - Each card shows event title, date, category, location, and max spots.
+ * - Provides quick navigation:
+ *      - "Create Event" → opens CreateEventActivity for new event creation.
+ *      - "Profile" → opens OrganizerProfileActivity.
+ *      - "Alerts" → opens OrganizerNotificationsActivity.
+ *      - "Home" → reloads OrganizerActivity.
+ * - Uses dynamic layout inflation (item_event_card.xml) to build event cards at runtime.
+ * - Displays user feedback via Toast messages for empty results or Firestore errors.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -26,29 +42,24 @@ public class OrganizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
 
-        // Initialize UI
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
         eventListContainer = findViewById(R.id.eventListContainer);
 
         db = FirebaseFirestore.getInstance();
 
-        // Temporary toast for My Events
         myEventsButton.setOnClickListener(v ->
                 Toast.makeText(this, "My Events clicked", Toast.LENGTH_SHORT).show());
 
-        // Open Create Event screen
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, CreateEventActivity.class);
             startActivity(intent);
         });
 
-        // 🔽 Bottom navigation setup
         TextView bottomHome = findViewById(R.id.bottomHome);
         TextView bottomProfile = findViewById(R.id.bottomProfile);
         TextView bottomAlerts = findViewById(R.id.bottomAlerts);
 
-        // 🏠 Home button (reloads OrganizerActivity)
         bottomHome.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -56,25 +67,21 @@ public class OrganizerActivity extends AppCompatActivity {
             finish();
         });
 
-        // 👤 Profile button (opens OrganizerProfileActivity)
         bottomProfile.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerProfileActivity.class);
             startActivity(intent);
         });
 
-        // 🔔 Notifications button (opens OrganizerNotificationsActivity)
         bottomAlerts.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class);
             startActivity(intent);
         });
 
-        // Load all events from Firestore
         loadEventsFromFirebase();
     }
 
     private void loadEventsFromFirebase() {
         eventListContainer.removeAllViews();
-
         db.collection("events")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -82,7 +89,6 @@ public class OrganizerActivity extends AppCompatActivity {
                         Toast.makeText(this, "No events found.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         addEventCard(doc);
                     }
@@ -92,7 +98,6 @@ public class OrganizerActivity extends AppCompatActivity {
     }
 
     private void addEventCard(DocumentSnapshot doc) {
-        // Inflate reusable layout for event card
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
 
@@ -101,7 +106,6 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
 
-        // Extract data safely
         String titleText = doc.getString("title");
         String dateText = doc.getString("date");
         Long maxSpots = doc.getLong("maxSpots");

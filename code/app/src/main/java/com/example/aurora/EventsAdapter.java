@@ -1,3 +1,16 @@
+/**
+ * EventsAdapter.java
+ *
+ * RecyclerView adapter that binds a list of Event objects to the event list UI.
+ * - Displays each event’s title, date, location, and image placeholder.
+ * - Handles “View Details” clicks to open EventDetailsActivity for the selected event.
+ * - Handles “Join” clicks to add the current user (by device ANDROID_ID) to the event’s waiting list in Firestore.
+ *
+ * The adapter ensures smooth scrolling and efficient view reuse using the ViewHolder pattern.
+ * It interacts directly with the "events" collection in Firestore to update waiting list data.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Context;
