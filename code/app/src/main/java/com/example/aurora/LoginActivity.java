@@ -1,6 +1,7 @@
 package com.example.aurora;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -9,10 +10,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-// class for login screen on app startup
 public class LoginActivity extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
@@ -37,46 +37,77 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SignUpActivity.class)));
     }
 
-    // get user info entered and see if it matches info for a user in firestore db
     private void loginUser() {
-        String email = loginEmail.getText().toString().trim();
+        String input = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
+        if (input.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter both email/phone and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Try email first
         db.collection("users")
-                .whereEqualTo("email", email)
+                .whereEqualTo("email", input)
                 .whereEqualTo("password", password)
                 .get()
                 .addOnSuccessListener(query -> {
-                    // return invalid if no user info matches ones entered in firestore
-                    if (query.isEmpty()) {
-                        Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // look into matching user and get role
-                    QueryDocumentSnapshot doc =
-                            (QueryDocumentSnapshot) query.getDocuments().get(0);
-                    String role = doc.getString("role");
-
-                    if ("admin".equals(role)) {
-                        // secret admin account goes to AdminActivity
-                        startActivity(new Intent(this, AdminActivity.class));
-                    } else if ("organizer".equals(role)) {
-                        startActivity(new Intent(this, OrganizerActivity.class));
+                    if (!query.isEmpty()) {
+                        handleLogin(query.getDocuments().get(0));
                     } else {
-                        // default role is entrant
-                        startActivity(new Intent(this, EntrantActivity.class));
+                        // Fallback: phone + password
+                        db.collection("users")
+                                .whereEqualTo("phone", input)
+                                .whereEqualTo("password", password)
+                                .get()
+                                .addOnSuccessListener(phoneQuery -> {
+                                    if (!phoneQuery.isEmpty()) {
+                                        handleLogin(phoneQuery.getDocuments().get(0));
+                                    } else {
+                                        Toast.makeText(this, "Invalid email/phone or password", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
-                    finish();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                "Error: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void handleLogin(DocumentSnapshot doc) {
+        String name = doc.getString("name");
+        String email = doc.getString("email");
+        String phone = doc.getString("phone");
+        String role = doc.getString("role");
+
+        // Save for profile screens
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        sp.edit()
+                .putString("user_email", email == null ? "" : email)
+                .putString("user_name", name == null ? "" : name)
+                .putString("user_role", role == null ? "" : role)
+                .putString("user_doc_id", doc.getId())
+                .apply();
+
+        Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
+
+        Intent intent;
+        if (role != null && role.equalsIgnoreCase("admin")) {
+            intent = new Intent(this, AdminActivity.class);
+        } else if (role != null && role.equalsIgnoreCase("organizer")) {
+            intent = new Intent(this, OrganizerActivity.class);
+        } else {
+            // default entrant flow is the pager with tabs
+            intent = new Intent(this, EntrantNavigationActivity.class);
+        }
+
+        intent.putExtra("userName", name);
+        intent.putExtra("userEmail", email);
+        intent.putExtra("userPhone", phone);
+        intent.putExtra("userRole", role);
+
+        startActivity(intent);
+        finish();
     }
 }

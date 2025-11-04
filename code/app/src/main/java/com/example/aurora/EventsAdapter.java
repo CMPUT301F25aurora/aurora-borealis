@@ -1,10 +1,12 @@
 package com.example.aurora;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,15 +28,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         this.context = context;
         this.events = events;
         this.db = FirebaseFirestore.getInstance();
-
-        // If you have UserSession.java:
         this.uid = UserSession.getUserId(context);
-
-        // If you DON'T use UserSession, comment the line above and use:
-        // this.uid = Settings.Secure.getString(
-        //         context.getContentResolver(),
-        //         Settings.Secure.ANDROID_ID
-        // );
     }
 
     @NonNull
@@ -52,11 +46,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.eventDate.setText(e.getDate());
         holder.eventLocation.setText(e.getLocation());
 
-        // No details screen right now, so hide the button (or you can remove it from XML later)
-        holder.btnViewDetails.setVisibility(View.GONE);
-        holder.btnViewDetails.setOnClickListener(null);
+        holder.btnViewDetails.setOnClickListener(v -> {
+            Intent i = new Intent(context, EventDetailsActivity.class);
+            i.putExtra("eventId", e.getEventId());
+            context.startActivity(i);
+        });
 
-        // Join waiting list
         holder.btnJoin.setOnClickListener(v ->
                 db.collection("events")
                         .document(e.getEventId())
@@ -71,11 +66,13 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
     public static class EventViewHolder extends RecyclerView.ViewHolder {
 
+        ImageView eventImage;
         TextView eventTitle, eventDate, eventLocation;
         Button btnViewDetails, btnJoin;
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
+            eventImage = itemView.findViewById(R.id.eventImage);
             eventTitle = itemView.findViewById(R.id.eventTitle);
             eventDate = itemView.findViewById(R.id.eventDate);
             eventLocation = itemView.findViewById(R.id.eventLocation);

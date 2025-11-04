@@ -91,7 +91,6 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
@@ -129,4 +128,8 @@
             android:text="🔔"
             android:textSize="24sp" />
     </LinearLayout>
+
+
+
+
 </LinearLayout>
