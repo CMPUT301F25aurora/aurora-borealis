@@ -71,8 +71,10 @@ public class SignUpActivity extends AppCompatActivity {
                         user.put("email", email);
                         user.put("phone", phone);
                         user.put("role", role);
+                        user.put("password", password);
 
-                        db.collection("users").add(user)
+                        String uid = firebaseUser.getUid();
+                        db.collection("users").document(uid).set(user)
                                 .addOnSuccessListener(docRef -> {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
                                     Intent intent;

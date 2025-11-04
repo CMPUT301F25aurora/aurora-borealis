@@ -1,10 +1,21 @@
-package com.example.aurora;
 /**
- * This activity is the main dashboard for organizers.
- * Displays a list of all events fetched from Firestore.
- * Allows organizers to create new events.
- * Includes bottom navigation buttons for Home, Profile, and Notifications.
+ * OrganizerActivity.java
+ *
+ * Main screen for organizers in the Aurora app.
+ * - Displays all events retrieved from Firestore ("events" collection) in a vertical list of cards.
+ * - Each card shows event title, date, category, location, and max spots.
+ * - Provides quick navigation:
+ *      - "Create Event" → opens CreateEventActivity for new event creation.
+ *      - "Profile" → opens OrganizerProfileActivity.
+ *      - "Alerts" → opens OrganizerNotificationsActivity.
+ *      - "Home" → reloads OrganizerActivity.
+ * - Uses dynamic layout inflation (item_event_card.xml) to build event cards at runtime.
+ * - Displays user feedback via Toast messages for empty results or Firestore errors.
  */
+
+
+package com.example.aurora;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -71,7 +82,6 @@ public class OrganizerActivity extends AppCompatActivity {
 
     private void loadEventsFromFirebase() {
         eventListContainer.removeAllViews();
-
         db.collection("events")
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -79,7 +89,6 @@ public class OrganizerActivity extends AppCompatActivity {
                         Toast.makeText(this, "No events found.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         addEventCard(doc);
                     }
@@ -96,7 +105,6 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
-
 
         String titleText = doc.getString("title");
         String dateText = doc.getString("date");

@@ -1,3 +1,16 @@
+/**
+ * GradientTextView.java
+ *
+ * A custom TextView that applies a horizontal color gradient to its text.
+ * - Extends AppCompatTextView to support custom styling and backward compatibility.
+ * - Creates a LinearGradient shader that blends blue (#49D5FF), purple (#9E6BFF),
+ *   and pink (#FF6AC4) across the text width.
+ * - The gradient is recalculated and applied dynamically whenever the view size changes.
+ *
+ * This component is typically used for visually appealing titles or headers in the Aurora app.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Context;
