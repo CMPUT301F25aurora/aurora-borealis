@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +18,8 @@ public class SignUpActivity extends AppCompatActivity {
     private RadioGroup radioGroupRole;
     private Button signupButton;
     private FirebaseFirestore db;
+
+    private FirebaseAuth mAuth; // NEW
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +33,7 @@ public class SignUpActivity extends AppCompatActivity {
         radioGroupRole = findViewById(R.id.Role);
         signupButton = findViewById(R.id.SignUpButton);
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance(); // NEW
 
         signupButton.setOnClickListener(v -> saveUser());
 
@@ -53,12 +60,19 @@ public class SignUpActivity extends AppCompatActivity {
 
         String role = (selectedId == R.id.Organizer) ? "organizer" : "entrant";
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", name);
-        user.put("email", email);
-        user.put("phone", phone);
-        user.put("password", password);
-        user.put("role", role);
+        // NEW: Use Firebase Authentication to ensure unique accounts
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // NEW: Account created successfully, now store user info in Firestore
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser(); // NEW
+
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("name", name);
+                        user.put("email", email);
+                        user.put("phone", phone);
+                        user.put("role", role);
+
 
         db.collection("users").add(user)
                 .addOnSuccessListener(docRef -> {
@@ -89,5 +103,5 @@ public class SignUpActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
+
 }
