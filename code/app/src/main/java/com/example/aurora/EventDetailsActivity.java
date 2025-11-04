@@ -21,6 +21,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import android.view.LayoutInflater;
+import android.view.View;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
+import androidx.appcompat.app.AlertDialog;
+
+
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
@@ -37,6 +44,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
+
+        View criteriaBtn = findViewById(R.id.btnCriteria);
+        if (criteriaBtn != null) {
+            criteriaBtn.setOnClickListener(v -> showCriteriaDialog());
+        }
 
         eventId = getIntent().getStringExtra("eventId");
         uid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -55,7 +67,30 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         loadEvent();
         btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
+        Button btnCriteria = findViewById(R.id.btnCriteria);
+        btnCriteria.setOnClickListener(v -> showCriteriaDialog());
+
     }
+
+
+    private void showCriteriaDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_criteria, null, false);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        View close = dialogView.findViewById(R.id.btnGotIt);
+        if (close != null) close.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+
 
     private void loadEvent() {
         db.collection("events").document(eventId)
