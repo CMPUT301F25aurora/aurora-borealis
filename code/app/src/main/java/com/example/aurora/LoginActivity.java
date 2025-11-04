@@ -71,9 +71,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleLogin(DocumentSnapshot doc) {
-        String role = doc.getString("role");
-        String email = doc.getString("email");
         String name = doc.getString("name");
+        String email = doc.getString("email");
+        String phone = doc.getString("phone");
+        String role = doc.getString("role");
 
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         sp.edit()
@@ -85,11 +86,19 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
 
+        Intent intent;
         if ("organizer".equalsIgnoreCase(role)) {
-            startActivity(new Intent(this, OrganizerActivity.class));
+            intent = new Intent(this, OrganizerActivity.class);
         } else {
-            startActivity(new Intent(this, EntrantNavigationActivity.class));
+            intent = new Intent(this, EntrantNavigationActivity.class);
         }
+
+        intent.putExtra("userName", name);
+        intent.putExtra("userEmail", email);
+        intent.putExtra("userPhone", phone);
+        intent.putExtra("userRole", role);
+
+        startActivity(intent);
         finish();
     }
 }

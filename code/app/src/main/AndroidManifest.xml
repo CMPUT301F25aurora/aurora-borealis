@@ -14,6 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Aurora">
 
+        <!-- Launcher -->
         <activity
             android:name=".WelcomeActivity"
             android:exported="true">
@@ -23,31 +24,18 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".EntrantNavigationActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EventDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EventsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AlertsActivity"
-            android:exported="false" />
+        <!-- App screens -->
+        <activity android:name=".CreateEventActivity" android:exported="false" />
+        <activity android:name=".EventsActivity" android:exported="false" />
+        <activity android:name=".EventDetailsActivity" android:exported="false" />
+        <activity android:name=".OrganizerActivity" android:exported="false" />
+        <activity android:name=".OrganizerProfileActivity" android:exported="false" />
+        <activity android:name=".EntrantActivity" android:exported="false" />
+        <activity android:name=".EntrantNavigationActivity" android:exported="false" />
+        <activity android:name=".LoginActivity" android:exported="false" />
+        <activity android:name=".SignUpActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".AlertsActivity" android:exported="false" />
 
     </application>
 
