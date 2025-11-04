@@ -1,21 +1,32 @@
 package com.example.aurora;
 
 import android.content.Context;
-import android.view.*;
-import android.widget.*;
+import android.content.Intent;
+import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-//import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
     private Context context;
     private List<Event> events;
+    private FirebaseFirestore db;
+    private String uid;
 
     public EventsAdapter(Context context, List<Event> events) {
         this.context = context;
         this.events = events;
+        this.db = FirebaseFirestore.getInstance();
+        this.uid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @NonNull
@@ -32,7 +43,16 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.eventDate.setText(e.getDate());
         holder.eventLocation.setText(e.getLocation());
 
-        //Glide.with(context).load(e.getImageUrl()).into(holder.eventImage);
+        holder.btnViewDetails.setOnClickListener(v -> {
+            Intent i = new Intent(context, EventDetailsActivity.class);
+            i.putExtra("eventId", e.getEventId());
+            context.startActivity(i);
+        });
+
+        holder.btnJoin.setOnClickListener(v ->
+                db.collection("events").document(e.getEventId())
+                        .update("waitingList", FieldValue.arrayUnion(uid))
+        );
     }
 
     @Override
@@ -47,7 +67,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
-            //eventImage = itemView.findViewById(R.id.eventImage);
+            eventImage = itemView.findViewById(R.id.eventImage);
             eventTitle = itemView.findViewById(R.id.eventTitle);
             eventDate = itemView.findViewById(R.id.eventDate);
             eventLocation = itemView.findViewById(R.id.eventLocation);
