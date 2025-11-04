@@ -1,5 +1,12 @@
 package com.example.aurora;
-
+/**
+ * Fragment that displays and manages the user's profile.
+ * Loads user data from Firestore (name, email, phone, role, stats).
+ * Allows editing and saving profile details.
+ * Lets the user enable/disable notifications.
+ * Supports deleting the account (removes user from Firestore and returns to login).
+ * Listens for notifications and shows them as Toasts if enabled.
+ */
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -29,7 +36,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProfileFragment extends Fragment {
-
     private FirebaseFirestore db;
     private DocumentReference userRef;
 
@@ -93,14 +99,11 @@ public class ProfileFragment extends Fragment {
             });
         });
 
-
-
         btnDelete.setOnClickListener(x -> {
             if (userRef == null) {
                 Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             userRef.delete()
                     .addOnSuccessListener(unused -> {
                         Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
@@ -112,29 +115,58 @@ public class ProfileFragment extends Fragment {
                     .addOnFailureListener(e ->
                             Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
         });
-
     }
-
     private void resolveAndLoad() {
-        FirebaseUser fu = FirebaseAuth.getInstance().getCurrentUser();
-        String em = fu != null ? fu.getEmail() : requireActivity().getSharedPreferences("aurora_prefs", getContext().MODE_PRIVATE).getString("user_email", null);
-        Query q = db.collection("users").whereEqualTo("email", em).limit(1);
-        q.get().addOnSuccessListener(snap -> {
-            if (!snap.isEmpty()) {
-                userRef = snap.getDocuments().get(0).getReference();
-                loadProfile();
-            } else {
-                Map<String,Object> init = new HashMap<>();
-                init.put("email", em);
-                init.put("role","Entrant");
-                init.put("joinedCount",0);
-                init.put("winsCount",0);
-                init.put("notificationsEnabled", true);
 
-                userRef = db.collection("users").document();
-                userRef.set(init, SetOptions.merge()).addOnSuccessListener(v->loadProfile());
-            }
-        });
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        String email;
+        if (currentUser != null) {
+            email = currentUser.getEmail();
+        } else {
+            email = requireActivity()
+                    .getSharedPreferences("aurora_prefs", getContext().MODE_PRIVATE)
+                    .getString("user_email", null);
+        }
+
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(getContext(), "No user email found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(result -> {
+
+                    if (!result.isEmpty()) {
+                        userRef = result.getDocuments().get(0).getReference();
+                        loadProfile();
+                    }
+                    else {
+
+                        Map<String, Object> newUser = new HashMap<>();
+                        newUser.put("email", email);
+                        newUser.put("role", "Entrant");
+                        newUser.put("joinedCount", 0);
+                        newUser.put("winsCount", 0);
+                        newUser.put("notificationsEnabled", true);
+
+                        db.collection("users")
+                                .add(newUser)
+                                .addOnSuccessListener(ref -> {
+
+                                    userRef = ref;
+
+                                    loadProfile();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(getContext(), "Error creating profile", Toast.LENGTH_SHORT).show());
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Error loading user", Toast.LENGTH_SHORT).show());
     }
 
     private void loadProfile() {
@@ -188,52 +220,5 @@ public class ProfileFragment extends Fragment {
         btnSave.setVisibility(editing ? View.VISIBLE : View.GONE);
         editToggle.setVisibility(editing ? View.GONE : View.VISIBLE);
     }
-    private void listenForNotifications() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
-        String email = user.getEmail();
-
-        db.collection("users")
-                .whereEqualTo("email", email)
-                .limit(1)
-                .get()
-                .addOnSuccessListener(users -> {
-                    if (users.isEmpty()) return;
-
-                    Boolean enabled = users.getDocuments().get(0).getBoolean("notificationsEnabled");
-                    if (enabled != null && !enabled) {
-                        db.collection("notifications")
-                                .whereEqualTo("userEmail", email)
-                                .get()
-                                .addOnSuccessListener(notifs -> {
-                                    for (var n : notifs.getDocuments())
-                                        n.getReference().delete();
-                                });
-                        return;
-                    }
-
-                    db.collection("notifications")
-                            .whereEqualTo("userEmail", email)
-                            .addSnapshotListener((snap, e) -> {
-                                if (e != null || snap == null) return;
-                                for (var n : snap.getDocuments()) {
-                                    String title = n.getString("title");
-                                    String msg = n.getString("message");
-
-                                    Toast.makeText(
-                                            getContext(),
-                                            (title != null ? title + ": " : "") + msg,
-                                            Toast.LENGTH_LONG
-                                    ).show();
-
-                                    n.getReference().delete(); // remove after showing
-                                }
-                            });
-                });
-    }
-
-
-
-
 
 }

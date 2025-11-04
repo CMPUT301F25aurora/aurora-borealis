@@ -1,5 +1,10 @@
 package com.example.aurora;
-
+/**
+ * This activity shows a list of notifications for the organizer.
+ * - Loads notifications from Firestore (most recent first).
+ * - Displays each notification’s title, message, and time.
+ * - If there are no notifications, shows a default message.
+ */
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
@@ -14,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class OrganizerNotificationsActivity extends AppCompatActivity {
-
     private LinearLayout notificationsContainer;
     private FirebaseFirestore db;
 
@@ -28,7 +32,6 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
 
         loadNotifications();
     }
-
     private void loadNotifications() {
         // Fetch organizer notifications from Firestore
         db.collection("notifications")
@@ -55,7 +58,6 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
                     }
                 });
     }
-
     private void addNotificationCard(String title, String message, String time) {
         View cardView = LayoutInflater.from(this)
                 .inflate(R.layout.item_notification_card, notificationsContainer, false);

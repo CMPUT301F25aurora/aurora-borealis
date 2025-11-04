@@ -96,8 +96,8 @@ public class OrganizerActivity extends AppCompatActivity {
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error loading events: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
     private void addEventCard(DocumentSnapshot doc) {
+
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
 
