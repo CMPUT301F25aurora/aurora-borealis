@@ -103,5 +103,8 @@ public class SignUpActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    }
+                });
+    }
 
 }
