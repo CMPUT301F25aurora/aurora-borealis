@@ -63,11 +63,28 @@ public class SignUpActivity extends AppCompatActivity {
         db.collection("users").add(user)
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+                    Intent intent;
                     if (role.equals("organizer")) {
-                        startActivity(new Intent(this, OrganizerActivity.class));
+                        intent = new Intent(this, OrganizerActivity.class);
                     } else {
-                        startActivity(new Intent(this, EntrantActivity.class));
+                        intent = new Intent(this, EntrantActivity.class);
                     }
+
+                    intent.putExtra("userName", name);
+                    intent.putExtra("userEmail", email);
+                    intent.putExtra("userPhone", phone);
+                    intent.putExtra("userRole", role);
+
+                    // ✅ NEW: store for later access (used by OrganizerProfileActivity)
+                    getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
+                            .edit()
+                            .putString("userName", name)
+                            .putString("userEmail", email)
+                            .putString("userPhone", phone)
+                            .putString("userRole", role)
+                            .apply();
+
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e ->

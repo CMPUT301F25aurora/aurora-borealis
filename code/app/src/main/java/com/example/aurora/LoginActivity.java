@@ -71,17 +71,44 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleLogin(DocumentSnapshot doc) {
+        // Extract all Firestore fields
+        String name = doc.getString("name");
+        String email = doc.getString("email");
+        String phone = doc.getString("phone");
         String role = doc.getString("role");
 
-        Toast.makeText(this, "Welcome " + doc.getString("name"), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Welcome " + name, Toast.LENGTH_SHORT).show();
 
+        // Decide which screen to go to
+        Intent intent;
         if ("organizer".equalsIgnoreCase(role)) {
-            startActivity(new Intent(this, OrganizerActivity.class));
+            intent = new Intent(this, OrganizerActivity.class);
         } else {
-            startActivity(new Intent(this, EventsActivity.class));
+            intent = new Intent(this, EventsActivity.class);
         }
+
+        // Pass user info to the next activity
+        intent.putExtra("userName", name);
+        intent.putExtra("userEmail", email);
+        intent.putExtra("userPhone", phone);
+        intent.putExtra("userRole", role);
+
+        // Save user info for later access
+        getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
+                .edit()
+                .putString("userName", name)
+                .putString("userEmail", email)
+                .putString("userPhone", phone)
+                .putString("userRole", role)
+                .apply();
+
+        startActivity(intent);
         finish();
     }
+
+
+
+
 }
 
 

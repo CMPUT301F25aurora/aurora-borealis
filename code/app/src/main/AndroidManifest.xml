@@ -20,6 +20,7 @@
         <activity android:name=".OrganizerActivity" />
         <activity android:name=".EntrantActivity" />
         <activity android:name=".SignUpActivity" />
+        <activity android:name=".OrganizerProfileActivity" />
 
         <!-- Login screen (no longer launcher) -->
         <activity
