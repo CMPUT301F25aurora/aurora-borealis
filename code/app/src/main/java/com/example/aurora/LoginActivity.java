@@ -2,14 +2,17 @@ package com.example.aurora;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-//class for login screen on app startup
+// class for login screen on app startup
 public class LoginActivity extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
@@ -30,58 +33,50 @@ public class LoginActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         loginButton.setOnClickListener(v -> loginUser());
-        createAccountButton.setOnClickListener(v -> startActivity(new Intent(this, SignUpActivity.class)));
+        createAccountButton.setOnClickListener(v ->
+                startActivity(new Intent(this, SignUpActivity.class)));
     }
-   // get user info entered and see if it matches info for a user in firestore db
+
+    // get user info entered and see if it matches info for a user in firestore db
     private void loginUser() {
-        String input = loginEmail.getText().toString().trim(); //can be email or phone
+        String email = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
-        if (input.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter both email/phone and password", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
         db.collection("users")
-                .whereEqualTo("email", input)
+                .whereEqualTo("email", email)
                 .whereEqualTo("password", password)
                 .get()
                 .addOnSuccessListener(query -> {
-                    if (!query.isEmpty()) {
-                        handleLogin(query.getDocuments().get(0));
-                    } else {
-                        // If not found, try phone-based login
-                        db.collection("users")
-                                .whereEqualTo("phone", input)
-                                .whereEqualTo("password", password)
-                                .get()
-                                .addOnSuccessListener(phoneQuery -> {
-                                    if (!phoneQuery.isEmpty()) {
-                                        handleLogin(phoneQuery.getDocuments().get(0));
-                                    } else {
-                                        Toast.makeText(this, "Invalid email/phone or password", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                    // return invalid if no user info matches ones entered in firestore
+                    if (query.isEmpty()) {
+                        Toast.makeText(this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                        return;
                     }
+
+                    // look into matching user and get role
+                    QueryDocumentSnapshot doc =
+                            (QueryDocumentSnapshot) query.getDocuments().get(0);
+                    String role = doc.getString("role");
+
+                    if ("admin".equals(role)) {
+                        // secret admin account goes to AdminActivity
+                        startActivity(new Intent(this, AdminActivity.class));
+                    } else if ("organizer".equals(role)) {
+                        startActivity(new Intent(this, OrganizerActivity.class));
+                    } else {
+                        // default role is entrant
+                        startActivity(new Intent(this, EntrantActivity.class));
+                    }
+                    finish();
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
-    private void handleLogin(DocumentSnapshot doc) {
-        String role = doc.getString("role");
-
-        Toast.makeText(this, "Welcome " + doc.getString("name"), Toast.LENGTH_SHORT).show();
-
-        if ("organizer".equalsIgnoreCase(role)) {
-            startActivity(new Intent(this, OrganizerActivity.class));
-        } else {
-            startActivity(new Intent(this, EventsActivity.class));
-        }
-        finish();
+                        Toast.makeText(this,
+                                "Error: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
     }
 }
-
-
