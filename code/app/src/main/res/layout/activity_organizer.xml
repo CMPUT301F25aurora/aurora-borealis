@@ -1,93 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/organizer_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:orientation="vertical"
+    android:background="@drawable/bg_gradient_purple"
+    android:padding="0dp">
 
+    <!-- Top App Bar -->
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="56dp"
+        android:background="#7E57C2"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <TextView
-            android:text="Create New Event"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="12dp"
+            android:id="@+id/dashboardTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/eventName"
-            android:hint="Event Name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/eventDescription"
-            android:hint="Description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/eventStartDate"
-            android:hint="Start Date (YYYY-MM-DD)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/eventEndDate"
-            android:hint="End Date (YYYY-MM-DD)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/registrationStart"
-            android:hint="Registration Opens (YYYY-MM-DD)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/registrationEnd"
-            android:hint="Registration Closes (YYYY-MM-DD)"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/maxCapacity"
-            android:hint="Max Participants"
-            android:inputType="number"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-
-        <Button
-            android:id="@+id/choosePosterButton"
-            android:text="Choose Poster Image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <ImageView
-            android:id="@+id/imagePreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:layout_marginTop="8dp"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/createEventButton"
-            android:text="Create Event"
-            android:layout_marginTop="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <View
-            android:layout_height="1dp"
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:background="#CCC" />
-
-
+            android:layout_height="wrap_content"
+            android:text="🎟️ Organizer Dashboard"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </LinearLayout>
-</ScrollView>
+
+    <!-- Main Content -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Tabs -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="#EDE7F6"
+                android:padding="6dp"
+                android:elevation="6dp"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/myEventsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="📅 My Events"
+                    android:textStyle="bold"
+                    android:backgroundTint="#7E57C2"
+                    android:textColor="@android:color/white" />
+
+                <Button
+                    android:id="@+id/createEventButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="➕ Create Event"
+                    android:textStyle="bold"
+                    android:backgroundTint="#D1C4E9"
+                    android:textColor="#333333" />
+            </LinearLayout>
+
+            <!-- Your Events -->
+            <TextView
+                android:id="@+id/yourEventsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your Events"
+                android:textStyle="bold"
+                android:textColor="#4A148C"
+                android:textSize="18sp"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Example Event 1 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/event1Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Summer Music Festival"
+                    android:textStyle="bold"
+                    android:textColor="#111"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/event1Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="June 15, 2025"
+                    android:textColor="#666"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/event1Stats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1250 entrants • 500 spots"
+                    android:textColor="#666"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/event1Status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🟢 Active"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <!-- Example Event 2 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#FFFFFF"
+                android:padding="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/event2Title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Art Gallery Opening"
+                    android:textStyle="bold"
+                    android:textColor="#111"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/event2Date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="July 2, 2025"
+                    android:textColor="#666"
+                    android:layout_marginTop="4dp" />
+
+                <TextView
+                    android:id="@+id/event2Stats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 entrants • 100 spots"
+                    android:textColor="#666"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/event2Status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🟡 Draft"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="#F3E5F5"
+        android:elevation="8dp">
+
+        <TextView
+            android:id="@+id/bottomHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🏠"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/bottomProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="👤"
+            android:textSize="20sp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp" />
+
+        <TextView
+            android:id="@+id/bottomAlerts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔔"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</LinearLayout>

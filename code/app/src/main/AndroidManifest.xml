@@ -12,10 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Aurora">
 
+        <activity android:name=".CreateEventActivity" />
         <activity
             android:name=".EventsActivity"
             android:exported="false" />
-  
+
         <activity android:name=".OrganizerActivity" />
         <activity android:name=".EntrantActivity" />
         <activity android:name=".SignUpActivity" />
