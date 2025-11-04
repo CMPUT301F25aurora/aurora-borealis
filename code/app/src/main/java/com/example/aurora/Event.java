@@ -26,6 +26,7 @@ public class Event {
     private List<String> waitingList;
     private String startDate;
     private String endDate;
+    private String deepLink;
 
     public Event() {
 
@@ -68,4 +69,11 @@ public class Event {
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) { this.endDate = endDate; }
 
+    public String getDeepLink() {
+        return deepLink;
+    }
+    //for qr code functionality
+    public void setDeepLink(String deepLink) {
+        this.deepLink = deepLink;
+    }
 }

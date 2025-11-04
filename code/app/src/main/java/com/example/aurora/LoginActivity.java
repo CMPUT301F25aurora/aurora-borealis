@@ -100,6 +100,21 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
 
+        // Checks if user came from a QR deep link
+        String pending = getSharedPreferences("aurora", MODE_PRIVATE)
+                .getString("pending_event", null);
+        if (pending != null) {
+            getSharedPreferences("aurora", MODE_PRIVATE)
+                    .edit().remove("pending_event").apply();
+
+            Intent deepLinkIntent = new Intent(this, EventDetailsActivity.class);
+            deepLinkIntent.putExtra("eventId", pending);
+            startActivity(deepLinkIntent);
+            finish();
+            return;
+        }
+
+
         Intent intent;
         if ("organizer".equalsIgnoreCase(role)) {
             intent = new Intent(this, OrganizerActivity.class);
