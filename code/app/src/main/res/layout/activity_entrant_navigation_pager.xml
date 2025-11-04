@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="#6750A4"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/navEvents"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Events"
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Profile"
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:id="@+id/navAlerts"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Alerts"
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+</LinearLayout>
