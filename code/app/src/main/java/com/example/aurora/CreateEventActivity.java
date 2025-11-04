@@ -15,8 +15,7 @@ import java.util.Map;
 
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText eventName, eventDescription, eventStart, eventEnd,
-            registrationStart, registrationEnd, maxCapacity;
+    private EditText eventName, eventDescription, eventStart, eventEnd, registrationStart, registrationEnd, maxCapacity, maxEntrantsEditText;
     private Button choosePosterButton, createEventButton;
     private ImageView imagePreview;
 
@@ -42,6 +41,7 @@ public class CreateEventActivity extends AppCompatActivity {
         choosePosterButton = findViewById(R.id.choosePosterButton);
         imagePreview = findViewById(R.id.imagePreview);
         createEventButton = findViewById(R.id.createEventButton);
+        maxEntrantsEditText = findViewById(R.id.maxEntrantsEditText);
 
 
         createEventButton.setOnClickListener(v -> uploadEvent());
@@ -68,6 +68,18 @@ public class CreateEventActivity extends AppCompatActivity {
         event.put("registrationStart", registrationStart.getText().toString());
         event.put("registrationEnd", registrationEnd.getText().toString());
         event.put("capacity", maxCapacity.getText().toString());
+
+        String limitText = maxEntrantsEditText.getText().toString().trim();
+        Long maxEntrants = null;
+        if (!limitText.isEmpty()) {
+            try {
+                maxEntrants = Long.parseLong(limitText);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid number for maximum entrants", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        event.put("maxEntrants", maxEntrants);
 
         db.collection("events")
                 .add(event)
