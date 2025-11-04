@@ -71,30 +71,47 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <Button android:text="All" style="@style/CategoryChip" />
-            <Button android:text="Music" style="@style/CategoryChip" />
-            <Button android:text="Sports" style="@style/CategoryChip" />
-            <Button android:text="Education" style="@style/CategoryChip" />
-            <Button android:text="Arts" style="@style/CategoryChip" />
-            <Button android:text="Technology" style="@style/CategoryChip" />
+            <Button
+                android:id="@+id/chipAll"
+                android:text="All"
+                style="@style/CategoryChip" />
+
+            <Button
+                android:id="@+id/chipMusic"
+                android:text="Music"
+                style="@style/CategoryChip" />
+
+            <Button
+                android:id="@+id/chipSports"
+                android:text="Sports"
+                style="@style/CategoryChip" />
+
+            <Button
+                android:id="@+id/chipEducation"
+                android:text="Education"
+                style="@style/CategoryChip" />
+
+            <Button
+                android:id="@+id/chipArts"
+                android:text="Arts"
+                style="@style/CategoryChip" />
+
+            <Button
+                android:id="@+id/chipTechnology"
+                android:text="Technology"
+                style="@style/CategoryChip" />
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- Placeholder space -->
-    <LinearLayout
+    <!-- Events list -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerEvents"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="(Event cards will appear here later)"
-            android:textColor="#888"
-            android:textSize="14sp" />
-    </LinearLayout>
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        tools:listitem="@layout/item_event" />
 
     <!-- Logout Button -->
     <Button

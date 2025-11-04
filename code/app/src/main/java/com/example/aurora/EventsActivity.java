@@ -5,12 +5,25 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventsActivity extends AppCompatActivity {
 
     private EditText searchEvents;
     private Button logoutButton;
+    private RecyclerView recyclerEvents;
+    private EventsAdapter adapter;
+    private final List<Event> eventList = new ArrayList<>();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +32,11 @@ public class EventsActivity extends AppCompatActivity {
 
         searchEvents = findViewById(R.id.searchEvents);
         logoutButton = findViewById(R.id.logoutButton);
+        recyclerEvents = findViewById(R.id.recyclerEvents);
+
+        recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new EventsAdapter(this, eventList);
+        recyclerEvents.setAdapter(adapter);
 
         logoutButton.setOnClickListener(v -> {
             Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
@@ -27,5 +45,23 @@ public class EventsActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+        loadEvents();
+    }
+
+    private void loadEvents() {
+        db.collection("events")
+                .get()
+                .addOnSuccessListener(query -> {
+                    eventList.clear();
+                    for (QueryDocumentSnapshot doc : query) {
+                        Event event = doc.toObject(Event.class);
+                        event.setEventId(doc.getId());
+                        eventList.add(event);
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error loading events", Toast.LENGTH_SHORT).show());
     }
 }
