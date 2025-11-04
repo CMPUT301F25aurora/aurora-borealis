@@ -1,11 +1,14 @@
 package com.example.aurora;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +17,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,6 +27,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class EventDetailsActivity extends AppCompatActivity {
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private FirebaseStorage storage;
     private FirebaseFirestore db;
     private String eventId;
     private String uid;
@@ -29,6 +36,9 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ImageView banner;
     private TextView title, subtitle, timeView, about, regWindow, joinedBadge, stats, location;
     private Button btnJoinLeave;
+    private Button btnUploadPoster;                        // NEW
+    private Uri imageUri;                                  // NEW
+
 
     private final List<String> currentWaitingList = new ArrayList<>();
 
@@ -41,6 +51,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventId = getIntent().getStringExtra("eventId");
         uid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
+        storage = FirebaseStorage.getInstance();
 
         banner = findViewById(R.id.imgBanner);
         title = findViewById(R.id.txtTitle);
@@ -52,11 +63,49 @@ public class EventDetailsActivity extends AppCompatActivity {
         stats = findViewById(R.id.txtStats);
         location = findViewById(R.id.txtLocation);
         btnJoinLeave = findViewById(R.id.btnJoinLeave);
+        btnUploadPoster = findViewById(R.id.btnUploadPoster);   // NEW
 
         loadEvent();
         btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
+        btnUploadPoster.setOnClickListener(v -> openFileChooser()); // NEW
     }
 
+    private void openFileChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            banner.setImageURI(imageUri); // show locally
+            uploadImageToFirebase();
+        }
+    }
+
+    private void uploadImageToFirebase() {
+        if (imageUri == null) return;
+
+        StorageReference fileRef = storage.getReference()
+                .child("event_posters/" + eventId + ".jpg");
+
+        fileRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot ->
+                        fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            String url = uri.toString();
+                            db.collection("events").document(eventId)
+                                    .update("posterUrl", url)
+                                    .addOnSuccessListener(aVoid ->
+                                            Toast.makeText(this, "Poster uploaded!", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(this, "Failed to save URL: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        }))
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
     private void loadEvent() {
         db.collection("events").document(eventId)
                 .get()
@@ -67,6 +116,17 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private void bindEvent(DocumentSnapshot d) {
         if (d == null || !d.exists()) return;
+
+        String posterUrl = d.getString("posterUrl");
+        if (posterUrl != null && !posterUrl.isEmpty()) {
+            // Glide is a lightweight image-loading library
+            // Add this dependency in build.gradle:
+            // implementation 'com.github.bumptech.glide:glide:4.16.0'
+            com.bumptech.glide.Glide.with(this)
+                    .load(posterUrl)
+                    .centerCrop()
+                    .into(banner);
+        }
 
         // Title / Date
         String titleStr = nz(d.getString("title"));

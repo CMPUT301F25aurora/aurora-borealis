@@ -14,7 +14,12 @@
             android:layout_height="200dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_launcher_background" />
-
+        <Button
+            android:id="@+id/btnUploadPoster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload / Change Poster"
+            android:layout_marginTop="8dp" />
         <TextView
             android:id="@+id/txtJoinedBadge"
             android:layout_width="match_parent"
