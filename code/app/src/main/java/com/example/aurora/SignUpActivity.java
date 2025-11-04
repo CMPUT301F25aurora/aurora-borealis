@@ -74,37 +74,37 @@ public class SignUpActivity extends AppCompatActivity {
                         user.put("role", role);
 
 
-        db.collection("users").add(user)
-                .addOnSuccessListener(docRef -> {
-                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
-                    Intent intent;
-                    if (role.equals("organizer")) {
-                        intent = new Intent(this, OrganizerActivity.class);
-                    } else {
-                        intent = new Intent(this, EntrantActivity.class);
+                        db.collection("users").add(user)
+                                .addOnSuccessListener(docRef -> {
+                                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+                                    Intent intent;
+                                    if (role.equals("organizer")) {
+                                        intent = new Intent(this, OrganizerActivity.class);
+                                    } else {
+                                        intent = new Intent(this, EntrantNavigationActivity.class);
+                                    }
+
+                                    intent.putExtra("userName", name);
+                                    intent.putExtra("userEmail", email);
+                                    intent.putExtra("userPhone", phone);
+                                    intent.putExtra("userRole", role);
+
+                                    // ✅ NEW: store for later access (used by OrganizerProfileActivity)
+                                    getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
+                                            .edit()
+                                            .putString("userName", name)
+                                            .putString("userEmail", email)
+                                            .putString("userPhone", phone)
+                                            .putString("userRole", role)
+                                            .apply();
+
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
 
-                    intent.putExtra("userName", name);
-                    intent.putExtra("userEmail", email);
-                    intent.putExtra("userPhone", phone);
-                    intent.putExtra("userRole", role);
-
-                    // ✅ NEW: store for later access (used by OrganizerProfileActivity)
-                    getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
-                            .edit()
-                            .putString("userName", name)
-                            .putString("userEmail", email)
-                            .putString("userPhone", phone)
-                            .putString("userRole", role)
-                            .apply();
-
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                    }
                 });
     }
-
 }
