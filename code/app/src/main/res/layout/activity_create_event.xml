@@ -104,6 +104,17 @@
             android:textColorHint="#666"
             android:layout_marginBottom="16dp" />
 
+        <EditText
+            android:id="@+id/maxEntrantsEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="🎟️ Maximum entrants for waiting list (optional)"
+            android:backgroundTint="#EDE7F6"
+            android:textColor="#111"
+            android:textColorHint="#666"
+            android:layout_marginBottom="16dp" />
+
         <Button
             android:id="@+id/choosePosterButton"
             android:layout_width="match_parent"
