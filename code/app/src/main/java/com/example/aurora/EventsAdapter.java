@@ -67,7 +67,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event e = events.get(position);
 
-        // 🔹 Defensive check (avoid NullPointerException)
+        // Defensive check (avoid NullPointerException)
         if (holder.eventTitle == null || holder.eventDate == null || holder.eventLocation == null) {
             Toast.makeText(context, "⚠️ Layout mismatch: missing TextView IDs in item_event_card.xml", Toast.LENGTH_SHORT).show();
             return;
@@ -77,14 +77,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.eventDate.setText(e.getDate() != null ? e.getDate() : "Date not set");
         holder.eventLocation.setText(e.getLocation() != null ? e.getLocation() : "Location not set");
 
-        // 🔹 View Details button
+        // View Details button
         holder.btnViewDetails.setOnClickListener(v -> {
             Intent i = new Intent(context, EventDetailsActivity.class);
             i.putExtra("eventId", e.getEventId());
             context.startActivity(i);
         });
 
-        // 🔹 Join button (Entrant)
+        // Join button (Entrant)
         if (holder.btnJoin != null) {
             holder.btnJoin.setOnClickListener(v ->
                     db.collection("events").document(e.getEventId())
@@ -142,7 +142,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         }
     }
 
-    // 🔹 ViewHolder
+    // ViewHolder
     public static class EventViewHolder extends RecyclerView.ViewHolder {
         ImageView eventImage;
         TextView eventTitle, eventDate, eventLocation;
