@@ -7,9 +7,6 @@
  * reused within different activities or navigation components.
  */
 
-
-
-
 package com.example.aurora;
 
 import android.os.Bundle;

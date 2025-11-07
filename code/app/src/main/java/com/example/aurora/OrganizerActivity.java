@@ -22,6 +22,16 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+/**
+ * OrganizerActivity.java
+ *
+ * Main dashboard for organizers in the Aurora app.
+ * - Displays all events from Firestore, marking which ones belong to the current organizer.
+ * - Lets organizers create new events or manage existing ones.
+ * - Shows event info such as title, date, capacity, category, and location.
+ * - Generates and displays QR codes for event deep links.
+ * - Provides navigation to profile and notifications pages, and supports logout.
+ */
 
 public class OrganizerActivity extends AppCompatActivity {
 

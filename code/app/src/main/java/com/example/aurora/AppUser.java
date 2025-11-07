@@ -1,8 +1,13 @@
 package com.example.aurora;
 
 /**
- * Simple model for Firestore "users" collection used by the admin panel.
+ * Basic data model representing a user document from the Firestore
+ * "users" collection.
+ *
+ * <p>Contains the user's ID, name, email, phone number, and role.
+ * Used mainly by the admin panel for displaying and managing profiles.</p>
  */
+
 public class AppUser {
     private String id;
     private String name;
