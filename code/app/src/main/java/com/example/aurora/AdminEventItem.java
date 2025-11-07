@@ -9,7 +9,7 @@ package com.example.aurora;
  * manage events efficiently without loading full event documents.</p>
  *
  * <p>Each {@code AdminEventItem} includes the event ID, title, date,
- * location, category, maximum spots, and the current waiting list
+ * location,category, maximum spots, and the current waiting list
  * count.</p>
  *
  * <p><b>Usage:</b> Objects of this class are typically created when
