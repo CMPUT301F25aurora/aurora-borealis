@@ -61,19 +61,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Entrant Events screen/**
- *  * Main events screen for entrants.
- *  *
- *  * <p>Displays all events from Firestore with search, category, and availability filters.
- *  * Entrants can also:
- *  * <ul>
- *  *   <li>Scan event QR codes to open event details.</li>
- *  *   <li>Filter events by category (e.g. Music, Sports, Education).</li>
- *  *   <li>Use an availability filter for specific days or time slots.</li>
- *  *   <li>Log out or navigate to Profile and Alerts screens.</li>
- *  * </ul>
- *  * </p>
- *  */
+ * <ul>
+ *   <li>Scan event QR codes to open event details.</li>
+ *   <li>Filter events by category (e.g. Music, Sports, Education).</li>
+ *   <li>Use an availability filter for specific days or time slots.</li>
+ *   <li>Log out or navigate to Profile and Alerts screens.</li>
+ * </ul>
+ */
+
 public class EventsActivity extends AppCompatActivity {
 
     private EditText searchEvents;

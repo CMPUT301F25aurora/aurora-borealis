@@ -32,6 +32,7 @@ android {
 }
 
 dependencies {
+    implementation(files("C:\\Users\\omara\\AppData\\Local\\Android\\Sdk\\platforms\\android-36\\android.jar"))
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
@@ -47,10 +48,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    androidTestImplementation ("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation ("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation ("androidx.test:core:1.5.0")
-    androidTestImplementation ("androidx.fragment:fragment-testing:1.6.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("androidx.test:core:1.5.0")
+    androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
+
     // ZXing (QR): core + embedded scanner (JourneyApps)
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
