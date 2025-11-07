@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,7 +26,11 @@ import java.util.List;
  *
  * - Title, date, location from Event model.
  * - "View Details" opens EventDetailsActivity with eventId.
- * - "Join Waiting List" writes the device's uid into events/{id}.waitingList.
+ * - "Join Waiting List" writes a stable user key into events/{id}.waitingList.
+ *   The key is:
+ *       1) user email from SharedPreferences ("aurora_prefs" -> "user_email"), or
+ *       2) FirebaseAuth currentUser.getEmail(), or
+ *       3) ANDROID_ID (device id) as a final fallback.
  * - Optionally enforces a max size from events/{id}.maxSpots (if that field exists).
  */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
@@ -33,16 +38,32 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     private final Context context;
     private final List<Event> events;
     private final FirebaseFirestore db;
-    private final String uid;  // simple stable id per device
+    /** Identifier stored in waitingList: email preferred, else device id. */
+    private final String userKey;
 
     public EventsAdapter(Context context, List<Event> events) {
         this.context = context;
         this.events = events;
         this.db = FirebaseFirestore.getInstance();
-        this.uid = Settings.Secure.getString(
-                context.getContentResolver(),
-                Settings.Secure.ANDROID_ID
-        );
+
+        // Try to resolve an email-based key first
+        String email = context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE)
+                .getString("user_email", null);
+
+        if ((email == null || email.isEmpty())
+                && FirebaseAuth.getInstance().getCurrentUser() != null) {
+            email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        // Fallback to device ID if no email available
+        if (email == null || email.isEmpty()) {
+            email = Settings.Secure.getString(
+                    context.getContentResolver(),
+                    Settings.Secure.ANDROID_ID
+            );
+        }
+
+        this.userKey = email;
     }
 
     @NonNull
@@ -64,14 +85,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.eventDate.setText(date);
         holder.eventLocation.setText(location);
 
-        // Open details
+        // Open details screen
         holder.btnViewDetails.setOnClickListener(v -> {
             Intent i = new Intent(context, EventDetailsActivity.class);
             i.putExtra("eventId", e.getEventId());
             context.startActivity(i);
         });
 
-        // Join waiting list
+        // Outside "Join Waiting List" button
         holder.btnJoin.setOnClickListener(v -> {
             String eventId = e.getEventId();
             if (eventId == null || eventId.isEmpty()) {
@@ -101,14 +122,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                             return;
                         }
 
-                        if (waitingList.contains(uid)) {
+                        if (waitingList.contains(userKey)) {
                             Toast.makeText(context, "You're already on the waiting list", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         db.collection("events")
                                 .document(eventId)
-                                .update("waitingList", FieldValue.arrayUnion(uid))
+                                .update("waitingList", FieldValue.arrayUnion(userKey))
                                 .addOnSuccessListener(unused ->
                                         Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show()
                                 )

@@ -160,7 +160,7 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
-        Button btnManage = eventView.findViewById(R.id.btnManageEvent);
+        //Button btnManage = eventView.findViewById(R.id.btnManageEvent);
 
         String eventId = doc.getId();
 
@@ -241,18 +241,7 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         });
 
-        // Manage button (for organizer's own events)
-        if (isMine) {
-            btnManage.setVisibility(View.VISIBLE);
-            btnManage.setOnClickListener(v -> {
-                Intent intent = new Intent(OrganizerActivity.this,
-                        OrganizerEventDetailsActivity.class);
-                intent.putExtra("eventId", eventId);
-                startActivity(intent);
-            });
-        } else {
-            btnManage.setVisibility(View.GONE);
-        }
+
 
         eventListContainer.addView(eventView);
     }
