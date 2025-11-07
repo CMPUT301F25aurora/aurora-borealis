@@ -1,7 +1,14 @@
 /**
- * Activity for creating a new user account.
- * Handles input validation, account creation with Firebase Authentication,
- * and saves user details to Firestore before redirecting to the correct screen.
+ * SignUpActivity.java
+ *
+ * Creates a new user account.
+ * - Validates fields
+ * - Creates Firebase Auth user
+ * - Saves user document in "users" collection
+ * - Logs registration in "logs"
+ * - Routes:
+ *      organizer → OrganizerActivity
+ *      entrant   → EventsActivity (NOT EntrantNavigationActivity)
  */
 
 package com.example.aurora;
@@ -24,11 +31,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Activity for creating a new user account.
- * Handles input validation, account creation with Firebase Authentication,
- * and saves user details to Firestore before redirecting to the correct screen.
- */
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText signupName, signupEmail, signupPhone, signupPassword;
@@ -48,6 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
         signupPassword = findViewById(R.id.Password);
         radioGroupRole = findViewById(R.id.Role);
         signupButton = findViewById(R.id.SignUpButton);
+
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
@@ -78,12 +81,13 @@ public class SignUpActivity extends AppCompatActivity {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser == null) {
                             Toast.makeText(this, "Could not create account.", Toast.LENGTH_SHORT).show();
                             return;
                         }
+
+                        String uid = firebaseUser.getUid();
 
                         Map<String, Object> user = new HashMap<>();
                         user.put("name", name);
@@ -92,12 +96,11 @@ public class SignUpActivity extends AppCompatActivity {
                         user.put("role", role);
                         user.put("password", password);
 
-                        String uid = firebaseUser.getUid();
                         db.collection("users").document(uid).set(user)
                                 .addOnSuccessListener(docRef -> {
                                     Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
 
-                                    // Log registration
+                                    // log registration
                                     Map<String, Object> log = new HashMap<>();
                                     log.put("type", "user_registered");
                                     log.put("message", "User registered: " + email);
@@ -107,7 +110,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     log.put("userRole", role);
                                     db.collection("logs").add(log);
 
-                                    // Cache in SharedPreferences for profile
+                                    // cache basic info
                                     getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                                             .edit()
                                             .putString("user_email", email)
@@ -120,7 +123,8 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (role.equals("organizer")) {
                                         intent = new Intent(this, OrganizerActivity.class);
                                     } else {
-                                        intent = new Intent(this, EntrantNavigationActivity.class);
+                                        // 👉 ENTRANT HOME = EventsActivity
+                                        intent = new Intent(this, EventsActivity.class);
                                     }
 
                                     intent.putExtra("userName", name);

@@ -2,10 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Needed for Firestore / network -->
+    <!-- Firestore / network -->
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <!-- Needed for QR scanner camera access -->
+    <!-- QR scanner -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -29,24 +28,17 @@
         </activity>
 
         <!-- Auth -->
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SignUpActivity"
-            android:exported="false" />
+        <activity android:name=".LoginActivity" android:exported="false" />
+        <activity android:name=".SignUpActivity" android:exported="false" />
 
-        <!-- Entrant: navigation hub with fragments -->
-        <activity
-            android:name=".EntrantNavigationActivity"
-            android:exported="false" />
+        <!-- Entrant surfaces -->
+        <activity android:name=".EventsActivity" android:exported="false" />
+        <activity android:name=".EntrantActivity" android:exported="false" />
+        <activity android:name=".EntrantNavigationActivity" android:exported="false" />
+        <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".AlertsActivity" android:exported="false" />
 
-        <!-- Fallback/simple events list activity (used in some flows) -->
-        <activity
-            android:name=".EventsActivity"
-            android:exported="false" />
-
-        <!-- Event details + deep links: aurora://event/<id> -->
+        <!-- Details + deep-link: aurora://event/<id> or aurora://event?id=<id> -->
         <activity
             android:name=".EventDetailsActivity"
             android:exported="true">
@@ -54,42 +46,17 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data
-                    android:scheme="aurora"
-                    android:host="event" />
+                <data android:scheme="aurora" android:host="event" />
             </intent-filter>
         </activity>
 
-        <!-- Entrant extra screens -->
-        <activity
-            android:name=".EntrantActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".AlertsActivity"
-            android:exported="false" />
-
         <!-- Organizer -->
-        <activity
-            android:name=".OrganizerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".CreateEventActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".OrganizerNotificationsActivity"
-            android:exported="false" />
+        <activity android:name=".OrganizerActivity" android:exported="false" />
+        <activity android:name=".CreateEventActivity" android:exported="false" />
+        <activity android:name=".OrganizerProfileActivity" android:exported="false" />
+        <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
 
         <!-- Admin -->
-        <activity
-            android:name=".AdminActivity"
-            android:exported="false" />
-
+        <activity android:name=".AdminActivity" android:exported="false" />
     </application>
-
 </manifest>
