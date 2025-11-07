@@ -1,3 +1,15 @@
+/*
+ * References:
+ *
+ * 1) author: Stack Overflow user — "How to set gradient as the text color of a TextView?"
+ *    https://stackoverflow.com/questions/16958111/how-to-set-gradient-as-the-text-color-of-a-textview
+ *    Used as a reference for applying a LinearGradient shader to a TextView's Paint to draw gradient text.
+ *
+ * 2) GitHub Gist — "GradientTextViewUtil.java"
+ *    https://gist.github.com/mirmilad/97182248c42d8477bb5edf07e5b40a08
+ *    Used as a reference for recalculating and applying the gradient in onSizeChanged.
+ */
+
 /**
  * GradientTextView.java
  *
@@ -10,17 +22,7 @@
  * This component is typically used for visually appealing titles or headers in the Aurora app.
  */
 
-/*
- * References:
- *
- * 1) author: Stack Overflow user — "How to set gradient as the text color of a TextView?"
- *    https://stackoverflow.com/questions/16958111/how-to-set-gradient-as-the-text-color-of-a-textview
- *    Used as a reference for applying a LinearGradient shader to a TextView's Paint to draw gradient text.
- *
- * 2) GitHub Gist — "GradientTextViewUtil.java"
- *    https://gist.github.com/mirmilad/97182248c42d8477bb5edf07e5b40a08
- *    Used as a reference for recalculating and applying the gradient in onSizeChanged.
- */
+
 
 
 package com.example.aurora;

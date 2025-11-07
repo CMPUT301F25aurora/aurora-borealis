@@ -1,16 +1,3 @@
-/**
- * SignUpActivity.java
- *
- * Creates a new user account.
- * - Validates fields
- * - Creates Firebase Auth user
- * - Saves user document in "users" collection
- * - Logs registration in "logs"
- * - Routes:
- *      organizer → OrganizerActivity
- *      entrant   → EventsActivity (NOT EntrantNavigationActivity)
- */
-
 /*
  * References for this screen:
  *
@@ -26,6 +13,21 @@
  *    https://developer.android.com/guide/components/activities/activity-lifecycle
  *    Used for managing navigation after a successful sign up and finishing this Activity.
  */
+
+/**
+ * SignUpActivity.java
+ *
+ * Creates a new user account.
+ * - Validates fields
+ * - Creates Firebase Auth user
+ * - Saves user document in "users" collection
+ * - Logs registration in "logs"
+ * - Routes:
+ *      organizer → OrganizerActivity
+ *      entrant   → EventsActivity (NOT EntrantNavigationActivity)
+ */
+
+
 
 
 package com.example.aurora;
