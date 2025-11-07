@@ -1,15 +1,27 @@
+/**
+ * EventsFragment.java
+ *
+ * Fragment that shows a scrollable list of events for entrants.
+ * - Sets up a RecyclerView with EventsAdapter.
+ * - Loads events from Firestore ("events" collection) and supports optional category filtering
+ *   via whereEqualTo("category", ...). Category buttons (All/Music/Sports/Education/Arts/Technology)
+ *   reload the list with the selected filter.
+ * - Logout returns the user to LoginActivity and clears the back stack.
+ *
+ * Note: searchEvents is present in the layout; wire it to query filtering if needed.
+ */
+
+
 package com.example.aurora;
 
-import android.app.AlertDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -22,228 +34,144 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 public class EventsFragment extends Fragment {
 
+    private EditText searchEvents;
+    private Button logoutButton;
     private RecyclerView recyclerEvents;
     private EventsAdapter adapter;
-    private final List<Event> allEvents = new ArrayList<>();
-    private final List<Event> shownEvents = new ArrayList<>();
+    private final List<Event> eventList = new ArrayList<>();
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private FirebaseFirestore db;
-
-    private EditText searchEvents;
     private Button btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology;
-    private Button btnAvailabilityFilter;
-    private Button logoutButton;
-
-    private final Set<Integer> selectedDays = new HashSet<>();
-    private final EnumSet<TimeSlot> selectedSlots = EnumSet.noneOf(TimeSlot.class);
-
-    private enum TimeSlot { MORNING, AFTERNOON, EVENING }
+    private Button btnScanQr;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_events, container, false);
-
-        db = FirebaseFirestore.getInstance();
-
-        searchEvents = v.findViewById(R.id.searchEvents);
-        logoutButton = v.findViewById(R.id.logoutButton);
-        recyclerEvents = v.findViewById(R.id.recyclerEvents);
-        btnAll = v.findViewById(R.id.btnAll);
-        btnMusic = v.findViewById(R.id.btnMusic);
-        btnSports = v.findViewById(R.id.btnSports);
-        btnEducation = v.findViewById(R.id.btnEducation);
-        btnArts = v.findViewById(R.id.btnArts);
-        btnTechnology = v.findViewById(R.id.btnTechnology);
-        btnAvailabilityFilter = v.findViewById(R.id.btnAvailabilityFilter);
-
-        recyclerEvents.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EventsAdapter(requireContext(), shownEvents, false);
-        recyclerEvents.setAdapter(adapter);
-
-        btnAll.setOnClickListener(x -> loadEvents(null));
-        btnMusic.setOnClickListener(x -> loadEvents("Music"));
-        btnSports.setOnClickListener(x -> loadEvents("Sports"));
-        btnEducation.setOnClickListener(x -> loadEvents("Education"));
-        btnArts.setOnClickListener(x -> loadEvents("Arts"));
-        btnTechnology.setOnClickListener(x -> loadEvents("Technology"));
-
-        if (searchEvents != null) {
-            searchEvents.addTextChangedListener(new TextWatcher() {
-                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-                @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyAllFilters(); }
-                @Override public void afterTextChanged(Editable s) {}
-            });
-        }
-
-        if (btnAvailabilityFilter != null) {
-            btnAvailabilityFilter.setOnClickListener(x -> showAvailabilityDialog());
-        }
-
-        if (logoutButton != null) {
-            logoutButton.setOnClickListener(x -> {
-                Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getContext(), LoginActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                requireActivity().finish();
-            });
-        }
-
-        loadEvents(null);
-        return v;
+        return inflater.inflate(R.layout.fragment_events, container, false);
     }
 
-    private void showAvailabilityDialog() {
-        View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_filter_availability, null, false);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        searchEvents = view.findViewById(R.id.searchEvents);
+        logoutButton = view.findViewById(R.id.logoutButton);
+        recyclerEvents = view.findViewById(R.id.recyclerEvents);
 
-        CheckBox chkMon = dialogView.findViewById(R.id.chkMon);
-        CheckBox chkTue = dialogView.findViewById(R.id.chkTue);
-        CheckBox chkWed = dialogView.findViewById(R.id.chkWed);
-        CheckBox chkThu = dialogView.findViewById(R.id.chkThu);
-        CheckBox chkFri = dialogView.findViewById(R.id.chkFri);
-        CheckBox chkSat = dialogView.findViewById(R.id.chkSat);
-        CheckBox chkSun = dialogView.findViewById(R.id.chkSun);
+        btnAll = view.findViewById(R.id.btnAll);
+        btnMusic = view.findViewById(R.id.btnMusic);
+        btnSports = view.findViewById(R.id.btnSports);
+        btnEducation = view.findViewById(R.id.btnEducation);
+        btnArts = view.findViewById(R.id.btnArts);
+        btnTechnology = view.findViewById(R.id.btnTechnology);
+        btnScanQr = view.findViewById(R.id.btnScanQr);
 
-        CheckBox chkMorning = dialogView.findViewById(R.id.chkMorning);
-        CheckBox chkAfternoon = dialogView.findViewById(R.id.chkAfternoon);
-        CheckBox chkEvening = dialogView.findViewById(R.id.chkEvening);
+        recyclerEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EventsAdapter(requireContext(), eventList);
+        recyclerEvents.setAdapter(adapter);
 
-        chkMon.setChecked(selectedDays.contains(Calendar.MONDAY));
-        chkTue.setChecked(selectedDays.contains(Calendar.TUESDAY));
-        chkWed.setChecked(selectedDays.contains(Calendar.WEDNESDAY));
-        chkThu.setChecked(selectedDays.contains(Calendar.THURSDAY));
-        chkFri.setChecked(selectedDays.contains(Calendar.FRIDAY));
-        chkSat.setChecked(selectedDays.contains(Calendar.SATURDAY));
-        chkSun.setChecked(selectedDays.contains(Calendar.SUNDAY));
-
-        chkMorning.setChecked(selectedSlots.contains(TimeSlot.MORNING));
-        chkAfternoon.setChecked(selectedSlots.contains(TimeSlot.AFTERNOON));
-        chkEvening.setChecked(selectedSlots.contains(TimeSlot.EVENING));
-
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
-                .setView(dialogView)
-                .setCancelable(true)
-                .create();
-
-        dialogView.findViewById(R.id.btnClose).setOnClickListener(v -> dialog.dismiss());
-
-        dialogView.findViewById(R.id.btnClear).setOnClickListener(v -> {
-            selectedDays.clear();
-            selectedSlots.clear();
-            applyAllFilters();
-            dialog.dismiss();
+        logoutButton.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            requireActivity().finish();
         });
 
-        dialogView.findViewById(R.id.btnApply).setOnClickListener(v -> {
-            selectedDays.clear();
-            if (chkMon.isChecked()) selectedDays.add(Calendar.MONDAY);
-            if (chkTue.isChecked()) selectedDays.add(Calendar.TUESDAY);
-            if (chkWed.isChecked()) selectedDays.add(Calendar.WEDNESDAY);
-            if (chkThu.isChecked()) selectedDays.add(Calendar.THURSDAY);
-            if (chkFri.isChecked()) selectedDays.add(Calendar.FRIDAY);
-            if (chkSat.isChecked()) selectedDays.add(Calendar.SATURDAY);
-            if (chkSun.isChecked()) selectedDays.add(Calendar.SUNDAY);
+        btnAll.setOnClickListener(v -> loadEvents(null));
+        btnMusic.setOnClickListener(v -> loadEvents("Music"));
+        btnSports.setOnClickListener(v -> loadEvents("Sports"));
+        btnEducation.setOnClickListener(v -> loadEvents("Education"));
+        btnArts.setOnClickListener(v -> loadEvents("Arts"));
+        btnTechnology.setOnClickListener(v -> loadEvents("Technology"));
 
-            selectedSlots.clear();
-            if (chkMorning.isChecked()) selectedSlots.add(TimeSlot.MORNING);
-            if (chkAfternoon.isChecked()) selectedSlots.add(TimeSlot.AFTERNOON);
-            if (chkEvening.isChecked()) selectedSlots.add(TimeSlot.EVENING);
+        if (btnScanQr != null) {
+            btnScanQr.setOnClickListener(v -> startQrScan());
+        }
 
-            applyAllFilters();
-            dialog.dismiss();
-        });
-
-        dialog.show();
+        // Initial load
+        loadEvents(null);
     }
 
     private void loadEvents(@Nullable String category) {
         Query q = db.collection("events");
-        if (category != null) q = q.whereEqualTo("category", category);
-        q.get().addOnSuccessListener(query -> {
-            allEvents.clear();
-            for (QueryDocumentSnapshot doc : query) {
-                Event e = doc.toObject(Event.class);
-                e.setEventId(doc.getId());
-                allEvents.add(e);
+        if (!TextUtils.isEmpty(category)) {
+            q = q.whereEqualTo("category", category);
+        }
+
+        q.get()
+                .addOnSuccessListener(query -> {
+                    eventList.clear();
+                    for (QueryDocumentSnapshot doc : query) {
+                        Event event = doc.toObject(Event.class);
+                        event.setEventId(doc.getId());
+                        eventList.add(event);
+                    }
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Error loading events", Toast.LENGTH_SHORT).show());
+    }
+
+    // ---------------- QR scanning ----------------
+
+    private void startQrScan() {
+        // IMPORTANT: use forSupportFragment for fragments
+        IntentIntegrator integrator = IntentIntegrator.forSupportFragment(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        integrator.setPrompt("Scan Aurora event QR");
+        integrator.setBeepEnabled(true);
+        integrator.setBarcodeImageEnabled(false);
+        integrator.initiateScan();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(getContext(), "Scan cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                handleScannedText(result.getContents());
             }
-            applyAllFilters();
-        }).addOnFailureListener(e ->
-                Toast.makeText(getContext(), "Error loading events", Toast.LENGTH_SHORT).show());
-    }
-
-    private void applyAllFilters() {
-        String search = searchEvents != null ? searchEvents.getText().toString().trim().toLowerCase(Locale.getDefault()) : "";
-        shownEvents.clear();
-        for (Event e : allEvents) {
-            if (!matchesSearch(e, search)) continue;
-            if (!matchesAvailability(e)) continue;
-            shownEvents.add(e);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
-        adapter.notifyDataSetChanged();
     }
 
-    private boolean matchesSearch(Event e, String search) {
-        if (search.isEmpty()) return true;
-        String t = safe(e.getTitle());
-        String d = safe(e.getDescription());
-        String loc = safe(e.getLocation());
-        return t.contains(search) || d.contains(search) || loc.contains(search);
-    }
+    private void handleScannedText(String text) {
+        try {
+            Uri uri = Uri.parse(text);
+            if ("aurora".equalsIgnoreCase(uri.getScheme())
+                    && "event".equalsIgnoreCase(uri.getHost())) {
 
-    private String safe(String s) {
-        return s == null ? "" : s.toLowerCase(Locale.getDefault());
-    }
+                String eventId = null;
+                if (uri.getPath() != null && uri.getPath().length() > 1) {
+                    eventId = uri.getPath().substring(1); // /<id>
+                } else {
+                    eventId = uri.getQueryParameter("id");
+                }
 
-    private boolean matchesAvailability(Event e) {
-        if (selectedDays.isEmpty() && selectedSlots.isEmpty()) return true;
-        Calendar cal = parseEventStart(e.getStartDate());
-        if (cal == null) return true;
-        int day = cal.get(Calendar.DAY_OF_WEEK);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        boolean dayOk = selectedDays.isEmpty() || selectedDays.contains(day);
-        boolean timeOk = selectedSlots.isEmpty() || slotMatch(hour);
-        return dayOk && timeOk;
-    }
-
-    private boolean slotMatch(int hour24) {
-        boolean morning = selectedSlots.contains(TimeSlot.MORNING) && (hour24 >= 6 && hour24 < 12);
-        boolean afternoon = selectedSlots.contains(TimeSlot.AFTERNOON) && (hour24 >= 12 && hour24 < 18);
-        boolean evening = selectedSlots.contains(TimeSlot.EVENING) && (hour24 >= 18 && hour24 <= 23);
-        return morning || afternoon || evening;
-    }
-
-    @Nullable
-    private Calendar parseEventStart(@Nullable String start) {
-        if (start == null || start.trim().isEmpty()) return null;
-        String[] patterns = new String[]{
-                "yyyy-MM-dd HH:mm",
-                "yyyy-MM-dd'T'HH:mm",
-                "yyyy-MM-dd"
-        };
-        for (String p : patterns) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat(p, Locale.getDefault());
-                Calendar c = Calendar.getInstance();
-                c.setTime(sdf.parse(start));
-                return c;
-            } catch (ParseException ignored) {}
+                if (eventId != null && !eventId.isEmpty()) {
+                    Intent i = new Intent(getContext(), EventDetailsActivity.class);
+                    i.putExtra("eventId", eventId);
+                    startActivity(i);
+                } else {
+                    Toast.makeText(getContext(), "Invalid Aurora event QR", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(getContext(), "Not an Aurora event QR", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(getContext(), "Failed to handle QR: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-        return null;
     }
 }

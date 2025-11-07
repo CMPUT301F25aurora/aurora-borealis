@@ -42,6 +42,7 @@
         android:textColor="#4A148C"
         android:layout_marginTop="6dp" />
 
+    <!-- QR button so OrganizerActivity & EventsAdapter can use R.id.btnShowQR -->
     <Button
         android:id="@+id/btnShowQR"
         android:layout_width="wrap_content"
