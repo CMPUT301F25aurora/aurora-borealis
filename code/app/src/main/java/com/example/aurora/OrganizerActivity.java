@@ -1,3 +1,17 @@
+/*
+ * References for this screen:
+ *
+ * 1) source: Android Developers — "The activity lifecycle"
+ *    https://developer.android.com/guide/components/activities/activity-lifecycle
+ *    Used for handling onCreate / onResume when building the organizer home screen.
+ *
+ *
+ * 2) author: Stack Overflow user — "How to start new activity on button click"
+ *    https://stackoverflow.com/questions/4186021/how-to-start-new-activity-on-button-click
+ *    Used for launching other organizer screens from buttons or cards.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
