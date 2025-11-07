@@ -1,3 +1,24 @@
+/*
+ * References for EventTest:
+ *
+ * source: JUnit 4 tutorial — "Unit Testing with JUnit 4"
+ * url: https://www.vogella.com/tutorials/JUnit4/article.html
+ * note: Used for the pattern of a JUnit 4 test class with fields,
+ *       a @Before setup method, and @Test methods using assertEquals.
+ *
+ *
+ * source: JUnit 4 Javadoc — "Assert"
+ * url: https://junit.org/junit4/javadoc/4.8/org/junit/Assert.html
+ * note: Used as a reference for assertEquals and the static import pattern
+ *       import static org.junit.Assert.*; in JUnit tests.
+ *
+ * source: Java SE docs — "Arrays"
+ * url: https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html
+ * note: Used for Arrays.asList(...) which returns a fixed-size List backed by
+ *       the array, similar to how the waitingList test data is created.
+ *
+ */
+
 package com.example.aurora;
 
 import org.junit.Before;
