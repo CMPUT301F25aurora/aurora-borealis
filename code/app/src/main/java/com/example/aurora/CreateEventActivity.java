@@ -1,3 +1,92 @@
+/*
+ * Sources / citations for CreateEventActivity.
+ *
+ * source: Android docs - "Get a result from an activity".
+ * url: https://developer.android.com/training/basics/intents/result
+ * note: Used as a reference for using ActivityResultLauncher and
+ *       registerForActivityResult instead of the deprecated startActivityForResult
+ *       when picking a poster image.
+ *
+ * source: Stack Overflow user - "android pick images from gallery (now startActivityForResult is deprecated)".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/66908673/android-pick-images-from-gallery-now-startactivityforresult-is-depreciated
+ * note: Example of replacing startActivityForResult with the Activity Result API
+ *       when opening the image picker.
+ *
+ * source: Stack Overflow user - "android pick images from gallery".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/5309190/android-pick-images-from-gallery
+ * note: Used for the basic idea of launching an intent with type "image/*"
+ *       so the user can choose an image from the gallery.
+ *
+ * source: Stack Overflow user - "Deprecated getBitmap with API 29. Any alternative codes?".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/56651444/deprecated-getbitmap-with-api-29-any-alternative-codes
+ * note: Background for why MediaStore.Images.Media.getBitmap is deprecated and what
+ *       the ImageDecoder alternative looks like; this activity still uses getBitmap
+ *       only to show a quick preview.
+ *
+ * source: Firebase docs - "Upload files with Cloud Storage on Android".
+ * url: https://firebase.google.com/docs/storage/android/upload-files
+ * note: Used as a reference for StorageReference.putFile, handling the UploadTask,
+ *       and then calling getDownloadUrl() to obtain the poster URL.
+ *
+ * source: Firebase docs - "Add data to Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data
+ * note: Used for building a Map<String,Object> and calling
+ *       db.collection("events").add(event) to create the event document with fields
+ *       like title, description, dates, and posterUrl.
+ *
+ * source: Firebase developers article - "The secrets of Firestore's FieldValue.serverTimestamp()".
+ * url: https://medium.com/firebase-developers/the-secrets-of-firestores-fieldvalue-servertimestamp-revealed-29dd7a38a82b
+ * note: Explains why createdAt uses FieldValue.serverTimestamp() so event creation
+ *       time is based on the server instead of the device clock.
+ *
+ * source: "Firestore Server Timestamp" example article.
+ * url: https://code.luasoftware.com/tutorials/google-cloud-firestore/firestore-server-timestamp
+ * note: Extra background on storing and later reading server timestamps from Firestore.
+ *
+ * source: Stack Overflow user - "How to generate a QR Code for an Android application?".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/8800919/how-to-generate-a-qr-code-for-an-android-application
+ * note: Used for the idea of using the ZXing library's QRCodeWriter and BitMatrix
+ *       to generate a QR code bitmap.
+ *
+ * source: Stack Overflow / ZXing examples linked from "Generate list of QR codes using RecyclerView, ZXing, RxJava in Android".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/a/25283174
+ * note: Reinforced the pattern of looping over BitMatrix pixels and writing them
+ *       into a Bitmap for display in an ImageView.
+ *
+ * source: Stack Overflow user - "Android AlertDialog with embedded EditText" and similar custom dialog examples.
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/2795300/android-alertdialog-with-embedded-edittext
+ * note: Used as a reference for building a custom AlertDialog and setting a view
+ *       (here an ImageView with the QR bitmap) plus a positive button.
+ *
+ * source: Firebase docs - "Download files with Cloud Storage on Android".
+ * url: https://firebase.google.com/docs/storage/android/download-files
+ * note: Confirms that getDownloadUrl() returns a stable HTTPS URL that can be stored
+ *       in Firestore as posterUrl for later use.
+ *
+ * source: Stack Overflow user - "How do you use Intent.FLAG_ACTIVITY_CLEAR_TOP to clear the activity stack".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/4342761/how-do-you-use-intent-flag-activity-clear-top-to-clear-the-activity-stack
+ * note: Used as a reference for adding FLAG_ACTIVITY_CLEAR_TOP and FLAG_ACTIVITY_NEW_TASK
+ *       when returning to OrganizerActivity in goBackToOrganizerHome().
+ *
+ * source: Android docs - "Tasks and the back stack".
+ * url: https://developer.android.com/guide/components/activities/tasks-and-back-stack
+ * note: Explains how FLAG_ACTIVITY_CLEAR_TOP and FLAG_ACTIVITY_NEW_TASK affect navigation
+ *       so the user ends up back at the organizer home screen instead of building
+ *       a deep back stack.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped with naming helper methods, clarifying validation messages, and
+ *       writing these citation notes, not with Firebase, ZXing, or navigation APIs.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
