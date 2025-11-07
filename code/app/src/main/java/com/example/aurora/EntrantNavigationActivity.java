@@ -1,3 +1,14 @@
+/*
+ * References:
+ *
+ * 1) Android Developers — "Slide between fragments using ViewPager2"
+ *    https://developer.android.com/develop/ui/views/animations/screen-slide-2
+ *    Used as a reference for wiring ViewPager2 with FragmentStateAdapter and swiping between fragment pages.
+ *
+ * 2) Tutorialwing — "ViewPager2 With Fragment and FragmentStateAdapter"
+ *    https://tutorialwing.com/viewpager2-with-fragment-and-fragmentstateadapter/
+ *    Used as a reference for implementing a FragmentStateAdapter subclass that returns different fragments by position.
+ */
 
 package com.example.aurora;
 
