@@ -9,6 +9,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -32,17 +34,23 @@ import java.util.List;
  *  - Join / leave the waiting list.
  *  - View selection criteria (dialog).
  *  - View the event's QR code (no scanning here).
+ *
+ * Waiting list entries are stored as the entrant's EMAIL when possible,
+ * falling back to device ID only if no email is available.
  */
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;
-    private TextView txtJoinedBadge, txtTitle, txtSubtitle, txtTime, txtLocation, txtAbout, txtStats, txtRegWindow;
+    private TextView txtJoinedBadge, txtTitle, txtSubtitle, txtTime,
+            txtLocation, txtAbout, txtStats, txtRegWindow;
     private Button btnJoinLeave;
     private Button btnCriteria;
     private Button btnShowQr;
+    private ImageButton btnBackEvent;
 
     private FirebaseFirestore db;
     private String eventId;
+    /** Identifier stored in waitingList (email preferred, else device id). */
     private String userId;
     private boolean isJoined = false;
     private String currentDeepLink;
@@ -53,7 +61,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details);
 
         db = FirebaseFirestore.getInstance();
-        userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        userId = resolveCurrentUserKey();   // <- EMAIL (with fallback)
 
         imgBanner = findViewById(R.id.imgBanner);
         txtJoinedBadge = findViewById(R.id.txtJoinedBadge);
@@ -67,6 +75,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         btnJoinLeave = findViewById(R.id.btnJoinLeave);
         btnCriteria = findViewById(R.id.btnCriteria);
         btnShowQr = findViewById(R.id.btnShowQr);
+        btnBackEvent = findViewById(R.id.btnBackEvent);
+
+        // Back arrow
+        btnBackEvent.setOnClickListener(v -> onBackPressed());
 
         // Get event ID from intent extra or deep link
         eventId = getIntent().getStringExtra("eventId");
@@ -110,6 +122,39 @@ public class EventDetailsActivity extends AppCompatActivity {
         loadEventDetails();
     }
 
+    /**
+     * Prefer to use the entrant's EMAIL as the waitingList key.
+     * Fallbacks:
+     *  - SharedPreferences "user_email" (if your login stored it)
+     *  - FirebaseAuth currentUser email
+     *  - ANDROID_ID (old behaviour)
+     */
+    private String resolveCurrentUserKey() {
+        // 1) SharedPreferences (if you store email there)
+        String email = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_email", null);
+
+        // 2) FirebaseAuth email
+        if ((email == null || email.isEmpty())
+                && FirebaseAuth.getInstance().getCurrentUser() != null) {
+            email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        }
+
+        // 3) Fallback to device ID to preserve old behaviour
+        if (email == null || email.isEmpty()) {
+            email = Settings.Secure.getString(
+                    getContentResolver(),
+                    Settings.Secure.ANDROID_ID
+            );
+        }
+
+        return email;
+    }
+
+    // -------------------------------------------------------------------------
+    // Loading + binding event
+    // -------------------------------------------------------------------------
+
     private void loadEventDetails() {
         db.collection("events")
                 .document(eventId)
@@ -124,7 +169,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void bindEvent(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-            finish(); // needs to be commented out when Testing with Test cases
+            // (Comment out finish() when doing certain UI tests if needed)
+            finish();
             return;
         }
 
@@ -177,7 +223,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         updateJoinedUi();
 
-        // No need to pass title; toggleJoin uses only eventId/userId
         btnJoinLeave.setOnClickListener(v -> toggleJoin());
     }
 
@@ -190,6 +235,10 @@ public class EventDetailsActivity extends AppCompatActivity {
             btnJoinLeave.setText("Join Waiting List");
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Join / leave waiting list  (stores EMAIL or fallback key)
+    // -------------------------------------------------------------------------
 
     private void toggleJoin() {
         if (eventId == null) return;
