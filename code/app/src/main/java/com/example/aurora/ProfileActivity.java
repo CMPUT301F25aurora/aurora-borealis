@@ -1,3 +1,22 @@
+/*
+ * References for this screen:
+ *
+ * 1) source: Firebase docs — "Get data with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/get-data
+ *    Used for loading the current user's profile data.
+ *
+ * 2) source: Firebase docs — "Add data to Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/manage-data/add-data
+ *    Used for saving edits to the user's profile fields.
+ *
+ * 3) author: Stack Overflow user — "How to get data from Firestore in Android"
+ *    https://stackoverflow.com/questions/72769031/how-to-retrieve-data-from-firestore
+ *    Used as a reminder of the collection / document structure when reading profile info.
+ */
+
+
+
+
 package com.example.aurora;
 
 
