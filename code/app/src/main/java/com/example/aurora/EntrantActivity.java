@@ -1,14 +1,3 @@
-/**
- * EntrantActivity.java
- *
- * This activity represents the main screen for entrants in the Aurora app.
- * It connects to Firestore to retrieve a list of available events that users can view
- * and register for. The events will be displayed in a RecyclerView using a linear layout.
- *
- * Future implementations will handle displaying event details, registration actions,
- * and viewing the entrant’s event history.
- */
-
 
 package com.example.aurora;
 
@@ -24,6 +13,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+/**
+ * Main activity for entrants in the Aurora app.
+ *
+ * <p>Connects to Firestore to load a list of available events
+ * that users can browse and register for. Future versions will
+ * include event details, registration, and history views.</p>
+ */
 
 public class EntrantActivity extends AppCompatActivity {
 
