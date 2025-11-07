@@ -34,6 +34,20 @@ import com.google.zxing.qrcode.QRCodeWriter;
  * - Provides navigation to profile and notifications pages, and supports logout.
  */
 
+/*
+ * References for this screen:
+ *
+ * 1) source: Android Developers — "The activity lifecycle"
+ *    https://developer.android.com/guide/components/activities/activity-lifecycle
+ *    Used for handling onCreate / onResume when building the organizer home screen.
+ *
+ *
+ * 2) author: Stack Overflow user — "How to start new activity on button click"
+ *    https://stackoverflow.com/questions/4186021/how-to-start-new-activity-on-button-click
+ *    Used for launching other organizer screens from buttons or cards.
+ */
+
+
 public class OrganizerActivity extends AppCompatActivity {
 
     private Button myEventsButton, createEventButton;

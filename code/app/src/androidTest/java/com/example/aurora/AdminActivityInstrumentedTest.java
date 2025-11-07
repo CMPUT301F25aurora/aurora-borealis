@@ -1,3 +1,34 @@
+/*
+ * References for AdminActivityInstrumentedTest:
+ *
+ * source: Android Developers — "Build instrumented tests"
+ * url: https://developer.android.com/training/testing/instrumented-tests
+ * note: Used for the basic setup of AndroidJUnit4, the instrumentation runner,
+ *       and running UI tests on a device or emulator.
+ *
+ * source: Android Developers — "Test your app's activities"
+ * url: https://developer.android.com/guide/components/activities/testing
+ * note: Used for using ActivityScenario to launch and test AdminActivity.
+ *
+ * source: AndroidX Test — ActivityScenarioRule reference
+ * url: https://developer.android.com/reference/androidx/test/ext/junit/rules/ActivityScenarioRule
+ * note: Used for the rule that automatically launches and closes AdminActivity
+ *       before and after each test.
+ *
+ * author: Stack Overflow user — "How do I use activityScenarioRule<Activity>?"
+ * url: https://stackoverflow.com/questions/54878598/how-do-i-use-activityscenarioruleactivity
+ * note: Example of configuring ActivityScenarioRule for a specific Activity in tests.
+ *
+ * source: Android Developers — "Espresso"
+ * url: https://developer.android.com/training/testing/espresso
+ * note: Used for the onView(...).perform(...).check(...) pattern for verifying
+ *       AdminActivity UI elements.
+ */
+
+
+
+
+
 package com.example.aurora;
 
 import static androidx.test.espresso.Espresso.onView;

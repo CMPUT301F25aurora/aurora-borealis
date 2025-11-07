@@ -31,6 +31,65 @@ import java.util.List;
  * Provides access to monitor and manage events, user profiles, logs, and images.
  * Includes a top back button for returning to the login screen (with session logout).
  */
+
+/*
+ *
+ * source: Firebase docs — "Get data with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/get-data
+ * note: Used as a reference for calling collection().get() with addOnSuccessListener
+ *       to load events, users, images, and logs into the admin dashboard.
+ *
+ * source: Firebase docs - "Order and limit data with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/order-limit-data
+ * note: Used for ordering queries such as orderBy("date", Query.Direction.ASCENDING)
+ *       and orderBy("timestamp", Query.Direction.DESCENDING) when listing events and logs.
+ *
+ * source: Firebase docs - "Add data to Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data
+ * note: General reference for working with Map<String,Object>, reading document
+ *       snapshots, and understanding how collection().document() and document IDs work.
+ *
+ * source: Firebase developers article - "The secrets of Firestore's FieldValue.serverTimestamp()".
+ * url: https://medium.com/firebase-developers/the-secrets-of-firestores-fieldvalue-servertimestamp-revealed-29dd7a38a82b
+ * note: Background for why ActivityLogger uses FieldValue.serverTimestamp() and why
+ *       AdminActivity later reads these timestamps and formats them in formatRelativeTime().
+ *
+ * source: Stack Overflow user - "Android / Firebase, get timestamp to date - java".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/66522800/android-firebase-get-timestamp-to-date
+ * note: Example of reading a Firebase Timestamp field, converting it to java.util.Date,
+ *       and displaying it, similar to how timeView shows log times.
+ *
+ * source: Firebase Auth docs - "Manage users in Firebase Authentication".
+ * url: https://firebase.google.com/docs/auth/android/manage-users
+ * note: Used as a reference for signing out with FirebaseAuth.getInstance().signOut()
+ *       when the admin presses the back button to leave the dashboard.
+ *
+ * source: Android documentation for SharedPreferences.
+ * url: https://developer.android.com/reference/android/content/SharedPreferences
+ * note: Used for clearing the "aurora_prefs" preferences with edit().clear().apply()
+ *       when logging the admin out.
+ *
+ * source: Android ViewGroup / LinearLayout documentation.
+ * url: https://developer.android.com/reference/android/view/ViewGroup#removeAllViews()
+ * note: Used as a reference for listContainer.removeAllViews() followed by inflating
+ *       child layouts for each event, profile, and log entry.
+ *
+ * source: Stack Overflow user - "Android AlertDialog with embedded EditText".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/2795300/android-alertdialog-with-embedded-edittext
+ * note: Used for the pattern of building a custom AlertDialog with setView(input)
+ *       to implement the search dialog in showSearchDialog().
+ *
+ * source: Android AlertDialog.Builder examples and tutorials.
+ * url: https://www.androidcode.ninja/android-alertdialog-example/
+ * note: General reference for showing confirmation dialogs when removing events and profiles.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names, and in-memory search logic,
+ *       but not the underlying Firebase or Android APIs.
+ */
+
 public class AdminActivity extends AppCompatActivity {
 
     private TextView countEvents, countUsers, countImages, countLogs;
@@ -73,6 +132,8 @@ public class AdminActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBackAdmin);
 
 
+
+
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 FirebaseAuth.getInstance().signOut();
@@ -90,6 +151,8 @@ public class AdminActivity extends AppCompatActivity {
         tabProfiles.setOnClickListener(v -> switchMode(Mode.PROFILES));
         tabImages.setOnClickListener(v -> switchMode(Mode.IMAGES));
         tabLogs.setOnClickListener(v -> switchMode(Mode.LOGS));
+
+
 
         buttonSearch.setOnClickListener(v -> showSearchDialog());
 
@@ -144,6 +207,7 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void refreshCounts() {
+
         db.collection("events").get()
                 .addOnSuccessListener(snap ->
                         countEvents.setText(String.valueOf(snap.size())));
@@ -166,6 +230,8 @@ public class AdminActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------
 
     private void loadEvents() {
+
+
         db.collection("events")
                 .orderBy("date", Query.Direction.ASCENDING)
                 .get()
@@ -205,6 +271,8 @@ public class AdminActivity extends AppCompatActivity {
         TextView entrantsView  = card.findViewById(R.id.adminEventEntrants);
         Button   removeButton  = card.findViewById(R.id.adminEventRemoveButton);
 
+
+
         String title = nz(doc.getString("title"));
         if (title.isEmpty()) title = nz(doc.getString("name"));
 
@@ -226,6 +294,8 @@ public class AdminActivity extends AppCompatActivity {
         String eventId = doc.getId();
         String finalTitle = title;
 
+
+
         removeButton.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Remove Event")
@@ -239,6 +309,8 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void deleteEvent(String eventId, String title) {
+
+
         db.collection("events").document(eventId)
                 .delete()
                 .addOnSuccessListener(v -> {
@@ -258,6 +330,8 @@ public class AdminActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------
 
     private void loadProfiles() {
+
+
         db.collection("users")
                 .orderBy("name", Query.Direction.ASCENDING)
                 .get()
@@ -351,6 +425,9 @@ public class AdminActivity extends AppCompatActivity {
     // ---------------------------------------------------------------------
 
     private void loadLogs() {
+
+
+
         db.collection("logs")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
@@ -419,6 +496,10 @@ public class AdminActivity extends AppCompatActivity {
         titleView.setText(title);
         subtitleView.setText(message);
 
+        // Converting Firestore Timestamp to java.util.Date uses Timestamp#toDate():
+        // Firebase Android SDK reference – com.google.firebase.Timestamp
+        // https://firebase.google.com/docs/reference/android/com/google/firebase/Timestamp
+
         if (ts != null) {
             timeView.setText(formatRelativeTime(ts.toDate()));
         } else {
@@ -432,7 +513,9 @@ public class AdminActivity extends AppCompatActivity {
     // SEARCH
     // ---------------------------------------------------------------------
 
+
     private void showSearchDialog() {
+
         if (currentMode == Mode.IMAGES) {
             Toast.makeText(this,
                     "Search is not available for images yet.",

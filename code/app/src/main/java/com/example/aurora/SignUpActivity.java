@@ -11,6 +11,23 @@
  *      entrant   → EventsActivity (NOT EntrantNavigationActivity)
  */
 
+/*
+ * References for this screen:
+ *
+ * 1) source: Firebase docs — "Authenticate with Firebase using Password-Based Accounts on Android"
+ *    https://firebase.google.com/docs/auth/android/password-auth
+ *    Used for createUserWithEmailAndPassword and handling sign-up callbacks.
+ *
+ * 2) author: Stack Overflow user — "How to include username when storing email and password using Firebase"
+ *    https://stackoverflow.com/questions/32151178/how-do-you-include-a-username-when-storing-email-and-password-using-firebase-ba
+ *    Used for storing extra profile fields in Firestore right after auth sign-up.
+ *
+ * 3) source: Android Developers — "Understand the Activity lifecycle"
+ *    https://developer.android.com/guide/components/activities/activity-lifecycle
+ *    Used for managing navigation after a successful sign up and finishing this Activity.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;

@@ -37,6 +37,26 @@ import java.util.List;
  * Note: The search bar is included in the layout but not yet functional.
  */
 
+/*
+ * References:
+ *
+ * 1) Android Developers — "Fragments"
+ *    https://developer.android.com/guide/fragments
+ *    Used as a reference for the fragment lifecycle and inflating a layout in onCreateView.
+ *
+ * 2) Android Developers — "Create dynamic lists with RecyclerView"
+ *    https://developer.android.com/develop/ui/views/layout/recyclerview
+ *    Used as a reference for wiring RecyclerView inside a fragment with a layout manager and adapter.
+ *
+ * 3) author: Stack Overflow user — "Firebase Firestore get data from collection"
+ *    https://stackoverflow.com/questions/46706433/firebase-firestore-get-data-from-collection
+ *    Used as a reference for loading Firestore documents into a list and showing them in the RecyclerView.
+ *
+ * 4) Android Developers — "Create deep links"
+ *    https://developer.android.com/training/app-links/create-deeplinks
+ *    Used as a reference for handling deep link URIs when a scanned QR code points to aurora://event/<id>.
+ */
+
 
 public class EventsFragment extends Fragment {
 

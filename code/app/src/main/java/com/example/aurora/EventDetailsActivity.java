@@ -36,6 +36,34 @@ import java.util.List;
  * Waiting list entries are stored as the entrant's EMAIL when possible,
  * falling back to device ID only if no email is available.
  */
+
+/*
+ * References for this screen:
+ *
+ * 1) author: Stack Overflow user — "How to generate a QR Code for an Android application?"
+ *    https://stackoverflow.com/questions/8800919/how-to-generate-a-qr-code-for-an-android-application
+ *    Used for the QRCodeWriter + BitMatrix pattern to draw a QR code Bitmap.
+ *
+ * 2) source: Firebase docs — "Get data with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/get-data
+ *    Used for reading a single event document and its fields from Firestore.
+ *
+ * 3) source: Firebase docs — "Perform simple and compound queries in Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/queries
+ *    Used for loading related data such as entrants or logs tied to the event.
+ *
+ * 4) source: Android Developers — "Dialogs"
+ *    https://developer.android.com/develop/ui/views/components/dialogs
+ *    Used for showing an AlertDialog with a custom view around the QR code or actions.
+ *
+ * 5) source: Android Developers — "Settings.Secure"
+ *    https://developer.android.com/reference/android/provider/Settings.Secure
+ *    Used when reading a device identifier like ANDROID_ID to tag actions from this screen.
+ *
+ * 6) source: ChatGPT (OpenAI assistant)
+ *    Used only to help tidy up wording in the Javadoc and choose some helper method names.
+ */
+
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;
