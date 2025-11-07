@@ -86,7 +86,6 @@ public class OrganizerActivity extends AppCompatActivity {
         }
     }
 
-
     private void logoutUser() {
 
         FirebaseAuth.getInstance().signOut();

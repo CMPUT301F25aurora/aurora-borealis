@@ -147,14 +147,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Settings.Secure.ANDROID_ID
             );
         }
-
         return email;
     }
 
-    // -------------------------------------------------------------------------
     // Loading + binding event
-    // -------------------------------------------------------------------------
-
     private void loadEventDetails() {
         db.collection("events")
                 .document(eventId)
@@ -236,10 +232,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Join / leave waiting list  (stores EMAIL or fallback key)
-    // -------------------------------------------------------------------------
 
+    // Join / leave waiting list  (stores EMAIL or fallback key)
     private void toggleJoin() {
         if (eventId == null) return;
 

@@ -119,7 +119,7 @@ public class EventsFragment extends Fragment {
                         Toast.makeText(getContext(), "Error loading events", Toast.LENGTH_SHORT).show());
     }
 
-    // ---------------- QR scanning ----------------
+    // QR scanning
 
     private void startQrScan() {
         // IMPORTANT: use forSupportFragment for fragments
