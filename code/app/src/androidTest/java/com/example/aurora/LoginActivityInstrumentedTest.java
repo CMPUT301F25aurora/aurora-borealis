@@ -1,3 +1,31 @@
+/*
+ * References for LoginActivityInstrumentedTest:
+ *
+ * source: Android Developers — "Espresso"
+ * url: https://developer.android.com/training/testing/espresso
+ * note: Used to test typing into EditTexts, clicking login buttons, and checking
+ *       that the correct views appear after login.
+ *
+ * source: Android Developers — "Espresso recipes"
+ * url: https://developer.android.com/training/testing/espresso/recipes
+ * note: Used for common patterns like matching error messages or checking that
+ *       a particular text is shown on screen.
+ *
+ * source: Android Developers — "Testing with Espresso for UI"
+ * url: https://google-developer-training.github.io/android-developer-fundamentals-course-practicals/en/Unit%202/61_p_use_espresso_to_test_your_ui.html
+ * note: Example of building basic UI tests around user input and verifying labels.
+ *
+ * source: Android testing tutorial — "Developing Android unit and instrumentation tests"
+ * url: https://www.vogella.com/tutorials/AndroidTesting/article.html
+ * note: Background on how instrumentation tests are structured with JUnit4 and Espresso.
+ *
+ * source: ChatGPT (OpenAI assistant)
+ * note: Helped with ideas on which login flows to assert (for example, valid login,
+ *       invalid login, and navigation to the next screen), not the Espresso API usage.
+ */
+
+
+
 package com.example.aurora;
 
 import static androidx.test.espresso.Espresso.onView;
