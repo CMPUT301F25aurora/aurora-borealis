@@ -1,3 +1,15 @@
+/*
+ * References:
+ *
+ * 1) author: Stack Overflow user — "How to implement my very own URI scheme on Android"
+ *    https://stackoverflow.com/questions/2448213/how-to-implement-my-very-own-uri-scheme-on-android
+ *    Used as a reference for defining a custom URI scheme and reading scheme/host/path from Intent.getData().
+ *
+ * 2) Android Developers — "Create deep links"
+ *    https://developer.android.com/training/app-links/create-deeplinks
+ *    Used as a reference for how deep links pass IDs in the path or query parameters and how activities receive them.
+ */
+
 package com.example.aurora;
 
 import android.content.Intent;
