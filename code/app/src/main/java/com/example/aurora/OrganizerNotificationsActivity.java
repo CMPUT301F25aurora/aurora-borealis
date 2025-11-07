@@ -1,10 +1,11 @@
-package com.example.aurora;
 /**
  * This activity shows a list of notifications for the organizer.
  * - Loads notifications from Firestore (most recent first).
  * - Displays each notification’s title, message, and time.
  * - If there are no notifications, shows a default message.
  */
+package com.example.aurora;
+
 import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
