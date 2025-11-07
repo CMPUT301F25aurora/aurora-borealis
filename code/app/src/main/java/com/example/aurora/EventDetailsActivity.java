@@ -105,7 +105,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void bindEvent(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-            finish();
+            finish(); // needs to be commented out when Testing with Test cases
             return;
         }
 
