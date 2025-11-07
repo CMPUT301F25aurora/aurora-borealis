@@ -1,3 +1,30 @@
+/*
+ * References for EventDetailsActivityInstrumentedTest:
+ *
+ * source: Android Developers — "Espresso"
+ * url: https://developer.android.com/training/testing/espresso
+ * note: Used for checking that text fields, buttons, and other views in the
+ *       event details screen are displayed and clickable.
+ *
+ * source: Android Developers — "Espresso recipes"
+ * url: https://developer.android.com/training/testing/espresso/recipes
+ * note: Used for examples of matching text, view visibility, and simple assertions.
+ *
+ * source: Android Developers — "Test your app's activities"
+ * url: https://developer.android.com/guide/components/activities/testing
+ * note: Used for using ActivityScenario or ActivityScenarioRule to test EventDetailsActivity.
+ *
+ * author: Stack Overflow user — "How to assert inside a RecyclerView in Espresso?"
+ * url: https://stackoverflow.com/questions/31394569/how-to-assert-inside-a-recyclerview-in-espresso
+ * note: Used if the event details screen shows lists (for example, entrants) in a RecyclerView
+ *       and the test needs to assert on a specific row.
+ *
+ * source: ChatGPT (OpenAI assistant)
+ * note: Helped refine the ideas for what UI states are worth checking in this test,
+ *       such as making sure QR or deep link related views appear when expected.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
