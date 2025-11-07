@@ -4,6 +4,8 @@
  * - Displays each notification’s title, message, and time.
  * - If there are no notifications, shows a default message.
  */
+
+
 package com.example.aurora;
 
 import android.os.Bundle;
