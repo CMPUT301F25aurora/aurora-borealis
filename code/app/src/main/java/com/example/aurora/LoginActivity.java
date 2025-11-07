@@ -1,3 +1,26 @@
+/*
+ * References:
+ *
+ * 1) Firebase — "Get started with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/quickstart
+ *    Used as a reference for initializing FirebaseFirestore and reading user documents for login.
+ *
+ * 2) author: Stack Overflow user — "Firebase Firestore get data from collection"
+ *    https://stackoverflow.com/questions/46706433/firebase-firestore-get-data-from-collection
+ *    Used as a reference for looking up user records in Firestore using email or phone as a key.
+ *
+ * 3) Android Developers — "Settings.Secure"
+ *    https://developer.android.com/reference/android/provider/Settings.Secure
+ *    Used as a reference for using Settings.Secure.ANDROID_ID to create or find a default entrant profile by device.
+ *
+ * 4) Android Developers — "Data and file storage overview (SharedPreferences)"
+ *    https://developer.android.com/training/data-storage/shared-preferences
+ *    https://developer.android.com/topic/libraries/architecture/datastore
+ *    https://developer.android.com/kotlin/multiplatform/datastore
+ *    Used as a reference for saving the logged-in user's role, name, email, and phone in SharedPreferences.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
