@@ -1,6 +1,7 @@
 package com.example.aurora;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -71,19 +72,26 @@ public class OrganizerActivity extends AppCompatActivity {
         }
 
         if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(OrganizerActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            });
+            btnLogout.setOnClickListener(v -> logoutUser());
         }
+    }
+
+
+    private void logoutUser() {
+
+        FirebaseAuth.getInstance().signOut();
+
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        sp.edit().clear().apply();
+
+        Intent intent = new Intent(OrganizerActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void setupTabs() {
         myEventsButton.setOnClickListener(v -> {
-            // currently just highlights "My Events" – content is always your events list
             Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show();
         });
 
@@ -95,7 +103,6 @@ public class OrganizerActivity extends AppCompatActivity {
 
     private void setupBottomNav() {
         bottomHome.setOnClickListener(v -> {
-            // Refresh organizer dashboard
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -157,7 +164,7 @@ public class OrganizerActivity extends AppCompatActivity {
         if (dateText == null) dateText = doc.getString("startDate");
         if (dateText == null) dateText = "Date not set";
 
-        // Max spots: support both 'maxSpots' (Long) and legacy 'capacity' (String/Long)
+        // Max spots
         Long maxSpots = doc.getLong("maxSpots");
         if (maxSpots == null) {
             Object capObj = doc.get("capacity");
@@ -174,7 +181,6 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         }
 
-        // Location & category
         String location = doc.getString("location");
         if (location == null) location = "";
         String category = doc.getString("category");
@@ -187,7 +193,7 @@ public class OrganizerActivity extends AppCompatActivity {
         date.setText(dateText);
         stats.setText("Max spots: " + maxSpots);
 
-        // Emoji based on category
+
         String emoji = "📍";
         String lowerCategory = category.toLowerCase();
 
@@ -214,7 +220,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
         status.setText(statusText);
 
-        // QR button (available for all)
+        // QR button
         btnShowQR.setOnClickListener(v -> {
             if (deepLink == null || deepLink.isEmpty()) {
                 Toast.makeText(this,
@@ -225,7 +231,7 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         });
 
-        // Manage button – ONLY for events created by this organizer
+        // Manage button (for organizer's own events)
         if (isMine) {
             btnManage.setVisibility(View.VISIBLE);
             btnManage.setOnClickListener(v -> {
