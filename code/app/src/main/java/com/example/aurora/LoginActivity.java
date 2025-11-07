@@ -20,29 +20,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The {@code LoginActivity} class manages user authentication and routing within the Aurora app.
- * <p>
- * It handles:
- * <ul>
- *   <li>Automatic login redirection if a saved user role exists in {@code SharedPreferences}.</li>
- *   <li>Creation of a default "entrant" Firestore profile for new devices.</li>
- *   <li>Email- or phone-based login authentication via Firebase Firestore.</li>
- *   <li>Saving user data (name, email, role, document ID) to {@code SharedPreferences} after login.</li>
- *   <li>Resuming deep-link navigation (e.g., joining an event from a QR scan) after successful login.</li>
- * </ul>
- * <p>
- * Depending on the user's role, it navigates to:
- * <ul>
- *   <li>{@link AdminActivity} for admins</li>
- *   <li>{@link OrganizerActivity} for organizers</li>
- *   <li>{@link EventsActivity} for entrants</li>
- * </ul>
- * <p>
- * Firestore Collection: {@code users}
- * <br>
- * Shared Preferences: {@code aurora_prefs}, {@code aurora}
- * <br>
- * Device Identifier: {@link android.provider.Settings.Secure#ANDROID_ID}
+ * Handles user login and navigation in the Aurora app.
+ *
+ * <p>This activity is responsible for:
+ * - Checking if a user is already logged in and sending them to the right page.
+ * - Creating a default entrant profile for new devices.
+ * - Logging in users using their email or phone and password.
+ * - Saving user information locally using SharedPreferences.
+ * - Opening the correct page based on the user's role (Admin, Organizer, Entrant).</p>
+ *
+ * <p>Firestore collection: "users"</p>
+ * <p>Shared preferences: "aurora_prefs" and "aurora"</p>
  */
 
 
