@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * Simple beginner-friendly UI tests for LoginActivity.
+ * UI tests for LoginActivity.
  * Checks that buttons and basic navigation work correctly.
  */
 @RunWith(AndroidJUnit4.class)
@@ -46,7 +46,6 @@ public class LoginActivityInstrumentedTest {
 
     /**
      * Tests that entering fake credentials and tapping login does not crash.
-     * (No need to check toast or backend response — just ensure app stays open.)
      */
     @Test
     public void testInvalidLoginDoesNotCrash() {
