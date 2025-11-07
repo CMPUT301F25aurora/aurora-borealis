@@ -148,7 +148,6 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (role.equals("organizer")) {
                                         intent = new Intent(this, OrganizerActivity.class);
                                     } else {
-                                        // ✅ entrants -> EventsActivity
                                         intent = new Intent(this, EventsActivity.class);
                                     }
 

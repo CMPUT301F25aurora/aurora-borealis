@@ -49,7 +49,7 @@ public class ActivityLogger {
         db.collection("logs").add(data);
     }
 
-    // -------- USERS --------
+    // USERS
 
     public static void logUserRegistered(String userId, String email, String role) {
         Map<String, Object> log = new HashMap<>();
@@ -71,7 +71,7 @@ public class ActivityLogger {
         addLog(log);
     }
 
-    // -------- EVENTS --------
+    // EVENTS
 
     public static void logEventCreated(String eventId, String title) {
         Map<String, Object> log = new HashMap<>();
@@ -98,7 +98,7 @@ public class ActivityLogger {
         addLog(log);
     }
 
-    // -------- NOTIFICATIONS --------
+    // NOTIFICATIONS
     // Call this anywhere an organizer sends a notification to entrants.
 
     public static void logNotificationSent(

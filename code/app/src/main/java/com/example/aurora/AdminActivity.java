@@ -105,10 +105,7 @@ public class AdminActivity extends AppCompatActivity {
         switchMode(currentMode);
     }
 
-    // ---------------------------------------------------------------------
     // MODE / TABS
-    // ---------------------------------------------------------------------
-
     private void switchMode(Mode mode) {
         currentMode = mode;
         updateTabHighlight();
@@ -161,10 +158,7 @@ public class AdminActivity extends AppCompatActivity {
                         countLogs.setText(String.valueOf(snap.size())));
     }
 
-    // ---------------------------------------------------------------------
     // EVENTS TAB
-    // ---------------------------------------------------------------------
-
     private void loadEvents() {
         db.collection("events")
                 .orderBy("date", Query.Direction.ASCENDING)
@@ -253,10 +247,8 @@ public class AdminActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
-    // ---------------------------------------------------------------------
-    // PROFILES TAB
-    // ---------------------------------------------------------------------
 
+    // PROFILES TAB
     private void loadProfiles() {
         db.collection("users")
                 .orderBy("name", Query.Direction.ASCENDING)
@@ -330,10 +322,7 @@ public class AdminActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
-    // ---------------------------------------------------------------------
     // IMAGES TAB (placeholder)
-    // ---------------------------------------------------------------------
-
     private void loadImagesPlaceholder() {
         listContainer.removeAllViews();
 
@@ -346,10 +335,7 @@ public class AdminActivity extends AppCompatActivity {
         listContainer.addView(tv);
     }
 
-    // ---------------------------------------------------------------------
     // LOGS TAB
-    // ---------------------------------------------------------------------
-
     private void loadLogs() {
         db.collection("logs")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -428,10 +414,7 @@ public class AdminActivity extends AppCompatActivity {
         listContainer.addView(card);
     }
 
-    // ---------------------------------------------------------------------
     // SEARCH
-    // ---------------------------------------------------------------------
-
     private void showSearchDialog() {
         if (currentMode == Mode.IMAGES) {
             Toast.makeText(this,
@@ -540,10 +523,7 @@ public class AdminActivity extends AppCompatActivity {
         }
     }
 
-    // ---------------------------------------------------------------------
     // UTIL
-    // ---------------------------------------------------------------------
-
     private static String nz(String s) {
         return s == null ? "" : s;
     }

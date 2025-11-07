@@ -93,8 +93,6 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                 });
     }
 
-
-
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Account")
