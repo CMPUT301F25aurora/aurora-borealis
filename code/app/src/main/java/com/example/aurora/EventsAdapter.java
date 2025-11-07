@@ -46,12 +46,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     private String uid;
     private boolean isOrganizer;
 
-    public EventsAdapter(Context context, List<Event> events) {
+    public EventsAdapter(Context context, List<Event> events, boolean isOrganizer) {
         this.context = context;
         this.events = events;
         this.db = FirebaseFirestore.getInstance();
         this.uid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        this.isOrganizer = isOrganizer;
+        this.isOrganizer = isOrganizer; // ✅ now properly received
     }
 
     @NonNull
@@ -96,17 +96,18 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             );
         }
 
-        // 🔹 QR button (Organizer only, ignore if missing)
+        // QR button (Organizer only, ignore if missing)
         if (holder.btnShowQR != null) {
             holder.btnShowQR.setOnClickListener(v -> {
                 String deepLink = e.getDeepLink();
                 if (deepLink == null || deepLink.isEmpty()) {
                     Toast.makeText(context, "⚠️ No QR code for this event", Toast.LENGTH_SHORT).show();
                 } else {
-                    showQrPopup(deepLink);
+                    showQrPopup(deepLink); // ✅ new method call
                 }
             });
         }
+
     }
 
     @Override
@@ -114,7 +115,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return events.size();
     }
 
-    // 🔹 QR popup generator (safe for both organizer and entrant)
+    // QR popup generator (safe for both organizer and entrant)
     private void showQrPopup(String deepLink) {
         try {
             QRCodeWriter writer = new QRCodeWriter();

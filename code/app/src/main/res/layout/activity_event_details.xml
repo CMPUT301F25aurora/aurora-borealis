@@ -101,7 +101,7 @@
                 android:textColor="@color/black" />
 
             <Button
-                android:id="@+id/btnQRCode"
+                android:id="@+id/btnShowQR"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"

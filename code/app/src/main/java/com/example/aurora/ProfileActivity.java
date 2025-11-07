@@ -1,4 +1,3 @@
-package com.example.aurora;
 /**
  * This screen shows and edits the user's profile.
  * Loads the user's info (name, email, phone, role, stats) from Firestore.
@@ -6,6 +5,9 @@ package com.example.aurora;
  * If no profile exists, it creates one automatically.
  * Uses Firebase Authentication to find which user is logged in.
  */
+
+package com.example.aurora;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;

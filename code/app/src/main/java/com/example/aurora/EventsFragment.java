@@ -1,6 +1,7 @@
 package com.example.aurora;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -34,16 +35,17 @@ import java.util.Set;
 
 public class EventsFragment extends Fragment {
 
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerEvents;
     private EventsAdapter adapter;
     private final List<Event> allEvents = new ArrayList<>();
     private final List<Event> shownEvents = new ArrayList<>();
 
     private FirebaseFirestore db;
 
-    private EditText searchBox;
+    private EditText searchEvents;
     private Button btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology;
     private Button btnAvailabilityFilter;
+    private Button logoutButton;
 
     private final Set<Integer> selectedDays = new HashSet<>();
     private final EnumSet<TimeSlot> selectedSlots = EnumSet.noneOf(TimeSlot.class);
@@ -55,51 +57,56 @@ public class EventsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_events, container, false);
+        View v = inflater.inflate(R.layout.fragment_events, container, false);
 
         db = FirebaseFirestore.getInstance();
 
-        recyclerView = root.findViewById(R.id.recyclerEvents);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EventsAdapter(getContext(), shownEvents);
-        recyclerView.setAdapter(adapter);
+        searchEvents = v.findViewById(R.id.searchEvents);
+        logoutButton = v.findViewById(R.id.logoutButton);
+        recyclerEvents = v.findViewById(R.id.recyclerEvents);
+        btnAll = v.findViewById(R.id.btnAll);
+        btnMusic = v.findViewById(R.id.btnMusic);
+        btnSports = v.findViewById(R.id.btnSports);
+        btnEducation = v.findViewById(R.id.btnEducation);
+        btnArts = v.findViewById(R.id.btnArts);
+        btnTechnology = v.findViewById(R.id.btnTechnology);
+        btnAvailabilityFilter = v.findViewById(R.id.btnAvailabilityFilter);
 
-        searchBox = root.findViewById(R.id.searchEvents);
-        btnAvailabilityFilter = root.findViewById(R.id.btnAvailabilityFilter);
+        recyclerEvents.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new EventsAdapter(requireContext(), shownEvents);
+        recyclerEvents.setAdapter(adapter);
 
-        btnAll = root.findViewById(R.id.btnAll);
-        btnMusic = root.findViewById(R.id.btnMusic);
-        btnSports = root.findViewById(R.id.btnSports);
-        btnEducation = root.findViewById(R.id.btnEducation);
-        btnArts = root.findViewById(R.id.btnArts);
-        btnTechnology = root.findViewById(R.id.btnTechnology);
+        btnAll.setOnClickListener(x -> loadEvents(null));
+        btnMusic.setOnClickListener(x -> loadEvents("Music"));
+        btnSports.setOnClickListener(x -> loadEvents("Sports"));
+        btnEducation.setOnClickListener(x -> loadEvents("Education"));
+        btnArts.setOnClickListener(x -> loadEvents("Arts"));
+        btnTechnology.setOnClickListener(x -> loadEvents("Technology"));
 
-        btnAll.setOnClickListener(v -> loadEvents(null));
-        btnMusic.setOnClickListener(v -> loadEvents("Music"));
-        btnSports.setOnClickListener(v -> loadEvents("Sports"));
-        btnEducation.setOnClickListener(v -> loadEvents("Education"));
-        btnArts.setOnClickListener(v -> loadEvents("Arts"));
-        btnTechnology.setOnClickListener(v -> loadEvents("Technology"));
+        if (searchEvents != null) {
+            searchEvents.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyAllFilters(); }
+                @Override public void afterTextChanged(Editable s) {}
+            });
+        }
 
-        searchBox.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyAllFilters(); }
-            @Override public void afterTextChanged(Editable s) {}
-        });
+        if (btnAvailabilityFilter != null) {
+            btnAvailabilityFilter.setOnClickListener(x -> showAvailabilityDialog());
+        }
 
-        btnAvailabilityFilter.setOnClickListener(v -> showAvailabilityDialog());
-
-        loadEvents(null);
-
-        Button logout = root.findViewById(R.id.logoutButton);
-        if (logout != null) {
-            logout.setOnClickListener(v -> {
-                Toast.makeText(getContext(), "Logged out", Toast.LENGTH_SHORT).show();
+        if (logoutButton != null) {
+            logoutButton.setOnClickListener(x -> {
+                Toast.makeText(getContext(), "Logged out successfully", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(getContext(), LoginActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
                 requireActivity().finish();
             });
         }
 
-        return root;
+        loadEvents(null);
+        return v;
     }
 
     private void showAvailabilityDialog() {
@@ -168,7 +175,6 @@ public class EventsFragment extends Fragment {
     private void loadEvents(@Nullable String category) {
         Query q = db.collection("events");
         if (category != null) q = q.whereEqualTo("category", category);
-
         q.get().addOnSuccessListener(query -> {
             allEvents.clear();
             for (QueryDocumentSnapshot doc : query) {
@@ -177,12 +183,12 @@ public class EventsFragment extends Fragment {
                 allEvents.add(e);
             }
             applyAllFilters();
-        }).addOnFailureListener(e -> Toast.makeText(getContext(), "Error loading events", Toast.LENGTH_SHORT).show());
+        }).addOnFailureListener(e ->
+                Toast.makeText(getContext(), "Error loading events", Toast.LENGTH_SHORT).show());
     }
 
     private void applyAllFilters() {
-        String search = searchBox != null ? searchBox.getText().toString().trim().toLowerCase(Locale.getDefault()) : "";
-
+        String search = searchEvents != null ? searchEvents.getText().toString().trim().toLowerCase(Locale.getDefault()) : "";
         shownEvents.clear();
         for (Event e : allEvents) {
             if (!matchesSearch(e, search)) continue;

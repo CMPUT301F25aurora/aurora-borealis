@@ -1,4 +1,3 @@
-package com.example.aurora;
 /**
  * Fragment that displays and manages the user's profile.
  * Loads user data from Firestore (name, email, phone, role, stats).
@@ -7,6 +6,9 @@ package com.example.aurora;
  * Supports deleting the account (removes user from Firestore and returns to login).
  * Listens for notifications and shows them as Toasts if enabled.
  */
+
+package com.example.aurora;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;

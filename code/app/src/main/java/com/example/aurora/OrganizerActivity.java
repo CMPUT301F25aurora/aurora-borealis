@@ -105,12 +105,14 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
+        Button qrButton = eventView.findViewById(R.id.btnShowQR);
 
         String titleText = doc.getString("title");
         String dateText = doc.getString("date");
         Long maxSpots = doc.getLong("maxSpots");
         String location = doc.getString("location");
         String category = doc.getString("category");
+        String deepLink = doc.getString("deepLink");
 
         if (titleText == null) titleText = "Untitled Event";
         if (dateText == null) dateText = "Date not set";
@@ -131,6 +133,41 @@ public class OrganizerActivity extends AppCompatActivity {
         if (statusText.isEmpty()) statusText = "📍 Location not set";
 
         status.setText(statusText);
+
+        if (qrButton != null) {
+            qrButton.setOnClickListener(v -> {
+                if (deepLink == null || deepLink.isEmpty()) {
+                    Toast.makeText(this, "No QR code for this event", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                try {
+                    com.google.zxing.qrcode.QRCodeWriter writer = new com.google.zxing.qrcode.QRCodeWriter();
+                    com.google.zxing.common.BitMatrix bitMatrix = writer.encode(deepLink, com.google.zxing.BarcodeFormat.QR_CODE, 800, 800);
+                    android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(800, 800, android.graphics.Bitmap.Config.RGB_565);
+                    for (int x = 0; x < 800; x++) {
+                        for (int y = 0; y < 800; y++) {
+                            bitmap.setPixel(x, y, bitMatrix.get(x, y) ? android.graphics.Color.BLACK : android.graphics.Color.WHITE);
+                        }
+                    }
+
+                    android.widget.ImageView qrView = new android.widget.ImageView(this);
+                    qrView.setImageBitmap(bitmap);
+                    qrView.setPadding(40, 40, 40, 40);
+
+                    new androidx.appcompat.app.AlertDialog.Builder(this)
+                            .setTitle("🎟️ Event QR Code")
+                            .setView(qrView)
+                            .setPositiveButton("Close", (d, w) -> d.dismiss())
+                            .show();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
 
         eventListContainer.addView(eventView);
     }

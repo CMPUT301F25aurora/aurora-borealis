@@ -69,6 +69,22 @@ public class EventsActivity extends AppCompatActivity {
         btnArts = findViewById(R.id.btnArts);
         btnTechnology = findViewById(R.id.btnTechnology);
 
+        navEvents = findViewById(R.id.navEvents);
+        navProfile = findViewById(R.id.navProfile);
+        navAlerts = findViewById(R.id.navAlerts);
+
+        recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new EventsAdapter(this, eventList, false); // ✅ Entrant view
+        recyclerEvents.setAdapter(adapter);
+
+        logoutButton.setOnClickListener(v -> {
+            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+
         btnAll.setOnClickListener(v -> loadEvents(null));
         btnMusic.setOnClickListener(v -> loadEvents("Music"));
         btnSports.setOnClickListener(v -> loadEvents("Sports"));

@@ -1,4 +1,3 @@
-package com.example.aurora;
 /**
  * This activity displays the organizer’s profile information.
  * Shows name, email, phone, and total active events.
@@ -7,6 +6,10 @@ package com.example.aurora;
  * On delete, removes the user's Firestore document and redirects to LoginActivity.
  * Includes a back button to return to OrganizerActivity.
  */
+
+
+package com.example.aurora;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
