@@ -1,3 +1,30 @@
+// References for ActivityLogger:
+//
+// source: Firebase docs — "Add data to Cloud Firestore"
+// url: https://firebase.google.com/docs/firestore/manage-data/add-data
+// note: Used for the pattern of building a Map<String,Object> and calling
+//       db.collection("logs").add(data) to write log documents.
+//
+// source: Firebase docs — "Server timestamps"
+// url: https://firebase.google.com/docs/firestore/manage-data/add-data#server_timestamp
+// note: Used for using FieldValue.serverTimestamp() so each log entry gets a
+//       server-side timestamp when added.
+//
+// author: Stack Overflow user — "How to use firebase.firestore.FieldValue.serverTimestamp() now?"
+// url: https://stackoverflow.com/questions/69702035/how-to-use-firebase-firestore-fieldvalue-servertimestamp-now
+// note: Example explaining how FieldValue.serverTimestamp() is stored and later read,
+//       similar to how timestamp is handled in the logs collection.
+//
+// source: Firebase Auth docs — "Manage users in Firebase Authentication"
+// url: https://firebase.google.com/docs/auth/android/manage-users
+// note: Used for the pattern FirebaseAuth.getInstance().getCurrentUser() and reading
+//       current.getUid() / current.getEmail() when attaching organizer info to logs.
+//
+// source: ChatGPT (OpenAI assistant)
+// note: Helped design the log structure (type/title/message + extra fields) and the
+//       idea of grouping log methods like logUserRegistered, logEventCreated, and
+//       logNotificationSent into one utility class, not the Firebase API usage itself.
+
 package com.example.aurora;
 
 import com.google.firebase.auth.FirebaseAuth;
