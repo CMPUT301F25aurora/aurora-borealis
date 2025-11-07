@@ -1,13 +1,19 @@
 package com.example.aurora;
 
 import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.Timestamp;
@@ -22,6 +28,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class EventDetailsActivity extends AppCompatActivity {
+
     private FirebaseFirestore db;
     private String eventId;
     private String uid;
@@ -38,23 +45,59 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
+        // Criteria button (you add it in XML as btnCriteria)
+        View criteriaBtn = findViewById(R.id.btnCriteria);
+        if (criteriaBtn != null) {
+            criteriaBtn.setOnClickListener(v -> showCriteriaDialog());
+        }
+
+        // Try to get event ID from intent or deep link
         eventId = getIntent().getStringExtra("eventId");
+        if (eventId == null) {
+            eventId = DeepLinkUtil.extractEventIdFromIntent(getIntent());
+        }
+
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         uid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
 
-        banner = findViewById(R.id.imgBanner);
-        title = findViewById(R.id.txtTitle);
-        subtitle = findViewById(R.id.txtSubtitle);
-        timeView = findViewById(R.id.txtTime);
-        about = findViewById(R.id.txtAbout);
-        regWindow = findViewById(R.id.txtRegWindow);
-        joinedBadge = findViewById(R.id.txtJoinedBadge);
-        stats = findViewById(R.id.txtStats);
-        location = findViewById(R.id.txtLocation);
+        banner       = findViewById(R.id.imgBanner);
+        title        = findViewById(R.id.txtTitle);
+        subtitle     = findViewById(R.id.txtSubtitle);
+        timeView     = findViewById(R.id.txtTime);
+        about        = findViewById(R.id.txtAbout);
+        regWindow    = findViewById(R.id.txtRegWindow);
+        joinedBadge  = findViewById(R.id.txtJoinedBadge);
+        stats        = findViewById(R.id.txtStats);
+        location     = findViewById(R.id.txtLocation);
         btnJoinLeave = findViewById(R.id.btnJoinLeave);
 
         loadEvent();
         btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
+    }
+
+    private void showCriteriaDialog() {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_criteria, null, false);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(dialogView)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        View close = dialogView.findViewById(R.id.btnGotIt);
+        if (close != null) {
+            close.setOnClickListener(v -> dialog.dismiss());
+        }
+
+        dialog.show();
     }
 
     private void loadEvent() {
@@ -63,7 +106,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(this::bindEvent);
     }
 
-    private static String nz(String s) { return s == null ? "" : s; }
+    private static String nz(String s) {
+        return s == null ? "" : s;
+    }
 
     private void bindEvent(DocumentSnapshot d) {
         if (d == null || !d.exists()) return;
@@ -97,7 +142,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         Timestamp endTs = d.getTimestamp("endAt");
         if (startTs != null && endTs != null) {
             SimpleDateFormat tfmt = new SimpleDateFormat("h:mm a 'MST'", Locale.CANADA);
-            tfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton")); // Mountain Time
+            tfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton"));
             String s = tfmt.format(startTs.toDate());
             String e = tfmt.format(endTs.toDate());
             timeView.setText(s + " – " + e);

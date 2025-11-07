@@ -1,3 +1,17 @@
+/**
+ * EventsFragment.java
+ *
+ * Fragment that shows a scrollable list of events for entrants.
+ * - Sets up a RecyclerView with EventsAdapter.
+ * - Loads events from Firestore ("events" collection) and supports optional category filtering
+ *   via whereEqualTo("category", ...). Category buttons (All/Music/Sports/Education/Arts/Technology)
+ *   reload the list with the selected filter.
+ * - Logout returns the user to LoginActivity and clears the back stack.
+ *
+ * Note: searchEvents is present in the layout; wire it to query filtering if needed.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -63,7 +77,6 @@ public class EventsFragment extends Fragment {
         btnEducation.setOnClickListener(x -> loadEvents("Education"));
         btnArts.setOnClickListener(x -> loadEvents("Arts"));
         btnTechnology.setOnClickListener(x -> loadEvents("Technology"));
-
         loadEvents(null);
     }
 

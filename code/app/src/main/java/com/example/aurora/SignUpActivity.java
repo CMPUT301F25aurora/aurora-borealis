@@ -1,3 +1,9 @@
+/**
+ * Activity for creating a new user account.
+ * Handles input validation, account creation with Firebase Authentication,
+ * and saves user details to Firestore before redirecting to the correct screen.
+ */
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -9,18 +15,27 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Activity for creating a new user account.
+ * Handles input validation, account creation with Firebase Authentication,
+ * and saves user details to Firestore before redirecting to the correct screen.
+ */
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText signupName, signupEmail, signupPhone, signupPassword;
     private RadioGroup radioGroupRole;
     private Button signupButton;
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
         radioGroupRole = findViewById(R.id.Role);
         signupButton = findViewById(R.id.SignUpButton);
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         signupButton.setOnClickListener(v -> saveUser());
 
@@ -59,44 +75,74 @@ public class SignUpActivity extends AppCompatActivity {
 
         String role = (selectedId == R.id.Organizer) ? "organizer" : "entrant";
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", name);
-        user.put("email", email);
-        user.put("phone", phone);
-        user.put("password", password);   // needed so Login can query
-        user.put("role", role);
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
 
-        db.collection("users").add(user)
-                .addOnSuccessListener(docRef -> {
-                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                        if (firebaseUser == null) {
+                            Toast.makeText(this, "Could not create account.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                    // 🔹 LOG: user registered
-                    Map<String, Object> log = new HashMap<>();
-                    log.put("type", "user_registered");
-                    log.put("message", "User registered: " + email);
-                    log.put("timestamp", FieldValue.serverTimestamp());
-                    log.put("userId", docRef.getId());
-                    log.put("userEmail", email);
-                    log.put("userRole", role);
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("name", name);
+                        user.put("email", email);
+                        user.put("phone", phone);
+                        user.put("role", role);
+                        user.put("password", password);
 
-                    db.collection("logs").add(log);
+                        String uid = firebaseUser.getUid();
+                        db.collection("users").document(uid).set(user)
+                                .addOnSuccessListener(docRef -> {
+                                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
 
-                    Intent intent;
-                    if ("organizer".equals(role)) {
-                        intent = new Intent(this, OrganizerActivity.class);
+                                    // Log registration
+                                    Map<String, Object> log = new HashMap<>();
+                                    log.put("type", "user_registered");
+                                    log.put("message", "User registered: " + email);
+                                    log.put("timestamp", FieldValue.serverTimestamp());
+                                    log.put("userId", uid);
+                                    log.put("userEmail", email);
+                                    log.put("userRole", role);
+                                    db.collection("logs").add(log);
+
+                                    // Cache in SharedPreferences for profile
+                                    getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                                            .edit()
+                                            .putString("user_email", email)
+                                            .putString("user_name", name)
+                                            .putString("user_role", role)
+                                            .putString("user_doc_id", uid)
+                                            .apply();
+
+                                    Intent intent;
+                                    if (role.equals("organizer")) {
+                                        intent = new Intent(this, OrganizerActivity.class);
+                                    } else {
+                                        intent = new Intent(this, EntrantNavigationActivity.class);
+                                    }
+
+                                    intent.putExtra("userName", name);
+                                    intent.putExtra("userEmail", email);
+                                    intent.putExtra("userPhone", phone);
+                                    intent.putExtra("userRole", role);
+
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     } else {
-                        intent = new Intent(this, EntrantNavigationActivity.class);
+                        Exception e = task.getException();
+                        if (e instanceof FirebaseAuthUserCollisionException) {
+                            Toast.makeText(this, "An account with this email already exists.", Toast.LENGTH_SHORT).show();
+                        } else if (e != null) {
+                            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "Sign up failed.", Toast.LENGTH_SHORT).show();
+                        }
                     }
-
-                    intent.putExtra("userName", name);
-                    intent.putExtra("userEmail", email);
-                    intent.putExtra("userPhone", phone);
-                    intent.putExtra("userRole", role);
-
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                });
     }
 }

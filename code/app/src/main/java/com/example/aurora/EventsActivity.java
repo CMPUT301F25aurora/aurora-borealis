@@ -1,3 +1,17 @@
+/**
+ * EventsActivity.java
+ *
+ * Displays a scrollable list of events for entrants.
+ * - Initializes a RecyclerView with an EventsAdapter.
+ * - Loads events from Firestore ("events" collection); optional category filter via whereEqualTo("category").
+ * - Category chips (All/Music/Sports/Education/Arts/Technology) reload the list with the selected filter.
+ * - Bottom navigation opens Profile and Alerts screens; Events is the current screen.
+ * - Logout clears the task and returns to LoginActivity.
+ *
+ * Note: searchEvents input is present in the layout; hook it up to query filtering if needed.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -82,6 +96,7 @@ public class EventsActivity extends AppCompatActivity {
         if (category != null) {
             q = q.whereEqualTo("category", category);
         }
+
         q.get()
                 .addOnSuccessListener(query -> {
                     eventList.clear();
