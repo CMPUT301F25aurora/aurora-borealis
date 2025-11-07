@@ -67,9 +67,18 @@ public class LoginActivity extends AppCompatActivity {
         createDefaultEntrantProfile();
 
         loginButton.setOnClickListener(v -> loginUser());
-        createAccountButton.setOnClickListener(
-                v -> startActivity(new Intent(this, SignUpActivity.class))
-        );
+        createAccountButton.setOnClickListener(v -> {
+            Intent i = new Intent(this, SignUpActivity.class);
+
+            // pass pending event if exists
+            String pending = getSharedPreferences("aurora", MODE_PRIVATE)
+                    .getString("pending_event", null);
+            if (pending != null) {
+                i.putExtra("pending_event", pending);
+            }
+
+            startActivity(i);
+        });
     }
 
     private void createDefaultEntrantProfile() {

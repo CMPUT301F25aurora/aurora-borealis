@@ -130,6 +130,20 @@ public class SignUpActivity extends AppCompatActivity {
                                             .putString("user_doc_id", uid)
                                             .apply();
 
+                                    String pending = getIntent().getStringExtra("pending_event");
+                                    if (pending != null) {
+                                        getSharedPreferences("aurora", MODE_PRIVATE)
+                                                .edit()
+                                                .remove("pending_event")
+                                                .apply();
+
+                                        Intent deepLinkIntent = new Intent(this, EventDetailsActivity.class);
+                                        deepLinkIntent.putExtra("eventId", pending);
+                                        startActivity(deepLinkIntent);
+                                        finish();
+                                        return;
+                                    }
+
                                     Intent intent;
                                     if (role.equals("organizer")) {
                                         intent = new Intent(this, OrganizerActivity.class);
