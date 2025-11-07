@@ -1,19 +1,29 @@
+/**
+ * Activity for creating a new user account.
+ * Handles input validation, account creation with Firebase Authentication,
+ * and saves user details to Firestore before redirecting to the correct screen.
+ */
+
 package com.example.aurora;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
-
     private EditText signupName, signupEmail, signupPhone, signupPassword;
     private RadioGroup radioGroupRole;
     private Button signupButton;
     private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,14 +37,13 @@ public class SignUpActivity extends AppCompatActivity {
         radioGroupRole = findViewById(R.id.Role);
         signupButton = findViewById(R.id.SignUpButton);
         db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         signupButton.setOnClickListener(v -> saveUser());
 
-        // Optional: back to login
         findViewById(R.id.backToLoginButton).setOnClickListener(v ->
                 startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
     }
-
     private void saveUser() {
         String name = signupName.getText().toString().trim();
         String email = signupEmail.getText().toString().trim();
@@ -53,24 +62,49 @@ public class SignUpActivity extends AppCompatActivity {
 
         String role = (selectedId == R.id.Organizer) ? "organizer" : "entrant";
 
-        Map<String, Object> user = new HashMap<>();
-        user.put("name", name);
-        user.put("email", email);
-        user.put("phone", phone);
-        user.put("password", password);
-        user.put("role", role);
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
 
-        db.collection("users").add(user)
-                .addOnSuccessListener(docRef -> {
-                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
-                    if (role.equals("organizer")) {
-                        startActivity(new Intent(this, OrganizerActivity.class));
-                    } else {
-                        startActivity(new Intent(this, EntrantActivity.class));
+                        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("name", name);
+                        user.put("email", email);
+                        user.put("phone", phone);
+                        user.put("role", role);
+                        user.put("password", password);
+
+                        String uid = firebaseUser.getUid();
+                        db.collection("users").document(uid).set(user)
+                                .addOnSuccessListener(docRef -> {
+                                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+                                    Intent intent;
+                                    if (role.equals("organizer")) {
+                                        intent = new Intent(this, OrganizerActivity.class);
+                                    } else {
+                                        intent = new Intent(this, EntrantNavigationActivity.class);
+                                    }
+
+                                    intent.putExtra("userName", name);
+                                    intent.putExtra("userEmail", email);
+                                    intent.putExtra("userPhone", phone);
+                                    intent.putExtra("userRole", role);
+
+                                    getSharedPreferences("AuroraPrefs", MODE_PRIVATE)
+                                            .edit()
+                                            .putString("userName", name)
+                                            .putString("userEmail", email)
+                                            .putString("userPhone", phone)
+                                            .putString("userRole", role)
+                                            .apply();
+
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e ->
+                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     }
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                });
     }
 }

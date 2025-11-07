@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="16dp"
+    android:layout_marginBottom="12dp"
+    android:elevation="4dp">
+
+    <TextView
+        android:id="@+id/eventTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event Title"
+        android:textStyle="bold"
+        android:textColor="#111"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/eventDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        android:textColor="#666"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/eventStats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Max spots: 0"
+        android:textColor="#666"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/eventStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="📍 Location"
+        android:textSize="14sp"
+        android:textColor="#4A148C"
+        android:layout_marginTop="6dp" />
+
+    <Button
+        android:id="@+id/btnShowQR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QR"
+        android:textAllCaps="true"
+        android:textColor="@android:color/white"
+        android:backgroundTint="?attr/colorPrimary"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="4dp"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="6dp"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:elevation="2dp"
+        android:layout_gravity="start"
+        android:tooltipText="Show QR Code" />
+
+</LinearLayout>

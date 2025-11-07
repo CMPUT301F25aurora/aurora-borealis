@@ -1,13 +1,32 @@
+/**
+ * EventsActivity.java
+ *
+ * Displays a scrollable list of events for entrants.
+ * - Initializes a RecyclerView with an EventsAdapter.
+ * - Loads events from Firestore ("events" collection); optional category filter via whereEqualTo("category").
+ * - Category chips (All/Music/Sports/Education/Arts/Technology) reload the list with the selected filter.
+ * - Bottom navigation opens Profile and Alerts screens; Events is the current screen.
+ * - Logout clears the task and returns to LoginActivity.
+ *
+ * Note: searchEvents input is present in the layout; hook it up to query filtering if needed.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.firebase.firestore.*;
-import java.util.*;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventsActivity extends AppCompatActivity {
 
@@ -17,6 +36,8 @@ public class EventsActivity extends AppCompatActivity {
     private EventsAdapter adapter;
     private List<Event> eventList = new ArrayList<>();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private Button btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology;
+    private Button navEvents, navProfile, navAlerts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +48,19 @@ public class EventsActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.logoutButton);
         recyclerEvents = findViewById(R.id.recyclerEvents);
 
+        btnAll = findViewById(R.id.btnAll);
+        btnMusic = findViewById(R.id.btnMusic);
+        btnSports = findViewById(R.id.btnSports);
+        btnEducation = findViewById(R.id.btnEducation);
+        btnArts = findViewById(R.id.btnArts);
+        btnTechnology = findViewById(R.id.btnTechnology);
+
+        navEvents = findViewById(R.id.navEvents);
+        navProfile = findViewById(R.id.navProfile);
+        navAlerts = findViewById(R.id.navAlerts);
+
         recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new EventsAdapter(this, eventList);
+        adapter = new EventsAdapter(this, eventList, false); // ✅ Entrant view
         recyclerEvents.setAdapter(adapter);
 
         logoutButton.setOnClickListener(v -> {
@@ -39,12 +71,27 @@ public class EventsActivity extends AppCompatActivity {
             finish();
         });
 
+        btnAll.setOnClickListener(v -> loadEvents(null));
+        btnMusic.setOnClickListener(v -> loadEvents("Music"));
+        btnSports.setOnClickListener(v -> loadEvents("Sports"));
+        btnEducation.setOnClickListener(v -> loadEvents("Education"));
+        btnArts.setOnClickListener(v -> loadEvents("Arts"));
+        btnTechnology.setOnClickListener(v -> loadEvents("Technology"));
+
+        navEvents.setOnClickListener(v -> {});
+        navProfile.setOnClickListener(v -> startActivity(new Intent(this, ProfileActivity.class)));
+        navAlerts.setOnClickListener(v -> startActivity(new Intent(this, AlertsActivity.class)));
         loadEvents();
     }
 
     private void loadEvents() {
-        db.collection("events")
-                .get()
+        loadEvents(null);
+    }
+
+    private void loadEvents(String category) {
+        Query q = db.collection("events");
+        if (category != null) q = q.whereEqualTo("category", category);
+        q.get()
                 .addOnSuccessListener(query ->{
                     eventList.clear();
                     for (QueryDocumentSnapshot doc : query) {

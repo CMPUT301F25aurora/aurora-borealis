@@ -1,15 +1,30 @@
+/**
+ * LoginActivity.java
+ *
+ * Handles user authentication for the Aurora app.
+ * - Allows users to log in using either email or phone number with their password.
+ * - Verifies credentials by querying the "users" collection in Firestore.
+ * - On successful login, user details (name, email, role, etc.) are saved to SharedPreferences.
+ * - Redirects users based on their role:
+ *      - Organizers → OrganizerActivity
+ *      - Entrants → EntrantNavigationActivity
+ * - Displays appropriate Toast messages for success, invalid credentials, or errors.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-//class for login screen on app startup
 public class LoginActivity extends AppCompatActivity {
 
     private EditText loginEmail, loginPassword;
@@ -32,9 +47,9 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(v -> loginUser());
         createAccountButton.setOnClickListener(v -> startActivity(new Intent(this, SignUpActivity.class)));
     }
-   // get user info entered and see if it matches info for a user in firestore db
+
     private void loginUser() {
-        String input = loginEmail.getText().toString().trim(); //can be email or phone
+        String input = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
 
         if (input.isEmpty() || password.isEmpty()) {
@@ -50,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
                     if (!query.isEmpty()) {
                         handleLogin(query.getDocuments().get(0));
                     } else {
-                        // If not found, try phone-based login
                         db.collection("users")
                                 .whereEqualTo("phone", input)
                                 .whereEqualTo("password", password)
@@ -71,17 +85,49 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void handleLogin(DocumentSnapshot doc) {
+        String name = doc.getString("name");
+        String email = doc.getString("email");
+        String phone = doc.getString("phone");
         String role = doc.getString("role");
 
-        Toast.makeText(this, "Welcome " + doc.getString("name"), Toast.LENGTH_SHORT).show();
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        sp.edit()
+                .putString("user_email", email == null ? "" : email)
+                .putString("user_name", name == null ? "" : name)
+                .putString("user_role", role == null ? "" : role)
+                .putString("user_doc_id", doc.getId())
+                .apply();
 
-        if ("organizer".equalsIgnoreCase(role)) {
-            startActivity(new Intent(this, OrganizerActivity.class));
-        } else {
-            startActivity(new Intent(this, EventsActivity.class));
+        Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
+
+        // Checks if user came from a QR deep link
+        String pending = getSharedPreferences("aurora", MODE_PRIVATE)
+                .getString("pending_event", null);
+        if (pending != null) {
+            getSharedPreferences("aurora", MODE_PRIVATE)
+                    .edit().remove("pending_event").apply();
+
+            Intent deepLinkIntent = new Intent(this, EventDetailsActivity.class);
+            deepLinkIntent.putExtra("eventId", pending);
+            startActivity(deepLinkIntent);
+            finish();
+            return;
         }
+
+
+        Intent intent;
+        if ("organizer".equalsIgnoreCase(role)) {
+            intent = new Intent(this, OrganizerActivity.class);
+        } else {
+            intent = new Intent(this, EntrantNavigationActivity.class);
+        }
+
+        intent.putExtra("userName", name);
+        intent.putExtra("userEmail", email);
+        intent.putExtra("userPhone", phone);
+        intent.putExtra("userRole", role);
+
+        startActivity(intent);
         finish();
     }
 }
-
-
