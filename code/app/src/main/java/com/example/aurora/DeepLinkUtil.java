@@ -2,6 +2,13 @@ package com.example.aurora;
 
 import android.content.Intent;
 import android.net.Uri;
+/**
+ * Utility class for handling deep links in the Aurora app.
+ *
+ * Extracts the event ID from intents that use the custom
+ * aurora://event/<id> deep link format.
+ */
+
 
 public class DeepLinkUtil {
     public static String extractEventIdFromIntent(Intent intent) {

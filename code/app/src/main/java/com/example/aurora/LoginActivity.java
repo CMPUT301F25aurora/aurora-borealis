@@ -1,22 +1,10 @@
-/**
- * LoginActivity.java
- *
- * Handles user authentication for the Aurora app.
- * - Allows users to log in using either email or phone number with their password.
- * - Verifies credentials by querying the "users" collection in Firestore.
- * - On successful login, user details (name, email, role, etc.) are saved to SharedPreferences.
- * - Redirects users based on their role:
- *      - Admin     → AdminActivity
- *      - Organizer → OrganizerActivity
- *      - Entrant   → EventsActivity  (IMPORTANT: no more EntrantNavigationActivity)
- * - If there is a pending deep-linked event (from QR before login), it opens EventDetailsActivity.
- */
-
 package com.example.aurora;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -24,8 +12,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -37,6 +29,33 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        String role = sp.getString("user_role", null);
+        String name = sp.getString("user_name", null);
+        String email = sp.getString("user_email", null);
+        String phone = sp.getString("user_phone", null);
+
+        if (role != null && !role.isEmpty()) {
+            Intent intent;
+            if (role.equalsIgnoreCase("admin")) {
+                intent = new Intent(this, AdminActivity.class);
+            } else if (role.equalsIgnoreCase("organizer")) {
+                intent = new Intent(this, OrganizerActivity.class);
+            } else {
+                intent = new Intent(this, EventsActivity.class);
+            }
+
+            intent.putExtra("userName", name);
+            intent.putExtra("userEmail", email);
+            intent.putExtra("userPhone", phone);
+            intent.putExtra("userRole", role);
+
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_login);
 
         loginEmail = findViewById(R.id.loginEmail);
@@ -45,10 +64,36 @@ public class LoginActivity extends AppCompatActivity {
         createAccountButton = findViewById(R.id.createAccountButton);
         db = FirebaseFirestore.getInstance();
 
+        createDefaultEntrantProfile();
+
         loginButton.setOnClickListener(v -> loginUser());
         createAccountButton.setOnClickListener(
                 v -> startActivity(new Intent(this, SignUpActivity.class))
         );
+    }
+
+    private void createDefaultEntrantProfile() {
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+        DocumentReference userRef = db.collection("users").document(deviceId);
+
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (!documentSnapshot.exists()) {
+                Map<String, Object> user = new HashMap<>();
+                user.put("role", "entrant");
+                user.put("notificationsEnabled", false);
+                user.put("createdAt", System.currentTimeMillis());
+                user.put("deviceId", deviceId);
+
+                userRef.set(user)
+                        .addOnSuccessListener(aVoid ->
+                                Log.d("DeviceAuth", "✅ New entrant profile created for device: " + deviceId))
+                        .addOnFailureListener(e ->
+                                Log.e("DeviceAuth", "❌ Error creating entrant profile", e));
+            } else {
+                Log.d("DeviceAuth", "Existing entrant profile found for device: " + deviceId);
+            }
+        }).addOnFailureListener(e ->
+                Log.e("DeviceAuth", "❌ Failed to check entrant profile", e));
     }
 
     private void loginUser() {
@@ -85,16 +130,14 @@ public class LoginActivity extends AppCompatActivity {
                                                 Toast.LENGTH_SHORT).show();
                                     }
                                 })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(this,
-                                                "Error: " + e.getMessage(),
-                                                Toast.LENGTH_SHORT).show());
+                                .addOnFailureListener(e -> Toast.makeText(this,
+                                        "Error: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show());
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                "Error: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "Error: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show());
     }
 
     private void handleLogin(DocumentSnapshot doc) {
@@ -103,7 +146,6 @@ public class LoginActivity extends AppCompatActivity {
         String phone = doc.getString("phone");
         String role  = doc.getString("role");
 
-        // Cache basic info for profile etc.
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         sp.edit()
                 .putString("user_email", email == null ? "" : email)
@@ -112,9 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                 .putString("user_doc_id", doc.getId())
                 .apply();
 
-        Toast.makeText(this,
-                "Welcome " + (name == null ? "" : name),
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
 
         // Deep-link case (scanned QR before login)
         String pending = getSharedPreferences("aurora", MODE_PRIVATE)
@@ -138,7 +178,6 @@ public class LoginActivity extends AppCompatActivity {
         } else if (role != null && role.equalsIgnoreCase("organizer")) {
             intent = new Intent(this, OrganizerActivity.class);
         } else {
-            // ✅ Entrants go straight to EventsActivity (no fragments)
             intent = new Intent(this, EventsActivity.class);
         }
 

@@ -9,15 +9,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Central helper for writing structured admin logs to the "logs" collection.
+ * Utility class responsible for creating and writing structured logs to the Firestore
+ * "logs" collection. Designed for use by administrators and organizers to keep
+ * a consistent audit trail of important actions across the Aurora app.
  *
- * All logs have at least:
- *  - type      (event_created, event_removed, profile_removed, user_registered, notification_sent, ...)
- *  - title     (short label for Admin UI)
- *  - message   (human readable text)
- *  - timestamp (serverTimestamp)
+ * <p>Each log entry contains metadata such as:</p>
+ * <ul>
+ *     <li><b>type</b> – logical category of the action
+ *         (e.g., <code>event_created</code>, <code>profile_removed</code>,
+ *         <code>notification_sent</code>).</li>
+ *     <li><b>title</b> – a short label used for display in the Admin UI.</li>
+ *     <li><b>message</b> – a readable description of the action performed.</li>
+ *     <li><b>timestamp</b> – automatically assigned server timestamp for chronological ordering.</li>
+ * </ul>
  *
- * Optional fields: eventId, eventTitle, userId, userEmail, organizerEmail, channel, etc.
+ * <p>Optional contextual fields include event and user identifiers, email addresses,
+ * communication channels, and short message previews. The logger supports common actions such as:</p>
+ * <ul>
+ *     <li>Registering or removing users</li>
+ *     <li>Creating or deleting events</li>
+ *     <li>Recording notifications sent to entrants</li>
+ * </ul>
+ *
+ * <p>All logging methods are static so that any activity, service, or fragment can
+ * record an action with one simple method call, ensuring traceability throughout
+ * the lifecycle of the app.</p>
+ *
+ * @author Aurora Borealis Team
+ * @version 1.0
  */
 public class ActivityLogger {
 

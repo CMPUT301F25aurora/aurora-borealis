@@ -34,6 +34,19 @@
                 android:textSize="26sp"
                 android:textStyle="bold"
                 android:textColor="#000000" />
+            <TextView
+                android:id="@+id/btnBackAdmin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="← Go Back"
+                android:textColor="#1E88E5"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:padding="4dp"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true" />
+
 
             <TextView
                 android:id="@+id/adminSubtitle"

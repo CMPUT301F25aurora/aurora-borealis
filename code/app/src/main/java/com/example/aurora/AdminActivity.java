@@ -1,5 +1,7 @@
 package com.example.aurora;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -14,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -22,6 +25,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * The main dashboard for administrators in the Aurora app.
+ *
+ * Provides access to monitor and manage events, user profiles, logs, and images.
+ * Includes a top back button for returning to the login screen (with session logout).
+ */
 public class AdminActivity extends AppCompatActivity {
 
     private TextView countEvents, countUsers, countImages, countLogs;
@@ -29,10 +38,10 @@ public class AdminActivity extends AppCompatActivity {
     private LinearLayout tabEvents, tabProfiles, tabImages, tabLogs;
     private LinearLayout listContainer;
     private MaterialButton buttonSearch;
+    private TextView btnBack;
 
     private FirebaseFirestore db;
 
-    // Cached lists so we can filter client-side with the search dialog
     private List<DocumentSnapshot> eventDocs = new ArrayList<>();
     private List<DocumentSnapshot> profileDocs = new ArrayList<>();
     private List<DocumentSnapshot> logDocs = new ArrayList<>();
@@ -61,6 +70,21 @@ public class AdminActivity extends AppCompatActivity {
         tabLogs     = findViewById(R.id.tabLogs);
 
         buttonSearch = findViewById(R.id.buttonSearch);
+        btnBack = findViewById(R.id.btnBackAdmin);
+
+
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> {
+                FirebaseAuth.getInstance().signOut();
+                SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+                sp.edit().clear().apply();
+
+                Intent intent = new Intent(AdminActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
 
         tabEvents.setOnClickListener(v -> switchMode(Mode.EVENTS));
         tabProfiles.setOnClickListener(v -> switchMode(Mode.PROFILES));
@@ -69,7 +93,7 @@ public class AdminActivity extends AppCompatActivity {
 
         buttonSearch.setOnClickListener(v -> showSearchDialog());
 
-        // Initial load
+
         switchMode(Mode.EVENTS);
         refreshCounts();
     }
@@ -77,7 +101,6 @@ public class AdminActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // When we return to this screen, refresh counts and the current list
         refreshCounts();
         switchMode(currentMode);
     }
@@ -129,7 +152,6 @@ public class AdminActivity extends AppCompatActivity {
                 .addOnSuccessListener(snap ->
                         countUsers.setText(String.valueOf(snap.size())));
 
-        // If there's no "images" collection yet, this will just show 0
         db.collection("images").get()
                 .addOnSuccessListener(snap ->
                         countImages.setText(String.valueOf(snap.size())));
@@ -192,7 +214,6 @@ public class AdminActivity extends AppCompatActivity {
         String organizer = nz(doc.getString("organizerName"));
         if (organizer.isEmpty()) organizer = nz(doc.getString("location"));
 
-        // entrants from waitingList array if present
         List<String> waiting = (List<String>) doc.get("waitingList");
         int entrants = waiting == null ? 0 : waiting.size();
 
@@ -372,7 +393,6 @@ public class AdminActivity extends AppCompatActivity {
         String message = nz(doc.getString("message"));
         Timestamp ts   = doc.getTimestamp("timestamp");
 
-        // Derive a nice title if one isn't stored
         if (title.isEmpty()) {
             switch (type) {
                 case "event_created":
@@ -516,7 +536,6 @@ public class AdminActivity extends AppCompatActivity {
                 break;
             }
             case IMAGES:
-                // not searchable yet
                 break;
         }
     }

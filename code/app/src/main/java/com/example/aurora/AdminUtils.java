@@ -1,6 +1,20 @@
 package com.example.aurora;
 
 import java.util.Date;
+/**
+ * A small set of helper methods used across admin-related classes.
+ *
+ * Provides simple utilities for working with strings and formatting time
+ * differences in a readable way. These methods help keep the admin UI
+ * code cleaner and easier to maintain.
+ *
+ * Includes:
+ * - nz(String): returns a non-null string (empty if null)
+ * - capitalize(String): capitalizes the first letter of a string
+ * - formatRelativeTime(Date, long): converts a date into a readable
+ *   relative time like "5 min ago" or "2 hours ago"
+ */
+
 
 public class AdminUtils {
 
