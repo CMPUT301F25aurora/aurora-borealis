@@ -5,42 +5,46 @@
     android:orientation="vertical"
     android:background="#F5F5F5">
 
-    <!-- Top bar -->
+    <!-- Header with title + logout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_header_gradient">
 
         <TextView
             android:id="@+id/titleEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Events"
+            android:text="@string/discover_events"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#111111" />
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/logoutButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Logout"
-            android:textAllCaps="false" />
+            android:text="@string/logout"
+            android:textAllCaps="false"
+            android:backgroundTint="@android:color/white"
+            android:textColor="#E53935" />
     </LinearLayout>
 
-    <!-- Search -->
+    <!-- Search bar -->
     <EditText
         android:id="@+id/searchEvents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="8dp"
-        android:hint="Search events"
+        android:layout_margin="12dp"
+        android:hint="@string/search_events_hint"
         android:padding="10dp"
-        android:background="@android:drawable/edit_text" />
+        android:background="@android:drawable/edit_text"
+        android:textColor="#000"
+        android:textColorHint="#999" />
 
     <!-- Category filters -->
     <HorizontalScrollView
@@ -122,7 +126,7 @@
         android:paddingHorizontal="8dp"
         android:paddingBottom="8dp" />
 
-    <!-- Bottom nav -->
+    <!-- Bottom nav (Entrant standalone screen) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"

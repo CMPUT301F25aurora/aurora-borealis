@@ -152,7 +152,7 @@ public class CreateEventActivity extends AppCompatActivity {
                             .set(linkData, SetOptions.merge());
 
                     // 🔹 Show QR popup for deep link
-                    showQrPopup(deepLink);
+                    // showQrPopup(deepLink);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());

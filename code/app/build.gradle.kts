@@ -13,10 +13,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
 
     buildTypes {
         release {
@@ -27,12 +25,12 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
-
 
 dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
@@ -44,9 +42,12 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.auth)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // QR / barcode support
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 }

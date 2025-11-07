@@ -36,12 +36,17 @@
             android:name=".SignUpActivity"
             android:exported="false" />
 
-        <!-- Entrant side -->
+        <!-- Entrant: navigation hub with fragments -->
+        <activity
+            android:name=".EntrantNavigationActivity"
+            android:exported="false" />
+
+        <!-- Fallback/simple events list activity (used in some flows) -->
         <activity
             android:name=".EventsActivity"
             android:exported="false" />
 
-        <!-- Event details: also handles deep links like aurora://event/<id> -->
+        <!-- Event details + deep links: aurora://event/<id> -->
         <activity
             android:name=".EventDetailsActivity"
             android:exported="true">
@@ -55,11 +60,9 @@
             </intent-filter>
         </activity>
 
+        <!-- Entrant extra screens -->
         <activity
             android:name=".EntrantActivity"
-            android:exported="false" />
-        <activity
-            android:name=".EntrantNavigationActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"
@@ -68,7 +71,7 @@
             android:name=".AlertsActivity"
             android:exported="false" />
 
-        <!-- Organizer side -->
+        <!-- Organizer -->
         <activity
             android:name=".OrganizerActivity"
             android:exported="false" />

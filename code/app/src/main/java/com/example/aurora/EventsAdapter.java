@@ -29,7 +29,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         this.context = context;
         this.events = events;
         this.db = FirebaseFirestore.getInstance();
-        // Simple stable user id
         this.uid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
