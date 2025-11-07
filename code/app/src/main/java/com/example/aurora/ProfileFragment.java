@@ -1,3 +1,5 @@
+package com.example.aurora;
+
 /**
  * Fragment that displays and manages the user's profile.
  * Loads user data from Firestore (name, email, phone, role, stats).
@@ -6,8 +8,6 @@
  * Supports deleting the account (removes user from Firestore and returns to login).
  * Listens for notifications and shows them as Toasts if enabled.
  */
-
-package com.example.aurora;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +29,6 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
@@ -83,7 +82,24 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Event History coming soon", Toast.LENGTH_SHORT).show());
 
         btnNotifSettings.setOnClickListener(x -> toggleNotifications());
-        btnDelete.setOnClickListener(x -> deleteAccount());
+
+        btnDelete.setOnClickListener(x -> {
+            if (userRef == null) {
+                Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            userRef.delete()
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(requireContext(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
+        });
     }
 
     private void resolveAndLoad() {
@@ -205,24 +221,6 @@ public class ProfileFragment extends Fragment {
                     .addOnFailureListener(e ->
                             Toast.makeText(getContext(), "Failed to update setting", Toast.LENGTH_SHORT).show());
         });
-    }
-
-    private void deleteAccount() {
-        if (userRef == null) {
-            Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        userRef.delete()
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(requireContext(), LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
     }
 
     private void setEditing(boolean editing) {
