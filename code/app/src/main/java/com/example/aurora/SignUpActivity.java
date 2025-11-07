@@ -1,9 +1,11 @@
-package com.example.aurora;
 /**
  * Activity for creating a new user account.
  * Handles input validation, account creation with Firebase Authentication,
  * and saves user details to Firestore before redirecting to the correct screen.
  */
+
+package com.example.aurora;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
