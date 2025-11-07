@@ -1,179 +1,293 @@
-/**
- * CreateEventActivity.java
- *
- * This activity allows organizers to create new events in the Aurora app.
- * It provides input fields for event details such as name, description, dates,
- * registration period, maximum capacity, and optional maximum entrants for the
- * waiting list. Users can also (eventually) upload a poster image.
- *
- * When the "Create Event" button is clicked, the entered event information
- * is validated and then uploaded to Firestore under the "events" collection.
- * After creation we:
- *  - log the creation into the "logs" collection
- *  - generate a deep link aurora://event/<id> and save it on the event
- *  - show a QR code popup for that deep link
- */
-
 package com.example.aurora;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * CreateEventActivity
+ *
+ * Covers organizer stories on the creation side:
+ * - US 02.01.01: create event + generate unique QR that links to event in app.
+ * - US 02.01.04: set registration period.
+ * - US 02.02.03: toggle geolocation requirement for event.
+ * - US 02.03.01: optionally limit waiting list size (maxSpots).
+ * - US 02.04.01 / 02.04.02: upload/update event poster.
+ * - US 02.05.02: specify how many entrants to sample for invitations.
+ */
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText eventName, eventDescription, eventStart, eventEnd,
-            registrationStart, registrationEnd, maxCapacity, maxEntrantsEditText;
-    private Button choosePosterButton, createEventButton;
-    private ImageView imagePreview;
+    private EditText editTitle, editDescription, editLocation, editCategory;
+    private EditText editStartDate, editEndDate, editRegStart, editRegEnd;
+    private EditText editMaxSpots, editLotterySampleSize;
+    private CheckBox checkGeoRequired;
+    private Button btnChoosePoster, btnCreateEvent;
+    private ImageView imgPosterPreview;
+
+    private Uri selectedPosterUri = null;
 
     private FirebaseFirestore db;
+    private StorageReference posterStorageRef;
+
+    private ActivityResultLauncher<Intent> posterPickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
-        Button backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> finish());
-
         db = FirebaseFirestore.getInstance();
+        posterStorageRef = FirebaseStorage.getInstance().getReference("event_posters");
 
-        eventName           = findViewById(R.id.eventName);
-        eventDescription    = findViewById(R.id.eventDescription);
-        eventStart          = findViewById(R.id.eventStartDate);
-        eventEnd            = findViewById(R.id.eventEndDate);
-        registrationStart   = findViewById(R.id.registrationStart);
-        registrationEnd     = findViewById(R.id.registrationEnd);
-        maxCapacity         = findViewById(R.id.maxCapacity);
-        maxEntrantsEditText = findViewById(R.id.maxEntrantsEditText);
+        bindViews();
+        setupPosterPicker();
 
-        choosePosterButton  = findViewById(R.id.choosePosterButton);
-        imagePreview        = findViewById(R.id.imagePreview);
-        createEventButton   = findViewById(R.id.createEventButton);
-
-        // Poster picking not implemented yet, but UI is wired
-        createEventButton.setOnClickListener(v -> uploadEvent());
+        btnChoosePoster.setOnClickListener(v -> openPosterPicker());
+        btnCreateEvent.setOnClickListener(v -> createEvent());
     }
 
-    private void uploadEvent() {
-        String name = eventName.getText().toString().trim();
-        String description = eventDescription.getText().toString().trim();
+    private void bindViews() {
+        editTitle = findViewById(R.id.editTitle);
+        editDescription = findViewById(R.id.editDescription);
+        editLocation = findViewById(R.id.editLocation);
+        editCategory = findViewById(R.id.editCategory);
 
-        if (name.isEmpty() || description.isEmpty()) {
-            Toast.makeText(this, "Please enter event name and description", Toast.LENGTH_SHORT).show();
+        editStartDate = findViewById(R.id.editStartDate);
+        editEndDate = findViewById(R.id.editEndDate);
+        editRegStart = findViewById(R.id.editRegStart);
+        editRegEnd = findViewById(R.id.editRegEnd);
+
+        editMaxSpots = findViewById(R.id.editMaxSpots);
+        editLotterySampleSize = findViewById(R.id.editLotterySampleSize);
+
+        checkGeoRequired = findViewById(R.id.checkGeoRequired);
+        btnChoosePoster = findViewById(R.id.btnChoosePoster);
+        imgPosterPreview = findViewById(R.id.imgPosterPreview);
+        btnCreateEvent = findViewById(R.id.btnCreateEvent);
+    }
+
+    private void setupPosterPicker() {
+        posterPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        selectedPosterUri = result.getData().getData();
+                        if (selectedPosterUri != null) {
+                            imgPosterPreview.setVisibility(View.VISIBLE);
+                            try {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
+                                        getContentResolver(), selectedPosterUri);
+                                imgPosterPreview.setImageBitmap(bitmap);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
+    private void openPosterPicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        posterPickerLauncher.launch(Intent.createChooser(intent, "Select event poster"));
+    }
+
+    private void createEvent() {
+        String title = editTitle.getText().toString().trim();
+        String description = editDescription.getText().toString().trim();
+        String location = editLocation.getText().toString().trim();
+        String category = editCategory.getText().toString().trim();
+
+        String startDate = editStartDate.getText().toString().trim();
+        String endDate = editEndDate.getText().toString().trim();
+        String regStart = editRegStart.getText().toString().trim();
+        String regEnd = editRegEnd.getText().toString().trim();
+
+        String maxSpotsStr = editMaxSpots.getText().toString().trim();
+        String lotterySizeStr = editLotterySampleSize.getText().toString().trim();
+
+        boolean geoRequired = checkGeoRequired.isChecked();
+
+        if (title.isEmpty() || description.isEmpty() || location.isEmpty() || startDate.isEmpty()) {
+            Toast.makeText(this, "Please fill in title, description, location, and start date.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        saveEventData();
-    }
-
-    private void saveEventData() {
-        String name      = eventName.getText().toString().trim();
-        String startText = eventStart.getText().toString().trim();
-
-        Map<String, Object> event = new HashMap<>();
-
-        // Store both "title" and "name" for compatibility with different screens
-        event.put("title", name);
-        event.put("name", name);
-
-        // Basic fields
-        event.put("description", eventDescription.getText().toString());
-        event.put("startDate", eventStart.getText().toString());
-        event.put("endDate", eventEnd.getText().toString());
-        event.put("registrationStart", registrationStart.getText().toString());
-        event.put("registrationEnd", registrationEnd.getText().toString());
-        event.put("capacity", maxCapacity.getText().toString());
-
-        // Also fill date/dateDisplay so lists & admin panels can show something
-        event.put("date", startText);
-        event.put("dateDisplay", startText);
-
-        // starter waitingList array
-        event.put("waitingList", new ArrayList<String>());
-
-        // Optional maxEntrants for lottery / waiting list
-        String limitText = maxEntrantsEditText.getText().toString().trim();
-        Long maxEntrants = null;
-        if (!limitText.isEmpty()) {
+        Long maxSpots = null;
+        if (!maxSpotsStr.isEmpty()) {
             try {
-                maxEntrants = Long.parseLong(limitText);
+                maxSpots = Long.parseLong(maxSpotsStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(this, "Invalid number for maximum entrants", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Maximum entrants must be a number.", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
-        if (maxEntrants != null) {
-            event.put("maxEntrants", maxEntrants);
+
+        Long lotterySampleSize = null;
+        if (!lotterySizeStr.isEmpty()) {
+            try {
+                lotterySampleSize = Long.parseLong(lotterySizeStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Lottery sample size must be a number.", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
+
+        if (selectedPosterUri != null) {
+            uploadPosterAndCreateEvent(selectedPosterUri, title, description, location, category,
+                    startDate, endDate, regStart, regEnd,
+                    maxSpots, lotterySampleSize, geoRequired);
+        } else {
+            createEventInFirestore(null, title, description, location, category,
+                    startDate, endDate, regStart, regEnd,
+                    maxSpots, lotterySampleSize, geoRequired);
+        }
+    }
+
+    private void uploadPosterAndCreateEvent(
+            Uri posterUri,
+            String title,
+            String description,
+            String location,
+            String category,
+            String startDate,
+            String endDate,
+            String regStart,
+            String regEnd,
+            Long maxSpots,
+            Long lotterySampleSize,
+            boolean geoRequired
+    ) {
+        String fileName = "poster_" + System.currentTimeMillis() + ".jpg";
+        StorageReference ref = posterStorageRef.child(fileName);
+        UploadTask uploadTask = ref.putFile(posterUri);
+
+        uploadTask
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+                    return ref.getDownloadUrl();
+                })
+                .addOnSuccessListener(uri -> {
+                    String url = uri.toString();
+                    createEventInFirestore(url, title, description, location, category,
+                            startDate, endDate, regStart, regEnd,
+                            maxSpots, lotterySampleSize, geoRequired);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to upload poster: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void createEventInFirestore(
+            String posterUrl,
+            String title,
+            String description,
+            String location,
+            String category,
+            String startDate,
+            String endDate,
+            String regStart,
+            String regEnd,
+            Long maxSpots,
+            Long lotterySampleSize,
+            boolean geoRequired
+    ) {
+        Map<String, Object> event = new HashMap<>();
+        event.put("title", title);
+        event.put("description", description);
+        event.put("location", location);
+        event.put("category", category);
+
+        // Event timing
+        event.put("startDate", startDate);
+        event.put("endDate", endDate);
+        // For older parts of the app that expect a "date" string
+        event.put("date", startDate);
+
+        // Registration window (US 02.01.04)
+        event.put("registrationStart", regStart);
+        event.put("registrationEnd", regEnd);
+
+        // Capacity / lottery (US 02.03.01, 02.05.02)
+        event.put("maxSpots", maxSpots);
+        event.put("lotterySampleSize", lotterySampleSize);
+
+        // Geo requirement (US 02.02.03)
+        event.put("geoRequired", geoRequired);
+
+        // Poster (US 02.04.01 / 02.04.02)
+        event.put("posterUrl", posterUrl);
+
+        // Organizer that created this (IMPORTANT for organiser dashboard)
+        String organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_email", null);
+        event.put("organizerEmail", organizerEmail);
+
+        // Lists for later organizer features:
+        event.put("waitingList", new ArrayList<String>());
+        event.put("selectedEntrants", new ArrayList<String>());
+        event.put("finalEntrants", new ArrayList<String>());
+        event.put("cancelledEntrants", new ArrayList<String>());
+
+        // Metadata
+        event.put("createdAt", FieldValue.serverTimestamp());
 
         db.collection("events")
                 .add(event)
                 .addOnSuccessListener(ref -> {
+                    String deepLink = "aurora://event/" + ref.getId();
+                    ref.update("deepLink", deepLink);
+                    showQrDialogAndReturnHome(deepLink);
                     Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
-
-                    String eventId = ref.getId();
-
-                    // 🔹 LOG: event created
-                    Map<String, Object> log = new HashMap<>();
-                    log.put("type", "event_created");
-                    log.put("message", "Event created: " + name);
-                    log.put("timestamp", FieldValue.serverTimestamp());
-                    log.put("eventId", eventId);
-                    log.put("eventTitle", name);
-                    db.collection("logs").add(log);
-
-                    // 🔹 Generate deep link and save to event
-                    String deepLink = "aurora://event/" + eventId;
-                    Map<String, Object> linkData = new HashMap<>();
-                    linkData.put("deepLink", deepLink);
-
-                    db.collection("events")
-                            .document(eventId)
-                            .set(linkData, SetOptions.merge());
-
-                    // 🔹 Show QR popup for deep link
-                    // showQrPopup(deepLink);
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Error creating event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    // Generates QR bitmap and shows it in a popup dialog
-    private void showQrPopup(String deepLink) {
-        if (deepLink == null || deepLink.isEmpty()) {
-            Toast.makeText(this, "No QR code available for this event", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+    /**
+     * Show QR code then return to OrganizerActivity.
+     */
+    private void showQrDialogAndReturnHome(String deepLink) {
         try {
             int size = 800;
             QRCodeWriter writer = new QRCodeWriter();
-            BitMatrix bitMatrix = writer.encode(deepLink, BarcodeFormat.QR_CODE, size, size);
+            BitMatrix matrix = writer.encode(deepLink, BarcodeFormat.QR_CODE, size, size);
             Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
 
             for (int x = 0; x < size; x++) {
                 for (int y = 0; y < size; y++) {
-                    bitmap.setPixel(x, y, bitMatrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
                 }
             }
 
@@ -182,14 +296,26 @@ public class CreateEventActivity extends AppCompatActivity {
             qrView.setPadding(40, 40, 40, 40);
 
             new AlertDialog.Builder(this)
-                    .setTitle("🎟️ Event QR Code")
+                    .setTitle("Event QR Code")
                     .setView(qrView)
-                    .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+                    .setPositiveButton("Done", (dialog, which) -> {
+                        dialog.dismiss();
+                        goBackToOrganizerHome();
+                    })
+                    .setCancelable(false)
                     .show();
 
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+            goBackToOrganizerHome();
         }
+    }
+
+    private void goBackToOrganizerHome() {
+        Intent intent = new Intent(CreateEventActivity.this, OrganizerActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 }

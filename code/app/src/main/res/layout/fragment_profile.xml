@@ -9,11 +9,37 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Top row: Back + Title -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/backButtonProfile"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_back_24"
+                android:contentDescription="Back" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Profile"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Profile header card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
+            android:layout_marginTop="12dp"
             android:background="#FFF5F7">
 
             <ImageView
@@ -47,6 +73,7 @@
                 android:background="#EEEEEE" />
         </LinearLayout>
 
+        <!-- Profile info header row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,6 +98,7 @@
                 android:textColor="#2962FF" />
         </LinearLayout>
 
+        <!-- Profile form -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -135,6 +163,7 @@
                 android:visibility="gone" />
         </LinearLayout>
 
+        <!-- Activity stats -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -202,6 +231,7 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
