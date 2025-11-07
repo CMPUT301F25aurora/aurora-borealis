@@ -1,3 +1,61 @@
+/*
+ *
+ * source: Firebase docs — "Get data with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/get-data
+ * note: Used as a reference for calling collection().get() with addOnSuccessListener
+ *       to load events, users, images, and logs into the admin dashboard.
+ *
+ * source: Firebase docs - "Order and limit data with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/order-limit-data
+ * note: Used for ordering queries such as orderBy("date", Query.Direction.ASCENDING)
+ *       and orderBy("timestamp", Query.Direction.DESCENDING) when listing events and logs.
+ *
+ * source: Firebase docs - "Add data to Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data
+ * note: General reference for working with Map<String,Object>, reading document
+ *       snapshots, and understanding how collection().document() and document IDs work.
+ *
+ * source: Firebase developers article - "The secrets of Firestore's FieldValue.serverTimestamp()".
+ * url: https://medium.com/firebase-developers/the-secrets-of-firestores-fieldvalue-servertimestamp-revealed-29dd7a38a82b
+ * note: Background for why ActivityLogger uses FieldValue.serverTimestamp() and why
+ *       AdminActivity later reads these timestamps and formats them in formatRelativeTime().
+ *
+ * source: Stack Overflow user - "Android / Firebase, get timestamp to date - java".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/66522800/android-firebase-get-timestamp-to-date
+ * note: Example of reading a Firebase Timestamp field, converting it to java.util.Date,
+ *       and displaying it, similar to how timeView shows log times.
+ *
+ * source: Firebase Auth docs - "Manage users in Firebase Authentication".
+ * url: https://firebase.google.com/docs/auth/android/manage-users
+ * note: Used as a reference for signing out with FirebaseAuth.getInstance().signOut()
+ *       when the admin presses the back button to leave the dashboard.
+ *
+ * source: Android documentation for SharedPreferences.
+ * url: https://developer.android.com/reference/android/content/SharedPreferences
+ * note: Used for clearing the "aurora_prefs" preferences with edit().clear().apply()
+ *       when logging the admin out.
+ *
+ * source: Android ViewGroup / LinearLayout documentation.
+ * url: https://developer.android.com/reference/android/view/ViewGroup#removeAllViews()
+ * note: Used as a reference for listContainer.removeAllViews() followed by inflating
+ *       child layouts for each event, profile, and log entry.
+ *
+ * source: Stack Overflow user - "Android AlertDialog with embedded EditText".
+ * author: Stack Overflow user
+ * url: https://stackoverflow.com/questions/2795300/android-alertdialog-with-embedded-edittext
+ * note: Used for the pattern of building a custom AlertDialog with setView(input)
+ *       to implement the search dialog in showSearchDialog().
+ *
+ * source: Android AlertDialog.Builder examples and tutorials.
+ * url: https://www.androidcode.ninja/android-alertdialog-example/
+ * note: General reference for showing confirmation dialogs when removing events and profiles.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names, and in-memory search logic,
+ *       but not the underlying Firebase or Android APIs.
+ */
+
 package com.example.aurora;
 
 import android.content.Intent;
