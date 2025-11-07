@@ -1,3 +1,19 @@
+/*
+ * References for this screen:
+ *
+ * 1) source: Firebase Cloud Messaging docs — "Firebase Cloud Messaging"
+ *    https://firebase.google.com/docs/cloud-messaging
+ *    Used as the general model for sending push notifications to entrants.
+ *
+ * 2) author: Stack Overflow user — "Firebase Cloud Messaging notification from Android app"
+ *    https://stackoverflow.com/questions/66656265/firebase-cloud-messaging-notification-from-android-app
+ *    Used for the idea of building a JSON payload and sending it to FCM for a topic or token.
+ *
+ * 3) source: Firebase docs — "Add data to Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/manage-data/add-data
+ *    Used for logging notification info in Firestore so the admin log view can show it later.
+ */
+
 /**
  * This activity shows a list of notifications for the organizer.
  * - Loads notifications from Firestore (most recent first).
