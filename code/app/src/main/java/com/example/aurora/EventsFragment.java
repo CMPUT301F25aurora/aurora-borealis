@@ -73,7 +73,7 @@ public class EventsFragment extends Fragment {
         btnAvailabilityFilter = v.findViewById(R.id.btnAvailabilityFilter);
 
         recyclerEvents.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EventsAdapter(requireContext(), shownEvents);
+        adapter = new EventsAdapter(requireContext(), shownEvents, false);
         recyclerEvents.setAdapter(adapter);
 
         btnAll.setOnClickListener(x -> loadEvents(null));
