@@ -1,6 +1,7 @@
 package com.example.aurora;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -57,14 +59,11 @@ public class EventsActivity extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    // Base list from Firestore, and filtered list for adapter
     private final List<Event> baseEvents = new ArrayList<>();
     private final List<Event> eventList = new ArrayList<>();
 
     private String currentCategory = null;
 
-    // Availability filter state
-    // 0=Mon,1=Tue,...,6=Sun
     private final boolean[] daySelected = new boolean[7];
     private boolean slotMorning = false;
     private boolean slotAfternoon = false;
@@ -97,16 +96,8 @@ public class EventsActivity extends AppCompatActivity {
         adapter = new EventsAdapter(this, eventList);
         recyclerEvents.setAdapter(adapter);
 
-        // Logout
-        logoutButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        });
+        logoutButton.setOnClickListener(v -> logoutUser());
 
-        // Category filters (Firestore side + local filters)
         btnAll.setOnClickListener(v -> loadEvents(null));
         btnMusic.setOnClickListener(v -> loadEvents("Music"));
         btnSports.setOnClickListener(v -> loadEvents("Sports"));
@@ -114,26 +105,23 @@ public class EventsActivity extends AppCompatActivity {
         btnArts.setOnClickListener(v -> loadEvents("Arts"));
         btnTechnology.setOnClickListener(v -> loadEvents("Technology"));
 
-        // Bottom nav
+
         navEvents.setOnClickListener(v -> {
-            // already here
+
         });
         navProfile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
         navAlerts.setOnClickListener(v ->
                 startActivity(new Intent(this, AlertsActivity.class)));
 
-        // QR scanning on main events screen
         if (btnScanQr != null) {
             btnScanQr.setOnClickListener(v -> startQrScan());
         }
 
-        // NEW: Filter dialog
         if (btnFilter != null) {
             btnFilter.setOnClickListener(v -> showFilterDialog());
         }
 
-        // Search text filter
         searchEvents.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -142,13 +130,22 @@ public class EventsActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Initial load
         loadEvents(null);
     }
 
-    // -------------------------------------------------------------------------
-    // Firestore load
-    // -------------------------------------------------------------------------
+
+    private void logoutUser() {
+        FirebaseAuth.getInstance().signOut();
+
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        sp.edit().clear().apply();
+
+        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
 
     private void loadEvents(@Nullable String category) {
         currentCategory = category;
@@ -171,10 +168,6 @@ public class EventsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Error loading events", Toast.LENGTH_SHORT).show());
     }
 
-    // -------------------------------------------------------------------------
-    // Filters (search + availability)
-    // -------------------------------------------------------------------------
-
     private void showFilterDialog() {
         android.view.View view = getLayoutInflater()
                 .inflate(R.layout.dialog_filter_availability, null);
@@ -191,7 +184,7 @@ public class EventsActivity extends AppCompatActivity {
         final android.widget.CheckBox cbAfternoon = view.findViewById(R.id.cbAfternoon);
         final android.widget.CheckBox cbEvening = view.findViewById(R.id.cbEvening);
 
-        // Restore current state
+
         cbMon.setChecked(daySelected[0]);
         cbTue.setChecked(daySelected[1]);
         cbWed.setChecked(daySelected[2]);
@@ -284,7 +277,6 @@ public class EventsActivity extends AppCompatActivity {
 
         String dateStr = e.getDate();
         if (dateStr == null || dateStr.trim().isEmpty()) {
-            // If we can't parse the event's date, don't hide it.
             return true;
         }
 
@@ -294,13 +286,13 @@ public class EventsActivity extends AppCompatActivity {
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
 
-        int calDay = cal.get(Calendar.DAY_OF_WEEK); // Sun=1 ... Sat=7
+        int calDay = cal.get(Calendar.DAY_OF_WEEK);
         int idx = dayIndexFromCalendar(calDay);
 
         boolean anyDay = anyDaySelected();
         boolean dayOk = !anyDay || (idx >= 0 && daySelected[idx]);
 
-        int hour = cal.get(Calendar.HOUR_OF_DAY); // 0..23
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
         boolean inMorning = hour >= 6 && hour < 12;
         boolean inAfternoon = hour >= 12 && hour < 18;
         boolean inEvening = hour >= 18 || hour < 6;
@@ -340,7 +332,7 @@ public class EventsActivity extends AppCompatActivity {
 
     private Date parseDateBestEffort(String s) {
         String[] patterns = new String[]{
-                "MMMM d, yyyy • h:mm a",   // e.g. June 15, 2025 • 6:00 PM
+                "MMMM d, yyyy • h:mm a",
                 "MMMM d, yyyy h:mm a",
                 "MMMM d, yyyy",
                 "yyyy-MM-dd HH:mm",
@@ -354,15 +346,10 @@ public class EventsActivity extends AppCompatActivity {
                 sdf.setLenient(true);
                 Date d = sdf.parse(s);
                 if (d != null) return d;
-            } catch (ParseException ignored) {
-            }
+            } catch (ParseException ignored) {}
         }
         return null;
     }
-
-    // -------------------------------------------------------------------------
-    // QR scanning
-    // -------------------------------------------------------------------------
 
     private void startQrScan() {
         IntentIntegrator integrator = new IntentIntegrator(this);
@@ -395,7 +382,7 @@ public class EventsActivity extends AppCompatActivity {
 
                 String eventId = null;
                 if (uri.getPath() != null && uri.getPath().length() > 1) {
-                    eventId = uri.getPath().substring(1); // /<id>
+                    eventId = uri.getPath().substring(1);
                 } else {
                     eventId = uri.getQueryParameter("id");
                 }
