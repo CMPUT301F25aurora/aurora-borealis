@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/notificationDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose whether you want to receive event notifications on this device."
+        android:textSize="14sp"
+        android:textColor="#444444"
+        android:layout_marginBottom="16dp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchNotifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enable notifications"
+        android:textSize="16sp" />
+</LinearLayout>

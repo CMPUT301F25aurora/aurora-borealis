@@ -7,14 +7,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -25,35 +26,76 @@ import com.google.zxing.qrcode.QRCodeWriter;
 public class OrganizerActivity extends AppCompatActivity {
 
     private Button myEventsButton, createEventButton;
+    private Button btnLogout;
+    private ImageButton btnBack;
     private LinearLayout eventListContainer;
+
+    private TextView bottomHome, bottomProfile, bottomAlerts;
+
     private FirebaseFirestore db;
+    private String organizerEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
 
-        // Top buttons
+        db = FirebaseFirestore.getInstance();
+        organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_email", null);
+
+        bindViews();
+        setupTopBar();
+        setupTabs();
+        setupBottomNav();
+
+        loadEventsFromFirebase();
+    }
+
+    private void bindViews() {
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
         eventListContainer = findViewById(R.id.eventListContainer);
 
-        db = FirebaseFirestore.getInstance();
+        btnLogout = findViewById(R.id.btnLogoutOrganizer);
+        btnBack = findViewById(R.id.btnBackOrganizer);
 
-        myEventsButton.setOnClickListener(v ->
-                Toast.makeText(this, "My Events clicked", Toast.LENGTH_SHORT).show());
+        bottomHome = findViewById(R.id.bottomHome);
+        bottomProfile = findViewById(R.id.bottomProfile);
+        bottomAlerts = findViewById(R.id.bottomAlerts);
+    }
+
+    private void setupTopBar() {
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> onBackPressed());
+        }
+
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(OrganizerActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            });
+        }
+    }
+
+    private void setupTabs() {
+        myEventsButton.setOnClickListener(v -> {
+            // currently just highlights "My Events" – content is always your events list
+            Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show();
+        });
 
         createEventButton.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, CreateEventActivity.class);
             startActivity(intent);
         });
+    }
 
-        // Bottom navigation
-        TextView bottomHome = findViewById(R.id.bottomHome);
-        TextView bottomProfile = findViewById(R.id.bottomProfile);
-        TextView bottomAlerts = findViewById(R.id.bottomAlerts);
-
+    private void setupBottomNav() {
         bottomHome.setOnClickListener(v -> {
+            // Refresh organizer dashboard
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
@@ -69,8 +111,6 @@ public class OrganizerActivity extends AppCompatActivity {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class);
             startActivity(intent);
         });
-
-        loadEventsFromFirebase();
     }
 
     private void loadEventsFromFirebase() {
@@ -103,35 +143,45 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
+        Button btnManage = eventView.findViewById(R.id.btnManageEvent);
 
-        // Support both your old and new field names
+        String eventId = doc.getId();
+
+        // Title
         String titleText = doc.getString("title");
         if (titleText == null) titleText = doc.getString("name");
+        if (titleText == null) titleText = "Untitled Event";
 
+        // Date
         String dateText = doc.getString("date");
         if (dateText == null) dateText = doc.getString("startDate");
+        if (dateText == null) dateText = "Date not set";
 
+        // Max spots: support both 'maxSpots' (Long) and legacy 'capacity' (String/Long)
         Long maxSpots = doc.getLong("maxSpots");
         if (maxSpots == null) {
-            String capStr = doc.getString("capacity");
-            try {
-                maxSpots = (capStr == null || capStr.isEmpty())
-                        ? 0L
-                        : Long.parseLong(capStr);
-            } catch (NumberFormatException e) {
+            Object capObj = doc.get("capacity");
+            if (capObj instanceof Number) {
+                maxSpots = ((Number) capObj).longValue();
+            } else if (capObj instanceof String) {
+                try {
+                    maxSpots = Long.parseLong((String) capObj);
+                } catch (NumberFormatException e) {
+                    maxSpots = 0L;
+                }
+            } else {
                 maxSpots = 0L;
             }
         }
 
+        // Location & category
         String location = doc.getString("location");
-        String category = doc.getString("category");
-        String deepLink = doc.getString("deepLink"); // saved when event is created
-
-        if (titleText == null) titleText = "Untitled Event";
-        if (dateText == null) dateText = "Date not set";
-        if (maxSpots == null) maxSpots = 0L;
         if (location == null) location = "";
+        String category = doc.getString("category");
         if (category == null) category = "";
+
+        String deepLink = doc.getString("deepLink");
+        String creatorEmail = doc.getString("organizerEmail");
 
         title.setText(titleText);
         date.setText(dateText);
@@ -147,7 +197,7 @@ public class OrganizerActivity extends AppCompatActivity {
             emoji = "⚽";
         } else if (lowerCategory.equals("music")) {
             emoji = "🎵";
-        } else if (lowerCategory.equals("technology")) {
+        } else if (lowerCategory.equals("technology") || lowerCategory.equals("tech")) {
             emoji = "💻";
         } else if (lowerCategory.equals("education")) {
             emoji = "📚";
@@ -155,16 +205,38 @@ public class OrganizerActivity extends AppCompatActivity {
 
         String statusText = emoji + " " + capitalize(category);
         if (!location.isEmpty()) statusText += " • " + location;
+
+        // Mark which ones are mine
+        boolean isMine = organizerEmail != null && organizerEmail.equalsIgnoreCase(creatorEmail);
+        if (isMine) {
+            statusText += " • My Event";
+        }
+
         status.setText(statusText);
 
-        // QR button for this event
+        // QR button (available for all)
         btnShowQR.setOnClickListener(v -> {
             if (deepLink == null || deepLink.isEmpty()) {
-                Toast.makeText(this, "No QR link saved for this event yet", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,
+                        "No QR link saved for this event yet",
+                        Toast.LENGTH_SHORT).show();
             } else {
                 showQrPopup(deepLink);
             }
         });
+
+        // Manage button – ONLY for events created by this organizer
+        if (isMine) {
+            btnManage.setVisibility(View.VISIBLE);
+            btnManage.setOnClickListener(v -> {
+                Intent intent = new Intent(OrganizerActivity.this,
+                        OrganizerEventDetailsActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            });
+        } else {
+            btnManage.setVisibility(View.GONE);
+        }
 
         eventListContainer.addView(eventView);
     }
@@ -174,7 +246,6 @@ public class OrganizerActivity extends AppCompatActivity {
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
-    // Same QR popup logic as in CreateEventActivity
     private void showQrPopup(String deepLink) {
         try {
             int size = 800;
@@ -192,7 +263,7 @@ public class OrganizerActivity extends AppCompatActivity {
             qrView.setImageBitmap(bitmap);
             qrView.setPadding(40, 40, 40, 40);
 
-            new AlertDialog.Builder(this)
+            new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("🎟️ Event QR Code")
                     .setView(qrView)
                     .setPositiveButton("Close", (d, w) -> d.dismiss())
@@ -200,7 +271,9 @@ public class OrganizerActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             e.printStackTrace();
-            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    "Failed to generate QR code",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }

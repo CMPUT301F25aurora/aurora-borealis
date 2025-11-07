@@ -1,146 +1,226 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/create_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#D8BFE6"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#F8F8F8">
 
     <LinearLayout
-        android:id="@+id/create_root"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- 🔙 Back Button -->
-        <Button
-            android:id="@+id/backButton"
+        <!-- Header -->
+        <TextView
+            android:id="@+id/createEventTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⬅️ Back"
-            android:backgroundTint="#B39DDB"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp"
-            android:textStyle="bold" />
+            android:text="Create New Event"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#212121"
+            android:layout_marginBottom="12dp" />
+
+        <!-- ================= BASIC INFO ================= -->
 
         <TextView
-            android:id="@+id/createTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="🚀 Create New Event"
-            android:textSize="20sp"
-            android:textColor="#4A148C"
+            android:text="Basic information"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="2dp" />
 
         <EditText
-            android:id="@+id/eventName"
+            android:id="@+id/editTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="🎫 Event Name"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="12dp" />
+            android:hint="Event title"
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
 
         <EditText
-            android:id="@+id/eventDescription"
+            android:id="@+id/editDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="📝 Description"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="12dp" />
+            android:hint="Description"
+            android:padding="10dp"
+            android:layout_marginTop="8dp"
+            android:minLines="3"
+            android:gravity="top"
+            android:background="@android:drawable/edit_text" />
 
         <EditText
-            android:id="@+id/eventStartDate"
+            android:id="@+id/editLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="📅 Start Date (YYYY-MM-DD)"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="12dp" />
+            android:hint="Location"
+            android:padding="10dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/edit_text" />
 
         <EditText
-            android:id="@+id/eventEndDate"
+            android:id="@+id/editCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="📅 End Date (YYYY-MM-DD)"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="12dp" />
+            android:hint="Category (Music, Sports, Arts...)"
+            android:padding="10dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- ================= EVENT DATES ================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event dates"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="2dp" />
 
         <EditText
-            android:id="@+id/registrationStart"
+            android:id="@+id/editStartDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="🕒 Registration Start"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="12dp" />
+            android:hint="Start date and time (e.g. 2025-11-10 18:00)"
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
 
         <EditText
-            android:id="@+id/registrationEnd"
+            android:id="@+id/editEndDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="🕓 Registration End"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="12dp" />
+            android:hint="End date and time (optional)"
+            android:padding="10dp"
+            android:layout_marginTop="4dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- ================= REGISTRATION WINDOW ================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registration period"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="2dp" />
 
         <EditText
-            android:id="@+id/maxCapacity"
+            android:id="@+id/editRegStart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="👥 Max Capacity"
+            android:hint="Registration opens (e.g. 2025-11-01 09:00)"
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
+
+        <EditText
+            android:id="@+id/editRegEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Registration closes (e.g. 2025-11-08 23:59)"
+            android:padding="10dp"
+            android:layout_marginTop="4dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- ================= CAPACITY / LOTTERY OPTIONS ================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Capacity and lottery options"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="2dp" />
+
+        <EditText
+            android:id="@+id/editMaxSpots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Maximum entrants on waiting list (optional)"
             android:inputType="number"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="16dp" />
+            android:padding="10dp"
+            android:background="@android:drawable/edit_text" />
 
         <EditText
-            android:id="@+id/maxEntrantsEditText"
+            android:id="@+id/editLotterySampleSize"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="Number of entrants to invite (optional)"
             android:inputType="number"
-            android:hint="🎟️ Maximum entrants for waiting list (optional)"
-            android:backgroundTint="#EDE7F6"
-            android:textColor="#111"
-            android:textColorHint="#666"
-            android:layout_marginBottom="16dp" />
+            android:padding="10dp"
+            android:layout_marginTop="4dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- ================= GEOLOCATION REQUIREMENT ================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location requirement"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="2dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <CheckBox
+                android:id="@+id/checkGeoRequired"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Require entrants to share approximate location when joining"
+                android:layout_marginStart="6dp" />
+        </LinearLayout>
+
+        <!-- ================= POSTER / QR ================= -->
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Event poster"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="2dp" />
 
         <Button
-            android:id="@+id/choosePosterButton"
+            android:id="@+id/btnChoosePoster"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🖼️ Choose Poster"
-            android:backgroundTint="#9575CD"
-            android:textColor="@android:color/white"
-            android:textStyle="bold"
-            android:layout_marginBottom="12dp" />
+            android:text="Choose poster image" />
 
         <ImageView
-            android:id="@+id/imagePreview"
+            android:id="@+id/imgPosterPreview"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp"
             android:scaleType="centerCrop"
-            android:background="#B39DDB" />
+            android:visibility="gone" />
 
-        <Button
-            android:id="@+id/createEventButton"
+        <TextView
+            android:id="@+id/txtQrHint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🚀 Create Event"
-            android:backgroundTint="#7E57C2"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+            android:text="After you create this event, a unique QR code will be generated that links to this event in the app."
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginTop="8dp" />
+
+        <!-- ================= CREATE BUTTON ================= -->
+
+        <Button
+            android:id="@+id/btnCreateEvent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Create event"
+            android:layout_marginTop="20dp" />
 
     </LinearLayout>
+
 </ScrollView>

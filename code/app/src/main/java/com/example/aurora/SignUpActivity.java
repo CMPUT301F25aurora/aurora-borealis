@@ -44,35 +44,42 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
-        signupName = findViewById(R.id.Name);
-        signupEmail = findViewById(R.id.Email);
-        signupPhone = findViewById(R.id.Phone);
+        signupName     = findViewById(R.id.Name);
+        signupEmail    = findViewById(R.id.Email);
+        signupPhone    = findViewById(R.id.Phone);
         signupPassword = findViewById(R.id.Password);
         radioGroupRole = findViewById(R.id.Role);
-        signupButton = findViewById(R.id.SignUpButton);
+        signupButton   = findViewById(R.id.SignUpButton);
 
-        db = FirebaseFirestore.getInstance();
+        db    = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
         signupButton.setOnClickListener(v -> saveUser());
 
-        findViewById(R.id.backToLoginButton).setOnClickListener(v ->
-                startActivity(new Intent(SignUpActivity.this, LoginActivity.class)));
+        findViewById(R.id.backToLoginButton)
+                .setOnClickListener(v ->
+                        startActivity(new Intent(this, LoginActivity.class)));
     }
 
     private void saveUser() {
-        String name = signupName.getText().toString().trim();
-        String email = signupEmail.getText().toString().trim();
-        String phone = signupPhone.getText().toString().trim();
+        String name     = signupName.getText().toString().trim();
+        String email    = signupEmail.getText().toString().trim();
+        String phone    = signupPhone.getText().toString().trim();
         String password = signupPassword.getText().toString().trim();
-        int selectedId = radioGroupRole.getCheckedRadioButtonId();
+        int selectedId  = radioGroupRole.getCheckedRadioButtonId();
 
-        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || phone.isEmpty()) {
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+        if (name.isEmpty() || email.isEmpty()
+                || password.isEmpty() || phone.isEmpty()) {
+            Toast.makeText(this,
+                    "Please fill in all fields",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
+
         if (phone.length() != 10 || !phone.matches("\\d{10}")) {
-            Toast.makeText(this, "Phone number must be exactly 10 digits", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    "Phone number must be exactly 10 digits",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -83,24 +90,29 @@ public class SignUpActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         FirebaseUser firebaseUser = mAuth.getCurrentUser();
                         if (firebaseUser == null) {
-                            Toast.makeText(this, "Could not create account.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this,
+                                    "Could not create account.",
+                                    Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         String uid = firebaseUser.getUid();
 
                         Map<String, Object> user = new HashMap<>();
-                        user.put("name", name);
+                        user.put("name",  name);
                         user.put("email", email);
                         user.put("phone", phone);
-                        user.put("role", role);
+                        user.put("role",  role);
                         user.put("password", password);
 
-                        db.collection("users").document(uid).set(user)
-                                .addOnSuccessListener(docRef -> {
-                                    Toast.makeText(this, "Account created!", Toast.LENGTH_SHORT).show();
+                        db.collection("users").document(uid)
+                                .set(user)
+                                .addOnSuccessListener(v -> {
+                                    Toast.makeText(this,
+                                            "Account created!",
+                                            Toast.LENGTH_SHORT).show();
 
-                                    // log registration
+                                    // simple log
                                     Map<String, Object> log = new HashMap<>();
                                     log.put("type", "user_registered");
                                     log.put("message", "User registered: " + email);
@@ -110,7 +122,6 @@ public class SignUpActivity extends AppCompatActivity {
                                     log.put("userRole", role);
                                     db.collection("logs").add(log);
 
-                                    // cache basic info
                                     getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                                             .edit()
                                             .putString("user_email", email)
@@ -123,28 +134,36 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (role.equals("organizer")) {
                                         intent = new Intent(this, OrganizerActivity.class);
                                     } else {
-                                        // 👉 ENTRANT HOME = EventsActivity
+                                        // ✅ entrants -> EventsActivity
                                         intent = new Intent(this, EventsActivity.class);
                                     }
 
-                                    intent.putExtra("userName", name);
+                                    intent.putExtra("userName",  name);
                                     intent.putExtra("userEmail", email);
                                     intent.putExtra("userPhone", phone);
-                                    intent.putExtra("userRole", role);
+                                    intent.putExtra("userRole",  role);
 
                                     startActivity(intent);
                                     finish();
                                 })
                                 .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                        Toast.makeText(this,
+                                                "Error: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show());
                     } else {
                         Exception e = task.getException();
                         if (e instanceof FirebaseAuthUserCollisionException) {
-                            Toast.makeText(this, "An account with this email already exists.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this,
+                                    "An account with this email already exists.",
+                                    Toast.LENGTH_SHORT).show();
                         } else if (e != null) {
-                            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this,
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(this, "Sign up failed.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this,
+                                    "Sign up failed.",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

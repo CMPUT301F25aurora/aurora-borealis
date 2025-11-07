@@ -46,8 +46,9 @@ public class LoginActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         loginButton.setOnClickListener(v -> loginUser());
-        createAccountButton.setOnClickListener(v ->
-                startActivity(new Intent(this, SignUpActivity.class)));
+        createAccountButton.setOnClickListener(
+                v -> startActivity(new Intent(this, SignUpActivity.class))
+        );
     }
 
     private void loginUser() {
@@ -55,11 +56,13 @@ public class LoginActivity extends AppCompatActivity {
         String password = loginPassword.getText().toString().trim();
 
         if (input.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter both email/phone and password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,
+                    "Please enter both email/phone and password",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 1st pass: email + password
+        // 1) try email
         db.collection("users")
                 .whereEqualTo("email", input)
                 .whereEqualTo("password", password)
@@ -68,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (!query.isEmpty()) {
                         handleLogin(query.getDocuments().get(0));
                     } else {
-                        // 2nd pass: phone + password
+                        // 2) fallback phone
                         db.collection("users")
                                 .whereEqualTo("phone", input)
                                 .whereEqualTo("password", password)
@@ -77,35 +80,43 @@ public class LoginActivity extends AppCompatActivity {
                                     if (!phoneQuery.isEmpty()) {
                                         handleLogin(phoneQuery.getDocuments().get(0));
                                     } else {
-                                        Toast.makeText(this, "Invalid email/phone or password", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(this,
+                                                "Invalid email/phone or password",
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 })
                                 .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                        Toast.makeText(this,
+                                                "Error: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show());
                     }
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this,
+                                "Error: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
     }
 
     private void handleLogin(DocumentSnapshot doc) {
         String name = doc.getString("name");
         String email = doc.getString("email");
         String phone = doc.getString("phone");
-        String role = doc.getString("role");
+        String role  = doc.getString("role");
 
-        // Save for profile / other screens
+        // Cache basic info for profile etc.
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         sp.edit()
                 .putString("user_email", email == null ? "" : email)
-                .putString("user_name", name == null ? "" : name)
-                .putString("user_role", role == null ? "" : role)
+                .putString("user_name",  name  == null ? "" : name)
+                .putString("user_role",  role  == null ? "" : role)
                 .putString("user_doc_id", doc.getId())
                 .apply();
 
-        Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,
+                "Welcome " + (name == null ? "" : name),
+                Toast.LENGTH_SHORT).show();
 
-        // If user arrived via QR deep-link (pending event)
+        // Deep-link case (scanned QR before login)
         String pending = getSharedPreferences("aurora", MODE_PRIVATE)
                 .getString("pending_event", null);
         if (pending != null) {
@@ -121,21 +132,20 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Decide where to go
         Intent intent;
         if (role != null && role.equalsIgnoreCase("admin")) {
             intent = new Intent(this, AdminActivity.class);
         } else if (role != null && role.equalsIgnoreCase("organizer")) {
             intent = new Intent(this, OrganizerActivity.class);
         } else {
-            // 👉 ENTRANT HOME = EventsActivity USING activity_events.xml
+            // ✅ Entrants go straight to EventsActivity (no fragments)
             intent = new Intent(this, EventsActivity.class);
         }
 
-        intent.putExtra("userName", name);
+        intent.putExtra("userName",  name);
         intent.putExtra("userEmail", email);
         intent.putExtra("userPhone", phone);
-        intent.putExtra("userRole", role);
+        intent.putExtra("userRole",  role);
 
         startActivity(intent);
         finish();

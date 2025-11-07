@@ -12,17 +12,38 @@
         android:layout_height="56dp"
         android:background="#7E57C2"
         android:gravity="center_vertical"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <ImageButton
+            android:id="@+id/btnBackOrganizer"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_arrow_back_24"
+            android:tint="@android:color/white"
+            android:contentDescription="@string/back" />
 
         <TextView
             android:id="@+id/dashboardTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
             android:text="🎟️ Organizer Dashboard"
             android:textColor="@android:color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnLogoutOrganizer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:textAllCaps="false"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
     <!-- Scrollable Content -->
@@ -75,7 +96,7 @@
                 android:id="@+id/yourEventsLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your Events"
+                android:text="Events"
                 android:textStyle="bold"
                 android:textColor="#4A148C"
                 android:textSize="18sp"
@@ -91,6 +112,7 @@
         </LinearLayout>
     </ScrollView>
 
+    <!-- Bottom navigation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
@@ -128,8 +150,5 @@
             android:text="🔔"
             android:textSize="24sp" />
     </LinearLayout>
-
-
-
 
 </LinearLayout>
