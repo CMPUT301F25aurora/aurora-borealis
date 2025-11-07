@@ -1,3 +1,19 @@
+/*
+ * References for this helper:
+ *
+ * 1) source: Android Developers — "Save key-value data"
+ *    https://developer.android.com/training/data-storage/shared-preferences
+ *    https://developer.android.com/topic/libraries/architecture/datastore
+ *    https://developer.android.com/kotlin/multiplatform/datastore
+ *    Used for storing simple session values like user id, email, and role in SharedPreferences.
+ *
+ *
+ * 2) source: Android Developers — "The activity lifecycle"
+ *    https://developer.android.com/guide/components/activities/activity-lifecycle
+ *    Used to understand when to read or clear session data as Activities start or finish.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Context;
