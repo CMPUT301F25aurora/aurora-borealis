@@ -1,3 +1,17 @@
+/**
+ * LoginActivity.java
+ *
+ * Handles user authentication for the Aurora app.
+ * - Allows users to log in using either email or phone number with their password.
+ * - Verifies credentials by querying the "users" collection in Firestore.
+ * - On successful login, user details (name, email, role, etc.) are saved to SharedPreferences.
+ * - Redirects users based on their role:
+ *      - Organizers → OrganizerActivity
+ *      - Entrants → EntrantNavigationActivity
+ * - Displays appropriate Toast messages for success, invalid credentials, or errors.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -46,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Try email first
+        // First try email
         db.collection("users")
                 .whereEqualTo("email", input)
                 .whereEqualTo("password", password)
@@ -55,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (!query.isEmpty()) {
                         handleLogin(query.getDocuments().get(0));
                     } else {
-                        // Fallback: phone + password
+                        // Fallback to phone + password
                         db.collection("users")
                                 .whereEqualTo("phone", input)
                                 .whereEqualTo("password", password)
@@ -92,13 +106,28 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
 
+        // If user arrived via QR deep-link (pending event)
+        String pending = getSharedPreferences("aurora", MODE_PRIVATE)
+                .getString("pending_event", null);
+        if (pending != null) {
+            getSharedPreferences("aurora", MODE_PRIVATE)
+                    .edit()
+                    .remove("pending_event")
+                    .apply();
+
+            Intent deepLinkIntent = new Intent(this, EventDetailsActivity.class);
+            deepLinkIntent.putExtra("eventId", pending);
+            startActivity(deepLinkIntent);
+            finish();
+            return;
+        }
+
         Intent intent;
         if (role != null && role.equalsIgnoreCase("admin")) {
             intent = new Intent(this, AdminActivity.class);
         } else if (role != null && role.equalsIgnoreCase("organizer")) {
             intent = new Intent(this, OrganizerActivity.class);
         } else {
-            // default entrant flow is the pager with tabs
             intent = new Intent(this, EntrantNavigationActivity.class);
         }
 

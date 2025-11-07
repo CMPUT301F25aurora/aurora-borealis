@@ -2,6 +2,7 @@ package com.example.aurora;
 
 import android.content.Context;
 import android.content.Intent;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,8 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         this.context = context;
         this.events = events;
         this.db = FirebaseFirestore.getInstance();
-        this.uid = UserSession.getUserId(context);
+        // Simple stable user id
+        this.uid = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
     @NonNull
@@ -42,9 +44,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event e = events.get(position);
 
-        holder.eventTitle.setText(e.getTitle());
-        holder.eventDate.setText(e.getDate());
-        holder.eventLocation.setText(e.getLocation());
+        holder.eventTitle.setText(e.getTitle() != null ? e.getTitle() : "Untitled Event");
+        holder.eventDate.setText(e.getDate() != null ? e.getDate() : "");
+        holder.eventLocation.setText(e.getLocation() != null ? e.getLocation() : "");
 
         holder.btnViewDetails.setOnClickListener(v -> {
             Intent i = new Intent(context, EventDetailsActivity.class);
@@ -72,12 +74,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
-            eventImage = itemView.findViewById(R.id.eventImage);
-            eventTitle = itemView.findViewById(R.id.eventTitle);
-            eventDate = itemView.findViewById(R.id.eventDate);
+            eventImage    = itemView.findViewById(R.id.eventImage);
+            eventTitle    = itemView.findViewById(R.id.eventTitle);
+            eventDate     = itemView.findViewById(R.id.eventDate);
             eventLocation = itemView.findViewById(R.id.eventLocation);
             btnViewDetails = itemView.findViewById(R.id.btnViewDetails);
-            btnJoin = itemView.findViewById(R.id.btnJoin);
+            btnJoin        = itemView.findViewById(R.id.btnJoin);
         }
     }
 }
