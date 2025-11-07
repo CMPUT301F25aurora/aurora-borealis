@@ -1,8 +1,21 @@
 package com.example.aurora;
 
 /**
- * Lightweight model specifically for the admin event list.
+ * Represents a lightweight data model used by the Admin dashboard
+ * to display basic event information in a list.
+ *
+ * <p>This class only stores key event details like title, date, and
+ * location, which are enough for the admin interface to show and
+ * manage events efficiently without loading full event documents.</p>
+ *
+ * <p>Each {@code AdminEventItem} includes the event ID, title, date,
+ * location,category, maximum spots, and the current waiting list
+ * count.</p>
+ *
+ * <p><b>Usage:</b> Objects of this class are typically created when
+ * mapping Firestore documents into list items for the Admin view.</p>
  */
+
 public class AdminEventItem {
     private String id;
     private String title;
