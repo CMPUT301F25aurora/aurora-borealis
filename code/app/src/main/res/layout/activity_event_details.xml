@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp" />
 
-            <!-- NEW: time line -->
+            <!-- Time line -->
             <TextView
                 android:id="@+id/txtTime"
                 android:layout_width="match_parent"
@@ -55,6 +55,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp" />
+
+            <!-- NEW: Criteria + Show QR buttons -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <Button
+                    android:id="@+id/btnCriteria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Criteria"
+                    android:textAllCaps="false" />
+
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="0dp" />
+
+                <Button
+                    android:id="@+id/btnShowQr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Show QR Code"
+                    android:textAllCaps="false" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtAbout"

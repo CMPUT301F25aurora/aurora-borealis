@@ -1,30 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
-    tools:context=".EventsActivity">
+    android:orientation="vertical"
+    android:background="#F5F5F5">
 
-    <TextView
-        android:id="@+id/discoverTitle"
-        android:layout_width="wrap_content"
+    <!-- Top bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Discover Events"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:gravity="center_vertical">
 
+        <TextView
+            android:id="@+id/titleEvents"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Discover Events"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#111111" />
+
+        <!-- Filter button (top-right) -->
+        <Button
+            android:id="@+id/btnFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Filter"
+            android:textAllCaps="false"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/logoutButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
+    <!-- Search -->
     <EditText
         android:id="@+id/searchEvents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search events..."
-        android:padding="12dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="8dp"
+        android:hint="Search events"
+        android:padding="10dp"
+        android:background="@android:drawable/edit_text" />
 
+    <!-- Category filters -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,80 +61,107 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="All"
-                android:layout_margin="4dp"
-                android:backgroundTint="#6750A4"
-                android:textColor="@android:color/white" />
+                android:textAllCaps="false"
+                android:layout_margin="4dp" />
 
             <Button
                 android:id="@+id/btnMusic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Music"
-                android:layout_margin="4dp"
-                android:backgroundTint="#6750A4"
-                android:textColor="@android:color/white" />
+                android:textAllCaps="false"
+                android:layout_margin="4dp" />
 
             <Button
                 android:id="@+id/btnSports"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sports"
-                android:layout_margin="4dp"
-                android:backgroundTint="#6750A4"
-                android:textColor="@android:color/white" />
+                android:textAllCaps="false"
+                android:layout_margin="4dp" />
 
             <Button
                 android:id="@+id/btnEducation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Education"
-                android:layout_margin="4dp"
-                android:backgroundTint="#6750A4"
-                android:textColor="@android:color/white" />
+                android:textAllCaps="false"
+                android:layout_margin="4dp" />
 
             <Button
                 android:id="@+id/btnArts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Arts"
-                android:layout_margin="4dp"
-                android:backgroundTint="#6750A4"
-                android:textColor="@android:color/white" />
+                android:textAllCaps="false"
+                android:layout_margin="4dp" />
 
             <Button
                 android:id="@+id/btnTechnology"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Technology"
-                android:layout_margin="4dp"
-                android:backgroundTint="#6750A4"
-                android:textColor="@android:color/white" />
+                android:text="Tech"
+                android:textAllCaps="false"
+                android:layout_margin="4dp" />
         </LinearLayout>
     </HorizontalScrollView>
 
+    <!-- Scan QR button -->
+    <Button
+        android:id="@+id/btnScanQr"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:text="📷 Scan Event QR"
+        android:textAllCaps="false" />
+
+    <!-- Events list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEvents"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp" />
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="8dp" />
 
-    <Button
-        android:id="@+id/logoutButton"
+    <!-- Bottom nav -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Logout"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#D32F2F"
-        android:textColor="@android:color/white" />
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:gravity="center">
 
-    <include layout="@layout/view_bottom_nav_entrant"/>
+        <Button
+            android:id="@+id/navEvents"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Events"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Profile"
+            android:textAllCaps="false" />
+
+        <Button
+            android:id="@+id/navAlerts"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="Alerts"
+            android:textAllCaps="false" />
+    </LinearLayout>
+
 </LinearLayout>

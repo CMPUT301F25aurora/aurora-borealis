@@ -1,157 +1,253 @@
 package com.example.aurora;
 
-import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 
+/**
+ * Shows details for a single event.
+ * As an entrant you can:
+ *  - See title, time, location, description, stats.
+ *  - Join / leave the waiting list.
+ *  - View selection criteria (dialog).
+ *  - View the event's QR code (no scanning here).
+ */
 public class EventDetailsActivity extends AppCompatActivity {
+
+    private ImageView imgBanner;
+    private TextView txtJoinedBadge, txtTitle, txtSubtitle, txtTime, txtLocation, txtAbout, txtStats, txtRegWindow;
+    private Button btnJoinLeave;
+    private Button btnCriteria;
+    private Button btnShowQr;
+
     private FirebaseFirestore db;
     private String eventId;
-    private String uid;
+    private String userId;
+    private boolean isJoined = false;
+    private String currentDeepLink;
 
-    private ImageView banner;
-    private TextView title, subtitle, timeView, about, regWindow, joinedBadge, stats, location;
-    private Button btnJoinLeave;
-
-    private final List<String> currentWaitingList = new ArrayList<>();
-
-    @SuppressLint("MissingInflatedId")
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
-        eventId = getIntent().getStringExtra("eventId");
-        uid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
+        userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        banner = findViewById(R.id.imgBanner);
-        title = findViewById(R.id.txtTitle);
-        subtitle = findViewById(R.id.txtSubtitle);
-        timeView = findViewById(R.id.txtTime);
-        about = findViewById(R.id.txtAbout);
-        regWindow = findViewById(R.id.txtRegWindow);
-        joinedBadge = findViewById(R.id.txtJoinedBadge);
-        stats = findViewById(R.id.txtStats);
-        location = findViewById(R.id.txtLocation);
+        imgBanner = findViewById(R.id.imgBanner);
+        txtJoinedBadge = findViewById(R.id.txtJoinedBadge);
+        txtTitle = findViewById(R.id.txtTitle);
+        txtSubtitle = findViewById(R.id.txtSubtitle);
+        txtTime = findViewById(R.id.txtTime);
+        txtLocation = findViewById(R.id.txtLocation);
+        txtAbout = findViewById(R.id.txtAbout);
+        txtStats = findViewById(R.id.txtStats);
+        txtRegWindow = findViewById(R.id.txtRegWindow);
         btnJoinLeave = findViewById(R.id.btnJoinLeave);
+        btnCriteria = findViewById(R.id.btnCriteria);
+        btnShowQr = findViewById(R.id.btnShowQr);
 
-        loadEvent();
-        btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
+        // Get event ID from intent extra or deep link
+        eventId = getIntent().getStringExtra("eventId");
+        if (eventId == null) {
+            eventId = DeepLinkUtil.extractEventIdFromIntent(getIntent());
+        }
+
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(this, "No event selected", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        btnCriteria.setOnClickListener(v -> showCriteriaDialog());
+
+        btnShowQr.setOnClickListener(v -> {
+            if (currentDeepLink == null || currentDeepLink.isEmpty()) {
+                Toast.makeText(this, "No QR link saved for this event", Toast.LENGTH_SHORT).show();
+            } else {
+                showQrPopup(currentDeepLink);
+            }
+        });
+
+        loadEventDetails();
     }
 
-    private void loadEvent() {
-        db.collection("events").document(eventId)
+    private void loadEventDetails() {
+        db.collection("events")
+                .document(eventId)
                 .get()
-                .addOnSuccessListener(this::bindEvent);
+                .addOnSuccessListener(this::bindEvent)
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load event", Toast.LENGTH_SHORT).show();
+                    finish();
+                });
     }
 
-    private static String nz(String s) { return s == null ? "" : s; }
-
-    private void bindEvent(DocumentSnapshot d) {
-        if (d == null || !d.exists()) return;
-
-        // Title / Date
-        String titleStr = nz(d.getString("title"));
-        if (titleStr.isEmpty()) titleStr = nz(d.getString("name"));
-
-        String dateStr = nz(d.getString("date"));
-        if (dateStr.isEmpty()) dateStr = nz(d.getString("dateDisplay"));
-
-        title.setText(titleStr);
-        subtitle.setText(dateStr);
-
-        // Location
-        String locStr = nz(d.getString("location"));
-        if (locStr.isEmpty()) {
-            String ln = nz(d.getString("locationName"));
-            String la = nz(d.getString("locationAddress"));
-            locStr = (ln + (la.isEmpty() ? "" : ", " + la)).trim();
+    private void bindEvent(DocumentSnapshot doc) {
+        if (!doc.exists()) {
+            Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
-        location.setText(locStr);
 
-        // Description
-        String aboutStr = nz(d.getString("description"));
-        if (aboutStr.isEmpty()) aboutStr = nz(d.getString("notes"));
-        about.setText(aboutStr);
+        String title = doc.getString("title");
+        if (title == null) title = doc.getString("name");
 
-        // Time (startAt/endAt -> "h:mm a MST")
-        Timestamp startTs = d.getTimestamp("startAt");
-        Timestamp endTs = d.getTimestamp("endAt");
-        if (startTs != null && endTs != null) {
-            SimpleDateFormat tfmt = new SimpleDateFormat("h:mm a 'MST'", Locale.CANADA);
-            tfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton")); // Mountain Time
-            String s = tfmt.format(startTs.toDate());
-            String e = tfmt.format(endTs.toDate());
-            timeView.setText(s + " – " + e);
-            timeView.setVisibility(TextView.VISIBLE);
+        String description = doc.getString("description");
+        String date = doc.getString("date");
+        if (date == null) date = doc.getString("startDate");
+
+        String location = doc.getString("location");
+        String regStart = doc.getString("registrationStart");
+        String regEnd = doc.getString("registrationEnd");
+
+        Long capacity = null;
+        Long maxSpots = doc.getLong("maxSpots");
+        if (maxSpots != null) capacity = maxSpots;
+
+        if (capacity == null) {
+            String capStr = doc.getString("capacity");
+            if (capStr != null && !capStr.isEmpty()) {
+                try {
+                    capacity = Long.parseLong(capStr);
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        if (capacity == null) capacity = 0L;
+
+        List<String> waiting = (List<String>) doc.get("waitingList");
+        int joinedCount = waiting == null ? 0 : waiting.size();
+        isJoined = waiting != null && waiting.contains(userId);
+
+        currentDeepLink = doc.getString("deepLink");
+
+        txtTitle.setText(title == null ? "Event" : title);
+        txtSubtitle.setText(location == null ? "" : location);
+        txtTime.setText(date == null ? "" : date);
+        txtLocation.setText(location == null ? "" : location);
+        txtAbout.setText(description == null ? "" : description);
+        txtStats.setText("Spots: " + capacity + " • Joined: " + joinedCount);
+
+        if (regStart != null || regEnd != null) {
+            String rs = regStart == null ? "?" : regStart;
+            String re = regEnd == null ? "?" : regEnd;
+            txtRegWindow.setText("Registration: " + rs + " – " + re);
         } else {
-            timeView.setText("");
-            timeView.setVisibility(TextView.GONE);
+            txtRegWindow.setText("");
         }
 
-        // Registration window
-        Timestamp regOpen = d.getTimestamp("registrationOpensAt");
-        Timestamp regClose = d.getTimestamp("registrationClosesAt");
-        if (regOpen != null || regClose != null) {
-            SimpleDateFormat dfmt = new SimpleDateFormat("MMM d, yyyy h:mm a 'MST'", Locale.CANADA);
-            dfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton"));
-            String openS = regOpen == null ? "" : dfmt.format(regOpen.toDate());
-            String closeS = regClose == null ? "" : dfmt.format(regClose.toDate());
-            regWindow.setText(("Registration: " + openS +
-                    (closeS.isEmpty() ? "" : " — " + closeS)).trim());
-        } else {
-            regWindow.setText("");
-        }
+        updateJoinedUi();
 
-        // Waiting list
-        List<String> wl = (List<String>) d.get("waitingList");
-        currentWaitingList.clear();
-        if (wl != null) currentWaitingList.addAll(wl);
-        stats.setText("Waiting List: " + currentWaitingList.size());
-
-        boolean joined = currentWaitingList.contains(uid);
-        joinedBadge.setText(joined ? "You're on the waiting list" : "");
-        btnJoinLeave.setText(joined ? "Leave Waiting List" : "Join Waiting List");
+        // No need to pass title; toggleJoin uses only eventId/userId
+        btnJoinLeave.setOnClickListener(v -> toggleJoin());
     }
 
-    private void toggleWaitlist() {
-        boolean joined = currentWaitingList.contains(uid);
-        if (joined) {
-            db.collection("events").document(eventId)
-                    .update("waitingList", FieldValue.arrayRemove(uid))
-                    .addOnSuccessListener(v -> {
-                        currentWaitingList.remove(uid);
-                        btnJoinLeave.setText("Join Waiting List");
-                        joinedBadge.setText("");
-                        stats.setText("Waiting List: " + currentWaitingList.size());
-                    });
+    private void updateJoinedUi() {
+        if (isJoined) {
+            txtJoinedBadge.setText("✅ You are on the waiting list");
+            btnJoinLeave.setText("Leave Waiting List");
         } else {
-            db.collection("events").document(eventId)
-                    .update("waitingList", FieldValue.arrayUnion(uid))
+            txtJoinedBadge.setText("");
+            btnJoinLeave.setText("Join Waiting List");
+        }
+    }
+
+    private void toggleJoin() {
+        if (eventId == null) return;
+
+        if (!isJoined) {
+            db.collection("events")
+                    .document(eventId)
+                    .update("waitingList", FieldValue.arrayUnion(userId))
                     .addOnSuccessListener(v -> {
-                        currentWaitingList.add(uid);
-                        btnJoinLeave.setText("Leave Waiting List");
-                        joinedBadge.setText("You're on the waiting list");
-                        stats.setText("Waiting List: " + currentWaitingList.size());
-                    });
+                        isJoined = true;
+                        updateJoinedUi();
+                        Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed to join: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } else {
+            db.collection("events")
+                    .document(eventId)
+                    .update("waitingList", FieldValue.arrayRemove(userId))
+                    .addOnSuccessListener(v -> {
+                        isJoined = false;
+                        updateJoinedUi();
+                        Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e ->
+                            Toast.makeText(this, "Failed to leave: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Criteria dialog
+    // -------------------------------------------------------------------------
+
+    private void showCriteriaDialog() {
+        View view = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_criteria, null, false);
+
+        Button btnGotIt = view.findViewById(R.id.btnGotIt);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .create();
+
+        btnGotIt.setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
+    }
+
+    // -------------------------------------------------------------------------
+    // QR popup (show QR for event deepLink)
+    // -------------------------------------------------------------------------
+
+    private void showQrPopup(String deepLink) {
+        try {
+            int size = 800;
+            QRCodeWriter writer = new QRCodeWriter();
+            BitMatrix matrix = writer.encode(deepLink, BarcodeFormat.QR_CODE, size, size);
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
+
+            for (int x = 0; x < size; x++) {
+                for (int y = 0; y < size; y++) {
+                    bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                }
+            }
+
+            ImageView qrView = new ImageView(this);
+            qrView.setImageBitmap(bitmap);
+            qrView.setPadding(40, 40, 40, 40);
+
+            new AlertDialog.Builder(this)
+                    .setTitle("🎟️ Event QR Code")
+                    .setView(qrView)
+                    .setPositiveButton("Close", (d, w) -> d.dismiss())
+                    .show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_card"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_marginTop="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/adminProfileName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Sarah Johnson"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#111111" />
+
+        <TextView
+            android:id="@+id/adminProfileRole"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Entrant"
+            android:textSize="12sp"
+            android:textColor="#333333"
+            android:background="#EDE7F6"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/adminProfileEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="email@example.com"
+        android:textColor="#555555"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/adminProfileRemoveButton"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:text="Remove Profile"
+        android:textAllCaps="false"
+        android:backgroundTint="#FFCDD2"
+        android:textColor="#C62828" />
+</LinearLayout>

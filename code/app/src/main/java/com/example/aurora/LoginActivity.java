@@ -1,3 +1,17 @@
+/**
+ * LoginActivity.java
+ *
+ * Handles user authentication for the Aurora app.
+ * - Allows users to log in using either email or phone number with their password.
+ * - Verifies credentials by querying the "users" collection in Firestore.
+ * - On successful login, user details (name, email, role, etc.) are saved to SharedPreferences.
+ * - Redirects users based on their role:
+ *      - Admin     → AdminActivity
+ *      - Organizer → OrganizerActivity
+ *      - Entrant   → EventsActivity  (IMPORTANT: no more EntrantNavigationActivity)
+ * - If there is a pending deep-linked event (from QR before login), it opens EventDetailsActivity.
+ */
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -7,7 +21,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -27,15 +43,15 @@ public class LoginActivity extends AppCompatActivity {
         loginPassword = findViewById(R.id.loginPassword);
         loginButton = findViewById(R.id.loginButton);
         createAccountButton = findViewById(R.id.createAccountButton);
-
         db = FirebaseFirestore.getInstance();
 
         loginButton.setOnClickListener(v -> loginUser());
-        createAccountButton.setOnClickListener(v -> startActivity(new Intent(this, SignUpActivity.class)));
+        createAccountButton.setOnClickListener(v ->
+                startActivity(new Intent(this, SignUpActivity.class)));
     }
 
     private void loginUser() {
-        String input = loginEmail.getText().toString().trim();
+        String input = loginEmail.getText().toString().trim();    // email or phone
         String password = loginPassword.getText().toString().trim();
 
         if (input.isEmpty() || password.isEmpty()) {
@@ -43,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        // 1st pass: email + password
         db.collection("users")
                 .whereEqualTo("email", input)
                 .whereEqualTo("password", password)
@@ -51,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (!query.isEmpty()) {
                         handleLogin(query.getDocuments().get(0));
                     } else {
+                        // 2nd pass: phone + password
                         db.collection("users")
                                 .whereEqualTo("phone", input)
                                 .whereEqualTo("password", password)
@@ -76,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         String phone = doc.getString("phone");
         String role = doc.getString("role");
 
+        // Save for profile / other screens
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         sp.edit()
                 .putString("user_email", email == null ? "" : email)
@@ -86,11 +105,31 @@ public class LoginActivity extends AppCompatActivity {
 
         Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
 
+        // If user arrived via QR deep-link (pending event)
+        String pending = getSharedPreferences("aurora", MODE_PRIVATE)
+                .getString("pending_event", null);
+        if (pending != null) {
+            getSharedPreferences("aurora", MODE_PRIVATE)
+                    .edit()
+                    .remove("pending_event")
+                    .apply();
+
+            Intent deepLinkIntent = new Intent(this, EventDetailsActivity.class);
+            deepLinkIntent.putExtra("eventId", pending);
+            startActivity(deepLinkIntent);
+            finish();
+            return;
+        }
+
+        // Decide where to go
         Intent intent;
-        if ("organizer".equalsIgnoreCase(role)) {
+        if (role != null && role.equalsIgnoreCase("admin")) {
+            intent = new Intent(this, AdminActivity.class);
+        } else if (role != null && role.equalsIgnoreCase("organizer")) {
             intent = new Intent(this, OrganizerActivity.class);
         } else {
-            intent = new Intent(this, EntrantNavigationActivity.class);
+            // 👉 ENTRANT HOME = EventsActivity USING activity_events.xml
+            intent = new Intent(this, EventsActivity.class);
         }
 
         intent.putExtra("userName", name);
