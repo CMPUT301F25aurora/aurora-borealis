@@ -14,6 +14,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+/**
+ * OrganizerEventDetailsActivity.java
+ *
+ * Displays detailed information for a specific event created by the organizer.
+ * - Loads event data from Firestore and shows title, date, category, location, and capacity.
+ * - Displays the registration window and current waiting list of entrants.
+ * - Ensures only the event creator (organizer) can access their event details.
+ * - Provides a simple back button for navigation.
+ */
 
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 

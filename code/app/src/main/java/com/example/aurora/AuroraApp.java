@@ -4,6 +4,12 @@ import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.os.Build;
+/**
+ * Application class for the Aurora app.
+ *
+ * <p>Used to initialize global settings and create the notification
+ * channel for sending lottery result updates to users.</p>
+ */
 
 public class AuroraApp extends Application {
     public static final String CHANNEL_WINNER = "winner_updates";

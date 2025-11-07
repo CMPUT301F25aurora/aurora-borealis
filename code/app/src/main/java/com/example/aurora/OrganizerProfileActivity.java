@@ -16,6 +16,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+/**
+ * OrganizerProfileActivity.java
+ *
+ * Displays the organizer’s profile information in the Aurora app.
+ * - Shows name, email, phone, and role details passed from the login screen.
+ * - Fetches additional stats like the number of active events from Firestore.
+ * - Includes navigation back to the organizer dashboard.
+ * - Provides an option to permanently delete the organizer’s account.
+ */
 
 public class OrganizerProfileActivity extends AppCompatActivity {
 

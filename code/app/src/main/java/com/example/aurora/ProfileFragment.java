@@ -34,6 +34,16 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
+/**
+ * ProfileFragment.java
+ *
+ * Fragment that displays and manages the entrant’s profile in the Aurora app.
+ * - Loads user data (name, email, phone, role, stats) from Firestore.
+ * - Allows editing and saving profile details with validation.
+ * - Lets users toggle notification settings on or off.
+ * - Supports deleting the account and returning to the login screen.
+ * - Automatically creates a new profile if one does not exist.
+ */
 
 public class ProfileFragment extends Fragment {
 
