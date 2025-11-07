@@ -52,8 +52,8 @@ public class AdminActivity extends AppCompatActivity {
         countImages = findViewById(R.id.textImageCount);
         countLogs   = findViewById(R.id.textLogCount);
 
-        sectionTitle   = findViewById(R.id.textSectionTitle);
-        listContainer  = findViewById(R.id.adminListContainer);
+        sectionTitle  = findViewById(R.id.textSectionTitle);
+        listContainer = findViewById(R.id.adminListContainer);
 
         tabEvents   = findViewById(R.id.tabEvents);
         tabProfiles = findViewById(R.id.tabProfiles);
@@ -367,11 +367,36 @@ public class AdminActivity extends AppCompatActivity {
         TextView subtitleView = card.findViewById(R.id.adminLogSubtitle);
         TextView timeView     = card.findViewById(R.id.adminLogTime);
 
+        String type    = nz(doc.getString("type"));
         String title   = nz(doc.getString("title"));
         String message = nz(doc.getString("message"));
         Timestamp ts   = doc.getTimestamp("timestamp");
 
-        titleView.setText(title.isEmpty() ? "Log" : title);
+        // Derive a nice title if one isn't stored
+        if (title.isEmpty()) {
+            switch (type) {
+                case "event_created":
+                    title = "Event created";
+                    break;
+                case "event_removed":
+                    title = "Event removed";
+                    break;
+                case "profile_removed":
+                    title = "Profile removed";
+                    break;
+                case "user_registered":
+                    title = "User registered";
+                    break;
+                case "notification_sent":
+                    title = "Notification sent";
+                    break;
+                default:
+                    title = "Log";
+                    break;
+            }
+        }
+
+        titleView.setText(title);
         subtitleView.setText(message);
 
         if (ts != null) {
@@ -481,6 +506,7 @@ public class AdminActivity extends AppCompatActivity {
                 for (DocumentSnapshot doc : logDocs) {
                     String title = nz(doc.getString("title"));
                     String message = nz(doc.getString("message"));
+
                     if (title.toLowerCase().contains(query) ||
                             message.toLowerCase().contains(query)) {
                         filtered.add(doc);
@@ -490,7 +516,7 @@ public class AdminActivity extends AppCompatActivity {
                 break;
             }
             case IMAGES:
-                // we already early-return in showSearchDialog()
+                // not searchable yet
                 break;
         }
     }
@@ -522,5 +548,3 @@ public class AdminActivity extends AppCompatActivity {
         return days + " days ago";
     }
 }
-
-

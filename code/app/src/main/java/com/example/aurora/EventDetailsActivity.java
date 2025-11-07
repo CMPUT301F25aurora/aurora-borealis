@@ -1,8 +1,10 @@
 package com.example.aurora;
 
 import android.annotation.SuppressLint;
-import android.graphics.Color;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -20,6 +22,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,6 +40,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ImageView banner;
     private TextView title, subtitle, timeView, about, regWindow, joinedBadge, stats, location;
     private Button btnJoinLeave;
+    private Button btnScanQr;
 
     private final List<String> currentWaitingList = new ArrayList<>();
 
@@ -45,7 +50,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
-        // Criteria button (you add it in XML as btnCriteria)
+        // Lottery criteria button
         View criteriaBtn = findViewById(R.id.btnCriteria);
         if (criteriaBtn != null) {
             criteriaBtn.setOnClickListener(v -> showCriteriaDialog());
@@ -66,54 +71,70 @@ public class EventDetailsActivity extends AppCompatActivity {
         uid = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         db = FirebaseFirestore.getInstance();
 
-        banner       = findViewById(R.id.imgBanner);
-        title        = findViewById(R.id.txtTitle);
-        subtitle     = findViewById(R.id.txtSubtitle);
-        timeView     = findViewById(R.id.txtTime);
-        about        = findViewById(R.id.txtAbout);
-        regWindow    = findViewById(R.id.txtRegWindow);
-        joinedBadge  = findViewById(R.id.txtJoinedBadge);
-        stats        = findViewById(R.id.txtStats);
-        location     = findViewById(R.id.txtLocation);
+        banner = findViewById(R.id.imgBanner);
+        title = findViewById(R.id.txtTitle);
+        subtitle = findViewById(R.id.txtSubtitle);
+        timeView = findViewById(R.id.txtTime);
+        about = findViewById(R.id.txtAbout);
+        regWindow = findViewById(R.id.txtRegWindow);
+        joinedBadge = findViewById(R.id.txtJoinedBadge);
+        stats = findViewById(R.id.txtStats);
+        location = findViewById(R.id.txtLocation);
         btnJoinLeave = findViewById(R.id.btnJoinLeave);
+        btnScanQr = findViewById(R.id.btnScanQr);
 
         loadEvent();
+
         btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
+
+        // Criteria button (again, just to be safe)
+        Button btnCriteria = findViewById(R.id.btnCriteria);
+        if (btnCriteria != null) {
+            btnCriteria.setOnClickListener(v -> showCriteriaDialog());
+        }
+
+        // Scan QR button on details screen
+        if (btnScanQr != null) {
+            btnScanQr.setOnClickListener(v -> startQrScan());
+        }
     }
 
+    // ---------------------------------------------------
+    // Lottery criteria dialog
+    // ---------------------------------------------------
+
     private void showCriteriaDialog() {
-        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_criteria, null, false);
+        View dialogView = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_criteria, null, false);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
                 .create();
-
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
-
         View close = dialogView.findViewById(R.id.btnGotIt);
-        if (close != null) {
-            close.setOnClickListener(v -> dialog.dismiss());
-        }
-
+        if (close != null) close.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
+
+    // ---------------------------------------------------
+    // Load event data
+    // ---------------------------------------------------
 
     private void loadEvent() {
         db.collection("events").document(eventId)
                 .get()
-                .addOnSuccessListener(this::bindEvent);
+                .addOnSuccessListener(this::bindEvent)
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error loading event", Toast.LENGTH_SHORT).show());
     }
 
-    private static String nz(String s) {
-        return s == null ? "" : s;
-    }
+    private static String nz(String s) { return s == null ? "" : s; }
 
     private void bindEvent(DocumentSnapshot d) {
         if (d == null || !d.exists()) return;
 
-        // Title / Date
         String titleStr = nz(d.getString("title"));
         if (titleStr.isEmpty()) titleStr = nz(d.getString("name"));
 
@@ -123,7 +144,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         title.setText(titleStr);
         subtitle.setText(dateStr);
 
-        // Location
         String locStr = nz(d.getString("location"));
         if (locStr.isEmpty()) {
             String ln = nz(d.getString("locationName"));
@@ -132,17 +152,15 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
         location.setText(locStr);
 
-        // Description
         String aboutStr = nz(d.getString("description"));
         if (aboutStr.isEmpty()) aboutStr = nz(d.getString("notes"));
         about.setText(aboutStr);
 
-        // Time (startAt/endAt -> "h:mm a MST")
         Timestamp startTs = d.getTimestamp("startAt");
         Timestamp endTs = d.getTimestamp("endAt");
         if (startTs != null && endTs != null) {
             SimpleDateFormat tfmt = new SimpleDateFormat("h:mm a 'MST'", Locale.CANADA);
-            tfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton"));
+            tfmt.setTimeZone(TimeZone.getTimeZone("America/Edmonton")); // Mountain Time
             String s = tfmt.format(startTs.toDate());
             String e = tfmt.format(endTs.toDate());
             timeView.setText(s + " – " + e);
@@ -152,7 +170,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             timeView.setVisibility(TextView.GONE);
         }
 
-        // Registration window
         Timestamp regOpen = d.getTimestamp("registrationOpensAt");
         Timestamp regClose = d.getTimestamp("registrationClosesAt");
         if (regOpen != null || regClose != null) {
@@ -166,7 +183,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             regWindow.setText("");
         }
 
-        // Waiting list
         List<String> wl = (List<String>) d.get("waitingList");
         currentWaitingList.clear();
         if (wl != null) currentWaitingList.addAll(wl);
@@ -176,6 +192,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         joinedBadge.setText(joined ? "You're on the waiting list" : "");
         btnJoinLeave.setText(joined ? "Leave Waiting List" : "Join Waiting List");
     }
+
+    // ---------------------------------------------------
+    // Join / leave waiting list
+    // ---------------------------------------------------
 
     private void toggleWaitlist() {
         boolean joined = currentWaitingList.contains(uid);
@@ -197,6 +217,53 @@ public class EventDetailsActivity extends AppCompatActivity {
                         joinedBadge.setText("You're on the waiting list");
                         stats.setText("Waiting List: " + currentWaitingList.size());
                     });
+        }
+    }
+
+    // ---------------------------------------------------
+    // QR scanning from Event Details
+    // ---------------------------------------------------
+
+    private void startQrScan() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
+        integrator.setPrompt("Scan Aurora event QR");
+        integrator.setBeepEnabled(true);
+        integrator.setBarcodeImageEnabled(false);
+        integrator.initiateScan();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Scan cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                handleScannedText(result.getContents());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void handleScannedText(String text) {
+        try {
+            // Treat the scanned text as a deep link and reuse DeepLinkUtil logic
+            Intent tmp = new Intent(Intent.ACTION_VIEW, Uri.parse(text));
+            String scannedId = DeepLinkUtil.extractEventIdFromIntent(tmp);
+
+            if (scannedId == null || scannedId.isEmpty()) {
+                Toast.makeText(this, "Invalid Aurora event QR", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Update this screen to show the new event
+            this.eventId = scannedId;
+            loadEvent();
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to handle QR: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 }

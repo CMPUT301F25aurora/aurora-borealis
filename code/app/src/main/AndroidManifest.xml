@@ -5,6 +5,9 @@
     <!-- Needed for Firestore / network -->
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!-- Needed for QR scanner camera access -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -26,25 +29,63 @@
         </activity>
 
         <!-- Auth -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".SignUpActivity" android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="false" />
 
         <!-- Entrant side -->
-        <activity android:name=".EventsActivity" android:exported="false" />
-        <activity android:name=".EventDetailsActivity" android:exported="false" />
-        <activity android:name=".EntrantActivity" android:exported="false" />
-        <activity android:name=".EntrantNavigationActivity" android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".AlertsActivity" android:exported="false" />
+        <activity
+            android:name=".EventsActivity"
+            android:exported="false" />
+
+        <!-- Event details: also handles deep links like aurora://event/<id> -->
+        <activity
+            android:name=".EventDetailsActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="aurora"
+                    android:host="event" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".EntrantActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EntrantNavigationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AlertsActivity"
+            android:exported="false" />
 
         <!-- Organizer side -->
-        <activity android:name=".OrganizerActivity" android:exported="false" />
-        <activity android:name=".CreateEventActivity" android:exported="false" />
-        <activity android:name=".OrganizerProfileActivity" android:exported="false" />
-        <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
+        <activity
+            android:name=".OrganizerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CreateEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerNotificationsActivity"
+            android:exported="false" />
 
         <!-- Admin -->
-        <activity android:name=".AdminActivity" android:exported="false" />
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false" />
 
     </application>
 

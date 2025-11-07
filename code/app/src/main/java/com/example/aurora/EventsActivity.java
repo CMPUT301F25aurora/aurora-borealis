@@ -15,11 +15,13 @@
 package com.example.aurora;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +46,7 @@ public class EventsActivity extends AppCompatActivity {
 
     private Button btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology;
     private Button navEvents, navProfile, navAlerts;
+    private Button btnScanQr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +67,8 @@ public class EventsActivity extends AppCompatActivity {
         navEvents = findViewById(R.id.navEvents);
         navProfile = findViewById(R.id.navProfile);
         navAlerts = findViewById(R.id.navAlerts);
+
+        btnScanQr = findViewById(R.id.btnScanQr);   // make sure this exists in activity_events.xml
 
         recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
         adapter = new EventsAdapter(this, eventList);
@@ -88,6 +95,10 @@ public class EventsActivity extends AppCompatActivity {
         navAlerts.setOnClickListener(v ->
                 startActivity(new Intent(this, AlertsActivity.class)));
 
+        if (btnScanQr != null) {
+            btnScanQr.setOnClickListener(v -> startQrScan());
+        }
+
         loadEvents(null);
     }
 
@@ -96,7 +107,6 @@ public class EventsActivity extends AppCompatActivity {
         if (category != null) {
             q = q.whereEqualTo("category", category);
         }
-
         q.get()
                 .addOnSuccessListener(query -> {
                     eventList.clear();
@@ -109,5 +119,57 @@ public class EventsActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error loading events", Toast.LENGTH_SHORT).show());
+    }
+
+    // QR scanning (if you ever use this Activity directly)
+    private void startQrScan() {
+        IntentIntegrator integrator = new IntentIntegrator(this);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE); // QR only
+        integrator.setPrompt("Scan Aurora event QR");
+        integrator.setBeepEnabled(true);
+        integrator.setBarcodeImageEnabled(false);
+        integrator.initiateScan();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result != null) {
+            if (result.getContents() == null) {
+                Toast.makeText(this, "Scan cancelled", Toast.LENGTH_SHORT).show();
+            } else {
+                handleScannedText(result.getContents());
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void handleScannedText(String text) {
+        try {
+            Uri uri = Uri.parse(text);
+            if ("aurora".equalsIgnoreCase(uri.getScheme())
+                    && "event".equalsIgnoreCase(uri.getHost())) {
+
+                String eventId = null;
+                if (uri.getPath() != null && uri.getPath().length() > 1) {
+                    eventId = uri.getPath().substring(1); // /<id>
+                } else {
+                    eventId = uri.getQueryParameter("id");
+                }
+
+                if (eventId != null && !eventId.isEmpty()) {
+                    Intent i = new Intent(this, EventDetailsActivity.class);
+                    i.putExtra("eventId", eventId);
+                    startActivity(i);
+                } else {
+                    Toast.makeText(this, "Invalid Aurora event QR", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Not an Aurora event QR", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to handle QR: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 }

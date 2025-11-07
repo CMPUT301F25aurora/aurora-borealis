@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -43,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp" />
 
-            <!-- Time line -->
+            <!-- Time row -->
             <TextView
                 android:id="@+id/txtTime"
                 android:layout_width="match_parent"
@@ -69,21 +68,39 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp" />
 
-            <!-- Lottery criteria button (used by EventDetailsActivity -> btnCriteria) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCriteria"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ℹ️ Lottery Criteria"
-                android:textAllCaps="false"
-                android:layout_marginTop="8dp"
-                app:cornerRadius="12dp" />
-
             <TextView
                 android:id="@+id/txtRegWindow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
+
+            <!-- Row: Lottery Criteria + Scan QR -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <Button
+                    android:id="@+id/btnCriteria"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="📋 Lottery Criteria"
+                    android:textAllCaps="false" />
+
+                <Space
+                    android:layout_width="12dp"
+                    android:layout_height="0dp" />
+
+                <Button
+                    android:id="@+id/btnScanQr"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="📷 Scan QR"
+                    android:textAllCaps="false" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnJoinLeave"

@@ -46,6 +46,17 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <!-- Scan QR button for entrants -->
+    <Button
+        android:id="@+id/btnScanQr"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:text="📷  Scan Event QR"
+        android:textAllCaps="false"
+        android:backgroundTint="#6750A4"
+        android:textColor="@android:color/white" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEvents"
         android:layout_width="match_parent"
