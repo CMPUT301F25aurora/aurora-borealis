@@ -1,49 +1,3 @@
-package com.example.aurora;
-
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.Toast;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * CreateEventActivity
- *
- * Covers organizer stories on the creation side:
- * - US 02.01.01: create event + generate unique QR that links to event in app.
- * - US 02.01.04: set registration period.
- * - US 02.02.03: toggle geolocation requirement for event.
- * - US 02.03.01: optionally limit waiting list size (maxSpots).
- * - US 02.04.01 / 02.04.02: upload/update event poster.
- * - US 02.05.02: specify how many entrants to sample for invitations.
- */
-
 /*
  * Sources / citations for CreateEventActivity.
  *
@@ -131,6 +85,54 @@ import java.util.Map;
  * note: Helped with naming helper methods, clarifying validation messages, and
  *       writing these citation notes, not with Firebase, ZXing, or navigation APIs.
  */
+
+package com.example.aurora;
+
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * CreateEventActivity
+ *
+ * Covers organizer stories on the creation side:
+ * - US 02.01.01: create event + generate unique QR that links to event in app.
+ * - US 02.01.04: set registration period.
+ * - US 02.02.03: toggle geolocation requirement for event.
+ * - US 02.03.01: optionally limit waiting list size (maxSpots).
+ * - US 02.04.01 / 02.04.02: upload/update event poster.
+ * - US 02.05.02: specify how many entrants to sample for invitations.
+ */
+
+
 
 
 

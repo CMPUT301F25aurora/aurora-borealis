@@ -1,3 +1,19 @@
+/*
+ * References for this fragment:
+ *
+ * 1) source: Android Developers — "Fragments"
+ *    https://developer.android.com/guide/fragments
+ *    Used for basic fragment lifecycle and inflating the profile layout inside a fragment.
+ *
+ * 2) source: Firebase docs — "Get data with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/get-data
+ *    Used for loading the user profile document while inside a Fragment.
+ *
+ * 3) author: Stack Overflow user — "How to correctly implement onCreateView in a Fragment"
+ *    https://stackoverflow.com/questions/6484708/android-fragments-and-oncreateview
+ *    Used for the pattern of inflating a view and wiring up UI controls in onCreateView.
+ */
+
 package com.example.aurora;
 
 /**
@@ -45,21 +61,7 @@ import java.util.Map;
  * - Automatically creates a new profile if one does not exist.
  */
 
-/*
- * References for this fragment:
- *
- * 1) source: Android Developers — "Fragments"
- *    https://developer.android.com/guide/fragments
- *    Used for basic fragment lifecycle and inflating the profile layout inside a fragment.
- *
- * 2) source: Firebase docs — "Get data with Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/query-data/get-data
- *    Used for loading the user profile document while inside a Fragment.
- *
- * 3) author: Stack Overflow user — "How to correctly implement onCreateView in a Fragment"
- *    https://stackoverflow.com/questions/6484708/android-fragments-and-oncreateview
- *    Used for the pattern of inflating a view and wiring up UI controls in onCreateView.
- */
+
 
 public class ProfileFragment extends Fragment {
 

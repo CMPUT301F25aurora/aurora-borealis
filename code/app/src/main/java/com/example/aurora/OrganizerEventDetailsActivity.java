@@ -1,3 +1,23 @@
+/*
+ * References for this screen:
+ *
+ * 1) source: Firebase docs — "Get data with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/get-data
+ *    Used for loading a single event document and its fields for organizer view.
+ *
+ * 2) source: Firebase docs — "Add data to Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/manage-data/add-data
+ *    Used for updating event fields such as description or dates from this screen.
+ *
+ * 3) author: Stack Overflow user — "How to generate a QR Code for an Android application?"
+ *    https://stackoverflow.com/questions/8800919/how-to-generate-a-qr-code-for-an-android-application
+ *    Used for the QRCodeWriter pattern if the organizer screen shows its own QR code.
+ *
+ * 4) source: Android Developers — "Dialogs"
+ *    https://developer.android.com/develop/ui/views/components/dialogs
+ *    Used for confirmation dialogs when organizer performs actions like delete or close event.
+ */
+
 package com.example.aurora;
 
 import android.os.Bundle;
@@ -24,25 +44,7 @@ import java.util.List;
  * - Provides a simple back button for navigation.
  */
 
-/*
- * References for this screen:
- *
- * 1) source: Firebase docs — "Get data with Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/query-data/get-data
- *    Used for loading a single event document and its fields for organizer view.
- *
- * 2) source: Firebase docs — "Add data to Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/manage-data/add-data
- *    Used for updating event fields such as description or dates from this screen.
- *
- * 3) author: Stack Overflow user — "How to generate a QR Code for an Android application?"
- *    https://stackoverflow.com/questions/8800919/how-to-generate-a-qr-code-for-an-android-application
- *    Used for the QRCodeWriter pattern if the organizer screen shows its own QR code.
- *
- * 4) source: Android Developers — "Dialogs"
- *    https://developer.android.com/develop/ui/views/components/dialogs
- *    Used for confirmation dialogs when organizer performs actions like delete or close event.
- */
+
 
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 

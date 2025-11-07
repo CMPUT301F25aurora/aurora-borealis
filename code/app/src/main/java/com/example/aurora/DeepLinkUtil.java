@@ -1,14 +1,3 @@
-package com.example.aurora;
-
-import android.content.Intent;
-import android.net.Uri;
-/**
- * Utility class for handling deep links in the Aurora app.
- *
- * Extracts the event ID from intents that use the custom
- * aurora://event/<id> deep link format.
- */
-
 /*
  * References:
  *
@@ -20,6 +9,19 @@ import android.net.Uri;
  *    https://developer.android.com/training/app-links/create-deeplinks
  *    Used as a reference for how deep links pass IDs in the path or query parameters and how activities receive them.
  */
+
+package com.example.aurora;
+
+import android.content.Intent;
+import android.net.Uri;
+/**
+ * Utility class for handling deep links in the Aurora app.
+ *
+ * Extracts the event ID from intents that use the custom
+ * aurora://event/<id> deep link format.
+ */
+
+
 
 
 public class DeepLinkUtil {

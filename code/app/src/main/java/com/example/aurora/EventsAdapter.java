@@ -1,3 +1,20 @@
+/*
+ * References:
+ *
+ * 1) Android Developers — "Create dynamic lists with RecyclerView"
+ *    https://developer.android.com/develop/ui/views/layout/recyclerview
+ *    Used as a reference for implementing RecyclerView.Adapter, ViewHolder, and binding data into item views.
+ *
+ * 2) author: Stack Overflow user — "Simple Android RecyclerView example"
+ *    https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
+ *    Used as a reference for inflating row layouts, holding view references, and handling item click callbacks.
+ *
+ * 3) Android Developers — "Settings.Secure"
+ *    https://developer.android.com/reference/android/provider/Settings.Secure
+ *    Used as a reference for using Settings.Secure.ANDROID_ID when joining events with a device-based identifier.
+ */
+
+
 package com.example.aurora;
 
 import android.content.Context;
@@ -32,22 +49,6 @@ import java.util.List;
  *       2) FirebaseAuth currentUser.getEmail(), or
  *       3) ANDROID_ID (device id) as a final fallback.
  * - Optionally enforces a max size from events/{id}.maxSpots (if that field exists).
- */
-
-/*
- * References:
- *
- * 1) Android Developers — "Create dynamic lists with RecyclerView"
- *    https://developer.android.com/develop/ui/views/layout/recyclerview
- *    Used as a reference for implementing RecyclerView.Adapter, ViewHolder, and binding data into item views.
- *
- * 2) author: Stack Overflow user — "Simple Android RecyclerView example"
- *    https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
- *    Used as a reference for inflating row layouts, holding view references, and handling item click callbacks.
- *
- * 3) Android Developers — "Settings.Secure"
- *    https://developer.android.com/reference/android/provider/Settings.Secure
- *    Used as a reference for using Settings.Secure.ANDROID_ID when joining events with a device-based identifier.
  */
 
 

@@ -1,10 +1,3 @@
-/**
- * This activity shows a list of notifications for the organizer.
- * - Loads notifications from Firestore (most recent first).
- * - Displays each notification’s title, message, and time.
- * - If there are no notifications, shows a default message.
- */
-
 /*
  * References for this screen:
  *
@@ -20,6 +13,15 @@
  *    https://firebase.google.com/docs/firestore/manage-data/add-data
  *    Used for logging notification info in Firestore so the admin log view can show it later.
  */
+
+/**
+ * This activity shows a list of notifications for the organizer.
+ * - Loads notifications from Firestore (most recent first).
+ * - Displays each notification’s title, message, and time.
+ * - If there are no notifications, shows a default message.
+ */
+
+
 
 
 package com.example.aurora;
