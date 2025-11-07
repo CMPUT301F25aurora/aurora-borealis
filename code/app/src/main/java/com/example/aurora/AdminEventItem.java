@@ -8,7 +8,7 @@ package com.example.aurora;
  * location, which are enough for the admin interface to show and
  * manage events efficiently without loading full event documents.</p>
  *
- * <p>Each {@code AdminEventItem} includes the event ID, title, date,
+ * <p>Each AdminEventItem includes the event ID, title, date,
  * location,category, maximum spots, and the current waiting list
  * count.</p>
  *
