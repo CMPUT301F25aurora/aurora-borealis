@@ -60,7 +60,7 @@ public class EventsActivity extends AppCompatActivity {
         navAlerts = findViewById(R.id.navAlerts);
 
         recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new EventsAdapter(this, eventList);
+        adapter = new EventsAdapter(this, eventList, false); // ✅ Entrant view
         recyclerEvents.setAdapter(adapter);
 
         logoutButton.setOnClickListener(v -> {
