@@ -89,8 +89,12 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         loadEvent();
         btnJoinLeave.setOnClickListener(v -> toggleWaitlist());
-        Button btnCriteria = findViewById(R.id.btnCriteria);
-        btnCriteria.setOnClickListener(v -> showCriteriaDialog());
+        // QR Code button
+        Button btnShowQR = findViewById(R.id.btnShowQR);
+        if (btnShowQR != null) {
+            btnShowQR.setOnClickListener(v -> fetchAndShowQr());
+        }
+
     }
 
     private void showCriteriaDialog() {
@@ -198,4 +202,58 @@ public class EventDetailsActivity extends AppCompatActivity {
                     });
         }
     }
+    private void fetchAndShowQr() {
+        db.collection("events").document(eventId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
+                        String deepLink = doc.getString("deepLink");
+                        showQrPopup(deepLink);
+                    } else {
+                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error fetching QR: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void showQrPopup(String deepLink) {
+        if (deepLink == null || deepLink.isEmpty()) {
+            Toast.makeText(this, "No QR code available for this event", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            com.google.zxing.qrcode.QRCodeWriter writer = new com.google.zxing.qrcode.QRCodeWriter();
+            com.google.zxing.common.BitMatrix bitMatrix = writer.encode(
+                    deepLink,
+                    com.google.zxing.BarcodeFormat.QR_CODE,
+                    800, 800
+            );
+
+            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(800, 800, android.graphics.Bitmap.Config.RGB_565);
+            for (int x = 0; x < 800; x++) {
+                for (int y = 0; y < 800; y++) {
+                    bitmap.setPixel(x, y, bitMatrix.get(x, y)
+                            ? android.graphics.Color.BLACK
+                            : android.graphics.Color.WHITE);
+                }
+            }
+
+            android.widget.ImageView qrView = new android.widget.ImageView(this);
+            qrView.setImageBitmap(bitmap);
+            qrView.setPadding(40, 40, 40, 40);
+
+            new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("🎟️ Event QR Code")
+                    .setView(qrView)
+                    .setPositiveButton("Close", (d, w) -> d.dismiss())
+                    .show();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

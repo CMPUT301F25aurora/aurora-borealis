@@ -13,6 +13,7 @@
 
 package com.example.aurora;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -113,15 +114,22 @@ public class CreateEventActivity extends AppCompatActivity {
                     linkData.put("deepLink", deepLink);
 
                     db.collection("events").document(eventId)
-                            .set(linkData, SetOptions.merge());
+                            .set(linkData, SetOptions.merge())
+                            .addOnSuccessListener(aVoid -> {
+                                // Navigate back to Organizer Dashboard and refresh
+                                Intent intent = new Intent(CreateEventActivity.this, OrganizerActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish(); // closes CreateEventActivity
+                            });
 
                     // Show QR code popup
-                    showQrPopup(deepLink);
+                    //showQrPopup(deepLink);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
+    /**
     // Generates QR bitmap and shows it in a popup dialog
     private void showQrPopup(String deepLink) {
         if (deepLink == null || deepLink.isEmpty()) {
@@ -153,6 +161,6 @@ public class CreateEventActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
         }
-    }
+    }**/
 
 }

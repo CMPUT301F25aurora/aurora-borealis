@@ -60,7 +60,7 @@ public class EventsFragment extends Fragment {
         btnTechnology = v.findViewById(R.id.btnTechnology);
 
         recyclerEvents.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new EventsAdapter(requireContext(), eventList);
+        adapter = new EventsAdapter(requireContext(), eventList, false);
         recyclerEvents.setAdapter(adapter);
 
         logoutButton.setOnClickListener(x -> {
