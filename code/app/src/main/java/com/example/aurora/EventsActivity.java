@@ -1,3 +1,32 @@
+/*
+ * References for this screen:
+ *
+ * 1) author: Stack Overflow user — "Simple Android RecyclerView example"
+ *    https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
+ *    Used as a model for setting up RecyclerView with a LayoutManager and Adapter to show events.
+ *
+ * 2) source: Android Developers — "Create dynamic lists with RecyclerView"
+ *    https://developer.android.com/develop/ui/views/layout/recyclerview
+ *    Used for general RecyclerView structure and best practices.
+ *
+ * 3) source: Firebase docs — "Get data with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/get-data
+ *    Used for loading the events collection into memory.
+ *
+ * 4) source: Firebase docs — "Perform simple and compound queries in Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/queries
+ *    Used for filtering and ordering events by fields like category or date.
+ *
+ * 5) author: Stack Overflow user — "How do I pass data between Activities in Android application?"
+ *    https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
+ *    Used for passing the selected event id via Intent extras to EventDetailsActivity.
+ *
+ * 6) source: ChatGPT (OpenAI assistant)
+ *    Used only to shorten some comments and pick simple method names for filters and click handlers.
+ */
+
+
+
 package com.example.aurora;
 
 import android.content.Intent;
