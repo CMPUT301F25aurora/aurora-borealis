@@ -8,6 +8,7 @@ package com.example.aurora;
  */
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.net.Uri;
@@ -25,7 +26,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
-
+        FirebaseAuth.getInstance().signOut();
         root = findViewById(R.id.welcomeRoot);
         tapAnywhere = findViewById(R.id.tapAnywhere);
 
@@ -43,7 +44,11 @@ public class WelcomeActivity extends AppCompatActivity {
         }
 
         // IF USER ALREADY LOGGED IN, GO STRAIGHT TO HOME / EVENT
-        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        String role = sp.getString("user_role", null);
+
+        if (role != null && !role.isEmpty()) {
+            // user is logged in
             String pending = getSharedPreferences("aurora", MODE_PRIVATE)
                     .getString("pending_event", null);
 
@@ -57,7 +62,18 @@ public class WelcomeActivity extends AppCompatActivity {
                 finish();
                 return;
             }
+
+            // route to correct dashboard if no pending event
+            Intent next;
+            if (role.equalsIgnoreCase("organizer")) next = new Intent(this, OrganizerActivity.class);
+            else if (role.equalsIgnoreCase("admin")) next = new Intent(this, AdminActivity.class);
+            else next = new Intent(this, EventsActivity.class);
+
+            startActivity(next);
+            finish();
+            return;
         }
+
 
         View.OnClickListener goToLogin = v -> {
             Intent i = new Intent(WelcomeActivity.this, LoginActivity.class);
