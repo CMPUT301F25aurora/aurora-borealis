@@ -26,6 +26,22 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * - Provides an option to permanently delete the organizer’s account.
  */
 
+/*
+ * References for this screen:
+ *
+ * 1) source: Firebase docs — "Get data with Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/query-data/get-data
+ *    Used for loading the organizer's profile document from Firestore.
+ *
+ * 2) source: Firebase docs — "Add data to Cloud Firestore"
+ *    https://firebase.google.com/docs/firestore/manage-data/add-data
+ *    Used for saving changed profile fields such as name or phone.
+ *
+ * 3) author: Stack Overflow user — "How to update a specific document in Firestore"
+ *    https://stackoverflow.com/questions/46597327/firebase-firestore-how-to-update-a-document
+ *    Used for the pattern of calling update(...) on a Firestore document reference.
+ */
+
 public class OrganizerProfileActivity extends AppCompatActivity {
 
     private ImageView backButton;

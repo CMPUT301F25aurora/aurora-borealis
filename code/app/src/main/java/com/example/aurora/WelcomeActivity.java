@@ -7,6 +7,22 @@ package com.example.aurora;
  * When the user taps anywhere on the screen, it navigates to LoginActivity.
  */
 
+/*
+ * References for this screen:
+ *
+ * 1) source: Android Developers — "Understand the Activity lifecycle"
+ *    https://developer.android.com/guide/components/activities/activity-lifecycle
+ *    Used for setting up the first screen and cleanly moving to login or sign-up flows.
+ *
+ * 2) author: Stack Overflow user — "How to start new activity on button click"
+ *    https://stackoverflow.com/questions/4186021/how-to-start-new-activity-on-button-click
+ *    Used for wiring up buttons that open LoginActivity or SignUpActivity with Intents.
+ *
+ * 3) source: Android Developers — "Intent and Intent Filters"
+ *    https://developer.android.com/guide/components/intents-filters
+ *    Used for understanding how explicit Intents are used to navigate between screens.
+ */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

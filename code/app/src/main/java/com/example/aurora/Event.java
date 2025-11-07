@@ -11,6 +11,20 @@ import java.util.List;
  * NOTE: We intentionally DO NOT have any field or getter/setter called "capacity"
  * so Firestore won't try to map the legacy "capacity" field and crash.
  */
+
+
+/*
+ * References:
+ *
+ * 1) FirebaseUI Android — "Model class requirements"
+ *    https://firebaseopensource.com/projects/firebase/firebaseui-android/firestore/readme/
+ *    Used as a reference for Firestore model classes needing an empty constructor and standard getters/setters.
+ *
+ * 2) author: Stack Overflow user — "Android Firestore limitations to custom object models"
+ *    https://stackoverflow.com/questions/54193629/android-firestore-limitations-to-custom-object-models
+ *    Used as a reference for how Firestore maps document fields into POJO fields and list properties.
+ */
+
 public class Event {
 
     // Not stored; you set it from doc.getId()
