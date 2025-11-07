@@ -21,6 +21,31 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+/**
+ * The main dashboard for administrators in the Aurora app.
+ *
+ * <p>This activity allows admins to monitor and manage app data such as events,
+ * user profiles, uploaded images, and system activity logs. It connects directly
+ * to Firebase Firestore to read, display, and delete documents from the database.</p>
+ *
+ * <p>Admins can switch between four main tabs:</p>
+ * <ul>
+ *     <li><b>Events</b> – view and remove events created by organizers.</li>
+ *     <li><b>Profiles</b> – browse and remove user accounts.</li>
+ *     <li><b>Images</b> – placeholder tab for future image moderation.</li>
+ *     <li><b>Logs</b> – view a record of all logged actions (e.g., user sign-ups, event creation).</li>
+ * </ul>
+ *
+ * <p>Each tab dynamically loads Firestore data, creates card-style UI elements,
+ * and allows client-side searching. The activity also refreshes record counts
+ * when opened or resumed.</p>
+ *
+ * <p>Overall, this class is responsible for providing admins with an overview
+ * of app activity and tools to manage data directly from the app interface.</p>
+ *
+ * @author Aurora Borealis Team
+ * @version 1.0
+ */
 
 public class AdminActivity extends AppCompatActivity {
 
