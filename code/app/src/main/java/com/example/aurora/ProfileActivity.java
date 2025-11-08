@@ -14,9 +14,12 @@
  *    Used as a reminder of the collection / document structure when reading profile info.
  */
 
+
+
+
 package com.example.aurora;
 
-import android.content.DialogInterface;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;

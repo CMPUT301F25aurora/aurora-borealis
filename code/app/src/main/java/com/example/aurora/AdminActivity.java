@@ -55,6 +55,7 @@
  * note: Helped tighten up JavaDoc wording, method names, and in-memory search logic,
  *       but not the underlying Firebase or Android APIs.
  */
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -169,10 +170,7 @@ public class AdminActivity extends AppCompatActivity {
         switchMode(currentMode);
     }
 
-    // ---------------------------------------------------------------------
     // MODE / TABS
-    // ---------------------------------------------------------------------
-
     private void switchMode(Mode mode) {
         currentMode = mode;
         updateTabHighlight();
@@ -226,10 +224,7 @@ public class AdminActivity extends AppCompatActivity {
                         countLogs.setText(String.valueOf(snap.size())));
     }
 
-    // ---------------------------------------------------------------------
     // EVENTS TAB
-    // ---------------------------------------------------------------------
-
     private void loadEvents() {
 
 
@@ -326,10 +321,8 @@ public class AdminActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
-    // ---------------------------------------------------------------------
-    // PROFILES TAB
-    // ---------------------------------------------------------------------
 
+    // PROFILES TAB
     private void loadProfiles() {
 
 
@@ -405,10 +398,7 @@ public class AdminActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
-    // ---------------------------------------------------------------------
     // IMAGES TAB (placeholder)
-    // ---------------------------------------------------------------------
-
     private void loadImagesPlaceholder() {
         listContainer.removeAllViews();
 
@@ -421,10 +411,7 @@ public class AdminActivity extends AppCompatActivity {
         listContainer.addView(tv);
     }
 
-    // ---------------------------------------------------------------------
     // LOGS TAB
-    // ---------------------------------------------------------------------
-
     private void loadLogs() {
 
 
@@ -510,11 +497,7 @@ public class AdminActivity extends AppCompatActivity {
         listContainer.addView(card);
     }
 
-    // ---------------------------------------------------------------------
     // SEARCH
-    // ---------------------------------------------------------------------
-
-
     private void showSearchDialog() {
 
         if (currentMode == Mode.IMAGES) {
@@ -624,10 +607,7 @@ public class AdminActivity extends AppCompatActivity {
         }
     }
 
-    // ---------------------------------------------------------------------
     // UTIL
-    // ---------------------------------------------------------------------
-
     private static String nz(String s) {
         return s == null ? "" : s;
     }

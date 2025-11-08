@@ -26,9 +26,6 @@
  */
 
 
-
-
-
 package com.example.aurora;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -84,10 +81,7 @@ public class AdminActivityInstrumentedTest {
         };
     }
 
-    // ---------------------------------------------------------------------
     // Browsing tests
-    // ---------------------------------------------------------------------
-
     @Test
     public void testBrowseEventsTabShowsList() {
         onView(withId(R.id.tabEvents)).perform(click());
@@ -106,10 +100,7 @@ public class AdminActivityInstrumentedTest {
         onView(withText("Activity Logs")).check(matches(isDisplayed()));
     }
 
-    // ---------------------------------------------------------------------
     // Remove Event confirmation
-    // ---------------------------------------------------------------------
-
     @Test
     public void testRemoveEventShowsConfirmationDialog() {
         // Go to Events tab
@@ -126,10 +117,7 @@ public class AdminActivityInstrumentedTest {
         // Close dialog so test ends cleanly
         onView(withText("Cancel")).perform(click());
     }
-
-    // ---------------------------------------------------------------------
     // Remove Profile confirmation
-    // ---------------------------------------------------------------------
 
     @Test
     public void testRemoveProfileShowsConfirmationDialog() {
