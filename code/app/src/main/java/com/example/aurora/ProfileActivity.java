@@ -14,12 +14,9 @@
  *    Used as a reminder of the collection / document structure when reading profile info.
  */
 
-
-
-
 package com.example.aurora;
 
-
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -48,6 +45,8 @@ import java.util.Map;
  * - Has a back button.
  * - Allows the entrant to delete their own account (with confirmation).
  */
+
+
 public class ProfileActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;

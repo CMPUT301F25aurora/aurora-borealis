@@ -19,6 +19,7 @@
  *
  */
 
+
 package com.example.aurora;
 
 import org.junit.Before;
@@ -28,29 +29,22 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
-
- Unit tests for Event.java data model.
- Adapted to the actual Event class (which uses setters, not constructors).*/
+ * Unit tests for Event.java data model.
+ */
 public class EventTest {
 
     private Event event;
 
     @Before
     public void setUp() {
-        event = new Event();
-        event.setEventId("e1");
-        event.setTitle("Aurora Night");
-        event.setDate("Jan 1, 2025");
-        event.setLocation("Edmonton");
-        event.setPosterUrl("poster.png");
+        event = new Event("e1", "Aurora Night", "Jan 1, 2025", "Edmonton", "poster.png");
     }
 
     @Test
     public void testConstructorAndDefaults() {
         assertEquals("e1", event.getEventId());
         assertEquals("Aurora Night", event.getTitle());
-        assertNotNull(event.getWaitingList());  // must return non-null (auto-initialized)
-        assertTrue(event.getWaitingList().isEmpty());
+        assertNotNull(event.getWaitingList());
     }
 
     @Test

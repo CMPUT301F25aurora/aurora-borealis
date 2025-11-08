@@ -45,6 +45,8 @@ import androidx.appcompat.app.AppCompatActivity;
  * for displaying in-app alerts or messages in future versions.</p>
  */
 
+
+
 public class AlertsActivity extends AppCompatActivity {
 
     @Override

@@ -18,7 +18,6 @@
  *    Used for confirmation dialogs when organizer performs actions like delete or close event.
  */
 
-
 package com.example.aurora;
 
 import android.os.Bundle;
@@ -44,6 +43,8 @@ import java.util.List;
  * - Ensures only the event creator (organizer) can access their event details.
  * - Provides a simple back button for navigation.
  */
+
+
 
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 

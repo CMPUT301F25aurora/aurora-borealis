@@ -11,7 +11,6 @@
  *    Used for launching other organizer screens from buttons or cards.
  */
 
-
 package com.example.aurora;
 
 import android.content.Intent;
@@ -47,6 +46,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
  * - Generates and displays QR codes for event deep links.
  * - Provides navigation to profile and notifications pages, and supports logout.
  */
+
+
+
 
 public class OrganizerActivity extends AppCompatActivity {
 
@@ -99,6 +101,7 @@ public class OrganizerActivity extends AppCompatActivity {
             btnLogout.setOnClickListener(v -> logoutUser());
         }
     }
+
 
     private void logoutUser() {
 

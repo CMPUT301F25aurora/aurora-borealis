@@ -8,7 +8,6 @@
 //    https://developer.android.com/reference/android/app/Application
 //    Used for extending Application to initialize app-wide resources in onCreate().
 
-
 package com.example.aurora;
 
 import android.app.Application;
@@ -21,6 +20,8 @@ import android.os.Build;
  * <p>Used to initialize global settings and create the notification
  * channel for sending lottery result updates to users.</p>
  */
+
+
 
 public class AuroraApp extends Application {
     public static final String CHANNEL_WINNER = "winner_updates";

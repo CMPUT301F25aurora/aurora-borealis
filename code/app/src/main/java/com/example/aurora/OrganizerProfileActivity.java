@@ -14,6 +14,7 @@
  *    Used for the pattern of calling update(...) on a Firestore document reference.
  */
 
+
 package com.example.aurora;
 
 import android.app.AlertDialog;
@@ -41,6 +42,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * - Includes navigation back to the organizer dashboard.
  * - Provides an option to permanently delete the organizer’s account.
  */
+
 
 public class OrganizerProfileActivity extends AppCompatActivity {
 
@@ -108,6 +110,8 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
 
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)

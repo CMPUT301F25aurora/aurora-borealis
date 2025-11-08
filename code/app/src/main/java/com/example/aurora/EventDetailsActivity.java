@@ -25,11 +25,8 @@
  *    Used only to help tidy up wording in the Javadoc and choose some helper method names.
  */
 
-
 package com.example.aurora;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -66,6 +63,8 @@ import java.util.List;
  * Waiting list entries are stored as the entrant's EMAIL when possible,
  * falling back to device ID only if no email is available.
  */
+
+
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;
@@ -120,23 +119,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
-        String role = sp.getString("user_role", null);
-        if (role == null || role.isEmpty()) {
-            // User not logged in — save event and redirect
-            getSharedPreferences("aurora", MODE_PRIVATE)
-                    .edit()
-                    .putString("pending_event", eventId)
-                    .apply();
-
-            Intent i = new Intent(this, WelcomeActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
-            return;
-        }
-
-
         btnCriteria.setOnClickListener(v -> showCriteriaDialog());
 
         btnShowQr.setOnClickListener(v -> {
@@ -175,10 +157,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Settings.Secure.ANDROID_ID
             );
         }
+
         return email;
     }
 
+    // -------------------------------------------------------------------------
     // Loading + binding event
+    // -------------------------------------------------------------------------
+
     private void loadEventDetails() {
         db.collection("events")
                 .document(eventId)
@@ -260,8 +246,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-
+    // -------------------------------------------------------------------------
     // Join / leave waiting list  (stores EMAIL or fallback key)
+    // -------------------------------------------------------------------------
+
     private void toggleJoin() {
         if (eventId == null) return;
 
@@ -290,6 +278,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    // -------------------------------------------------------------------------
+    // Criteria dialog
+    // -------------------------------------------------------------------------
+
     private void showCriteriaDialog() {
         View view = LayoutInflater.from(this)
                 .inflate(R.layout.dialog_criteria, null, false);
@@ -304,6 +296,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    // -------------------------------------------------------------------------
+    // QR popup (show QR for event deepLink)
+    // -------------------------------------------------------------------------
 
     private void showQrPopup(String deepLink) {
         try {

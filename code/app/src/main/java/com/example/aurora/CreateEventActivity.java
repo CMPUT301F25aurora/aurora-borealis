@@ -86,7 +86,6 @@
  *       writing these citation notes, not with Firebase, ZXing, or navigation APIs.
  */
 
-
 package com.example.aurora;
 
 import android.content.Intent;
@@ -132,6 +131,11 @@ import java.util.Map;
  * - US 02.04.01 / 02.04.02: upload/update event poster.
  * - US 02.05.02: specify how many entrants to sample for invitations.
  */
+
+
+
+
+
 public class CreateEventActivity extends AppCompatActivity {
 
     private EditText editTitle, editDescription, editLocation, editCategory;
