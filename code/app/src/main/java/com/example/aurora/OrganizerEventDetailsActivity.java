@@ -18,6 +18,7 @@
  *    Used for confirmation dialogs when organizer performs actions like delete or close event.
  */
 
+
 package com.example.aurora;
 
 import android.os.Bundle;

@@ -14,7 +14,6 @@
  *    Used for the pattern of calling update(...) on a Firestore document reference.
  */
 
-
 package com.example.aurora;
 
 import android.app.AlertDialog;
@@ -110,8 +109,6 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
 
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)

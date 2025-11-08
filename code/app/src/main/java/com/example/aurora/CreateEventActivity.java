@@ -86,6 +86,7 @@
  *       writing these citation notes, not with Firebase, ZXing, or navigation APIs.
  */
 
+
 package com.example.aurora;
 
 import android.content.Intent;
