@@ -45,6 +45,8 @@ import java.util.List;
  * - Provides a simple back button for navigation.
  */
 
+
+
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;

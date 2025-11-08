@@ -48,6 +48,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
  * - Provides navigation to profile and notifications pages, and supports logout.
  */
 
+
+
+
 public class OrganizerActivity extends AppCompatActivity {
 
     private Button myEventsButton, createEventButton;

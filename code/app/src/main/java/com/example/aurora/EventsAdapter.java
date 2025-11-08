@@ -50,6 +50,8 @@ import java.util.List;
  *       3) ANDROID_ID (device id) as a final fallback.
  * - Optionally enforces a max size from events/{id}.maxSpots (if that field exists).
  */
+
+
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
     private final Context context;

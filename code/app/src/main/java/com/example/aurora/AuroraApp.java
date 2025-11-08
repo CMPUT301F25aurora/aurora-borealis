@@ -22,6 +22,8 @@ import android.os.Build;
  * channel for sending lottery result updates to users.</p>
  */
 
+
+
 public class AuroraApp extends Application {
     public static final String CHANNEL_WINNER = "winner_updates";
 

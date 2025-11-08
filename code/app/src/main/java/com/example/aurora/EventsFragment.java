@@ -57,6 +57,8 @@ import java.util.List;
  */
 
 
+
+
 public class EventsFragment extends Fragment {
 
     private EditText searchEvents;

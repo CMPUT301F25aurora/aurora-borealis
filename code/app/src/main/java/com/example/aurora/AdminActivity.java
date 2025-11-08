@@ -89,6 +89,9 @@ import java.util.List;
  * Provides access to monitor and manage events, user profiles, logs, and images.
  * Includes a top back button for returning to the login screen (with session logout).
  */
+
+
+
 public class AdminActivity extends AppCompatActivity {
 
     private TextView countEvents, countUsers, countImages, countLogs;
@@ -131,6 +134,8 @@ public class AdminActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBackAdmin);
 
 
+
+
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> {
                 FirebaseAuth.getInstance().signOut();
@@ -148,6 +153,8 @@ public class AdminActivity extends AppCompatActivity {
         tabProfiles.setOnClickListener(v -> switchMode(Mode.PROFILES));
         tabImages.setOnClickListener(v -> switchMode(Mode.IMAGES));
         tabLogs.setOnClickListener(v -> switchMode(Mode.LOGS));
+
+
 
         buttonSearch.setOnClickListener(v -> showSearchDialog());
 
@@ -199,6 +206,7 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void refreshCounts() {
+
         db.collection("events").get()
                 .addOnSuccessListener(snap ->
                         countEvents.setText(String.valueOf(snap.size())));
@@ -218,6 +226,8 @@ public class AdminActivity extends AppCompatActivity {
 
     // EVENTS TAB
     private void loadEvents() {
+
+
         db.collection("events")
                 .orderBy("date", Query.Direction.ASCENDING)
                 .get()
@@ -257,6 +267,8 @@ public class AdminActivity extends AppCompatActivity {
         TextView entrantsView  = card.findViewById(R.id.adminEventEntrants);
         Button   removeButton  = card.findViewById(R.id.adminEventRemoveButton);
 
+
+
         String title = nz(doc.getString("title"));
         if (title.isEmpty()) title = nz(doc.getString("name"));
 
@@ -278,6 +290,8 @@ public class AdminActivity extends AppCompatActivity {
         String eventId = doc.getId();
         String finalTitle = title;
 
+
+
         removeButton.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Remove Event")
@@ -291,6 +305,8 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void deleteEvent(String eventId, String title) {
+
+
         db.collection("events").document(eventId)
                 .delete()
                 .addOnSuccessListener(v -> {
@@ -308,6 +324,8 @@ public class AdminActivity extends AppCompatActivity {
 
     // PROFILES TAB
     private void loadProfiles() {
+
+
         db.collection("users")
                 .orderBy("name", Query.Direction.ASCENDING)
                 .get()
@@ -395,6 +413,9 @@ public class AdminActivity extends AppCompatActivity {
 
     // LOGS TAB
     private void loadLogs() {
+
+
+
         db.collection("logs")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
@@ -463,6 +484,10 @@ public class AdminActivity extends AppCompatActivity {
         titleView.setText(title);
         subtitleView.setText(message);
 
+        // Converting Firestore Timestamp to java.util.Date uses Timestamp#toDate():
+        // Firebase Android SDK reference – com.google.firebase.Timestamp
+        // https://firebase.google.com/docs/reference/android/com/google/firebase/Timestamp
+
         if (ts != null) {
             timeView.setText(formatRelativeTime(ts.toDate()));
         } else {
@@ -474,6 +499,7 @@ public class AdminActivity extends AppCompatActivity {
 
     // SEARCH
     private void showSearchDialog() {
+
         if (currentMode == Mode.IMAGES) {
             Toast.makeText(this,
                     "Search is not available for images yet.",

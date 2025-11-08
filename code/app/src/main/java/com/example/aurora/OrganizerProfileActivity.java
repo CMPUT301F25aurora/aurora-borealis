@@ -42,6 +42,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  * - Provides an option to permanently delete the organizer’s account.
  */
 
+
 public class OrganizerProfileActivity extends AppCompatActivity {
 
     private ImageView backButton;

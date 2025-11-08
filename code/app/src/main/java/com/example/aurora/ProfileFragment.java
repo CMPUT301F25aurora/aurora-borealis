@@ -52,6 +52,8 @@ import java.util.Map;
  * - Automatically creates a new profile if one does not exist.
  */
 
+
+
 public class ProfileFragment extends Fragment {
 
     private FirebaseFirestore db;

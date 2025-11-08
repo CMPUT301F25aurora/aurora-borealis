@@ -26,6 +26,8 @@ import android.provider.Settings;
  * - Provides a simple way to reference the current user across app sessions.
  */
 
+
+
 public class UserSession {
 
     // Returns a stable device-based ID for this user on this app

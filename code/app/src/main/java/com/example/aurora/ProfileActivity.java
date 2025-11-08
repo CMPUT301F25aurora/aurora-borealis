@@ -48,6 +48,8 @@ import java.util.Map;
  * - Has a back button.
  * - Allows the entrant to delete their own account (with confirmation).
  */
+
+
 public class ProfileActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;

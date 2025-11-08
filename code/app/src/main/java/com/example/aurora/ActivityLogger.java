@@ -65,9 +65,12 @@ import java.util.Map;
  * @author Aurora Borealis Team
  * @version 1.0
  */
+
 public class ActivityLogger {
 
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
 
     private static void addLog(Map<String, Object> data) {
         if (!data.containsKey("timestamp")) {
@@ -127,6 +130,8 @@ public class ActivityLogger {
 
     // NOTIFICATIONS
     // Call this anywhere an organizer sends a notification to entrants.
+
+
 
     public static void logNotificationSent(
             String eventId,

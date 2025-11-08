@@ -23,6 +23,10 @@ import java.util.List;
  * NOTE: We intentionally DO NOT have any field or getter/setter called "capacity"
  * so Firestore won't try to map the legacy "capacity" field and crash.
  */
+
+
+
+
 public class Event {
 
     // Not stored; you set it from doc.getId()

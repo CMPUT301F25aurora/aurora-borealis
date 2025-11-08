@@ -66,6 +66,8 @@ import java.util.List;
  * Waiting list entries are stored as the entrant's EMAIL when possible,
  * falling back to device ID only if no email is available.
  */
+
+
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;

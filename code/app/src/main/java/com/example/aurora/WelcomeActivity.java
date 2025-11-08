@@ -23,6 +23,7 @@ package com.example.aurora;
  * When the user taps anywhere on the screen, it navigates to LoginActivity.
  */
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;

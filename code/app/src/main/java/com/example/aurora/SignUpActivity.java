@@ -27,6 +27,9 @@
  *      entrant   → EventsActivity (NOT EntrantNavigationActivity)
  */
 
+
+
+
 package com.example.aurora;
 
 import android.content.Intent;
