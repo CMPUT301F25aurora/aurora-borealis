@@ -175,8 +175,11 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
+
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
-        //Button btnManage = eventView.findViewById(R.id.btnManageEvent);
+
+        // NEW BUTTON
+        Button btnManage = eventView.findViewById(R.id.btnManage);
 
         String eventId = doc.getId();
 
@@ -219,7 +222,6 @@ public class OrganizerActivity extends AppCompatActivity {
         date.setText(dateText);
         stats.setText("Max spots: " + maxSpots);
 
-
         String emoji = "📍";
         String lowerCategory = category.toLowerCase();
 
@@ -257,7 +259,12 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         });
 
-
+        // NEW: View Entrants button
+        btnManage.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerActivity.this, OrganizerEntrantsActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
+        });
 
         eventListContainer.addView(eventView);
     }
