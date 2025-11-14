@@ -91,8 +91,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         editToggle.setOnClickListener(v -> setEditing(true));
         btnSave.setOnClickListener(v -> saveProfile());
-        btnEventHistory.setOnClickListener(v ->
-                Toast.makeText(this, "Event History coming soon", Toast.LENGTH_SHORT).show());
+        btnEventHistory.setOnClickListener(v -> {
+            Intent intent = new Intent(this, EntrantEventHistoryActivity.class);
+            startActivity(intent);
+        });
+
 
         // Simple enable/disable toggle for notifications
         btnNotifSettings.setOnClickListener(v -> showNotifSettingsDialog());

@@ -43,6 +43,8 @@
         <activity android:name=".EntrantNavigationActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".AlertsActivity" android:exported="false" />
+        <activity android:name=".EntrantEventHistoryActivity" />
+
 
         <!-- Details + deep-link: aurora://event/<id> or aurora://event?id=<id> -->
         <activity
