@@ -66,7 +66,7 @@ public class Event {
     // Required empty constructor for Firestore
     public Event() {}
 
-    // ----------------------- ID (local-only) -----------------------
+    // ID (local-only)
 
     public String getEventId() {
         return eventId;
@@ -76,7 +76,7 @@ public class Event {
         this.eventId = eventId;
     }
 
-    // ----------------------- Title / Name --------------------------
+    // Title / Name 
 
     public String getTitle() {
         if (title != null && !title.isEmpty()) return title;
@@ -96,7 +96,7 @@ public class Event {
         this.name = name;
     }
 
-    // ----------------------- Description ---------------------------
+    // Description
 
     public String getDescription() {
         return description;
@@ -106,7 +106,7 @@ public class Event {
         this.description = description;
     }
 
-    // ----------------------- Location / Category -------------------
+    // Location / Category 
 
     public String getLocation() {
         return location;
@@ -124,7 +124,7 @@ public class Event {
         this.category = category;
     }
 
-    // ----------------------- Dates ---------------------------------
+    // Dates
 
     /**
      * Unified getter used by cards: prefer legacy "date" if set,
@@ -172,7 +172,7 @@ public class Event {
         this.registrationEnd = registrationEnd;
     }
 
-    // ----------------------- Poster / Deep link --------------------
+    // Poster / Deep link
 
     public String getPosterUrl() {
         return posterUrl;
@@ -190,7 +190,7 @@ public class Event {
         this.deepLink = deepLink;
     }
 
-    // ----------------------- Capacity (new) ------------------------
+    // Capacity (new) 
 
     public Long getMaxSpots() {
         return maxSpots;
@@ -200,7 +200,7 @@ public class Event {
         this.maxSpots = maxSpots;
     }
 
-    // ----------------------- Geo requirement -----------------------
+    // Geo requirement 
 
     public Boolean getGeoRequired() {
         return geoRequired;
@@ -210,7 +210,7 @@ public class Event {
         this.geoRequired = geoRequired;
     }
 
-    // ----------------------- Lists --------------------------------
+    // Lists 
 
     public List<String> getWaitingList() {
         if (waitingList == null) waitingList = new ArrayList<>();

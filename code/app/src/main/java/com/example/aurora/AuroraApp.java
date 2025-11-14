@@ -8,6 +8,7 @@
 //    https://developer.android.com/reference/android/app/Application
 //    Used for extending Application to initialize app-wide resources in onCreate().
 
+
 package com.example.aurora;
 
 import android.app.Application;

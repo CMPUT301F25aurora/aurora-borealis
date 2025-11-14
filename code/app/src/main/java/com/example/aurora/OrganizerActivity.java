@@ -11,6 +11,7 @@
  *    Used for launching other organizer screens from buttons or cards.
  */
 
+
 package com.example.aurora;
 
 import android.content.Intent;
@@ -101,7 +102,6 @@ public class OrganizerActivity extends AppCompatActivity {
             btnLogout.setOnClickListener(v -> logoutUser());
         }
     }
-
 
     private void logoutUser() {
 

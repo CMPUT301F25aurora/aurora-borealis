@@ -13,6 +13,7 @@
  *    Used to understand when to read or clear session data as Activities start or finish.
  */
 
+
 package com.example.aurora;
 
 import android.content.Context;

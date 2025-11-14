@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "aurora"
 include(":app")
- 
+include(":app:javadocs")

@@ -21,7 +21,6 @@
  */
 
 
-
 package com.example.aurora;
 
 import android.content.Intent;
@@ -42,6 +41,21 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * Handles user login and navigation in the Aurora app.
+ *
+ * <p>This activity is responsible for:
+ * - Checking if a user is already logged in and sending them to the right page.
+ * - Creating a default entrant profile for new devices.
+ * - Logging in users using their email or phone and password.
+ * - Saving user information locally using SharedPreferences.
+ * - Opening the correct page based on the user's role (Admin, Organizer, Entrant).</p>
+ *
+ * <p>Firestore collection: "users"</p>
+ * <p>Shared preferences: "aurora_prefs" and "aurora"</p>
+ */
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -91,9 +105,18 @@ public class LoginActivity extends AppCompatActivity {
         createDefaultEntrantProfile();
 
         loginButton.setOnClickListener(v -> loginUser());
-        createAccountButton.setOnClickListener(
-                v -> startActivity(new Intent(this, SignUpActivity.class))
-        );
+        createAccountButton.setOnClickListener(v -> {
+            Intent i = new Intent(this, SignUpActivity.class);
+
+            // pass pending event if exists
+            String pending = getSharedPreferences("aurora", MODE_PRIVATE)
+                    .getString("pending_event", null);
+            if (pending != null) {
+                i.putExtra("pending_event", pending);
+            }
+
+            startActivity(i);
+        });
     }
 
     private void createDefaultEntrantProfile() {
