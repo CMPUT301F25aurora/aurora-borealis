@@ -89,6 +89,8 @@
 
 package com.example.aurora;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -96,10 +98,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -117,10 +122,12 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
-
 /**
  * CreateEventActivity
  *
@@ -136,22 +143,42 @@ import java.util.Map;
 
 
 
-
 public class CreateEventActivity extends AppCompatActivity {
 
-    private EditText editTitle, editDescription, editLocation, editCategory;
-    private EditText editStartDate, editEndDate, editRegStart, editRegEnd;
+    // UI Components
+    private EditText editTitle, editDescription, editLocation;
+    private Spinner spinnerCategory;
     private EditText editMaxSpots, editLotterySampleSize;
     private CheckBox checkGeoRequired;
     private Button btnChoosePoster, btnCreateEvent;
     private ImageView imgPosterPreview;
 
+    // Date/Time Pickers
+    private Button btnPickStartDate, btnPickStartTime;
+    private Button btnPickEndDate, btnPickEndTime;
+    private Button btnPickRegStartDate, btnPickRegStartTime;
+    private Button btnPickRegEndDate, btnPickRegEndTime;
+
+    // Date/Time Display TextViews
+    private TextView txtStartDateTime, txtEndDateTime;
+    private TextView txtRegStartDateTime, txtRegEndDateTime;
+
+    // Calendar instances to store selected dates/times
+    private Calendar startCalendar = Calendar.getInstance();
+    private Calendar endCalendar = Calendar.getInstance();
+    private Calendar regStartCalendar = Calendar.getInstance();
+    private Calendar regEndCalendar = Calendar.getInstance();
+
+    // Poster
     private Uri selectedPosterUri = null;
 
+    // Firebase
     private FirebaseFirestore db;
     private StorageReference posterStorageRef;
-
     private ActivityResultLauncher<Intent> posterPickerLauncher;
+
+    // Date format for display
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,6 +189,8 @@ public class CreateEventActivity extends AppCompatActivity {
         posterStorageRef = FirebaseStorage.getInstance().getReference("event_posters");
 
         bindViews();
+        setupCategorySpinner();
+        setupDateTimePickers();
         setupPosterPicker();
 
         btnChoosePoster.setOnClickListener(v -> openPosterPicker());
@@ -172,21 +201,116 @@ public class CreateEventActivity extends AppCompatActivity {
         editTitle = findViewById(R.id.editTitle);
         editDescription = findViewById(R.id.editDescription);
         editLocation = findViewById(R.id.editLocation);
-        editCategory = findViewById(R.id.editCategory);
-
-        editStartDate = findViewById(R.id.editStartDate);
-        editEndDate = findViewById(R.id.editEndDate);
-        editRegStart = findViewById(R.id.editRegStart);
-        editRegEnd = findViewById(R.id.editRegEnd);
+        spinnerCategory = findViewById(R.id.spinnerCategory);
 
         editMaxSpots = findViewById(R.id.editMaxSpots);
         editLotterySampleSize = findViewById(R.id.editLotterySampleSize);
-
         checkGeoRequired = findViewById(R.id.checkGeoRequired);
+
         btnChoosePoster = findViewById(R.id.btnChoosePoster);
         imgPosterPreview = findViewById(R.id.imgPosterPreview);
         btnCreateEvent = findViewById(R.id.btnCreateEvent);
+
+        // Date/Time Buttons
+        btnPickStartDate = findViewById(R.id.btnPickStartDate);
+        btnPickStartTime = findViewById(R.id.btnPickStartTime);
+        btnPickEndDate = findViewById(R.id.btnPickEndDate);
+        btnPickEndTime = findViewById(R.id.btnPickEndTime);
+        btnPickRegStartDate = findViewById(R.id.btnPickRegStartDate);
+        btnPickRegStartTime = findViewById(R.id.btnPickRegStartTime);
+        btnPickRegEndDate = findViewById(R.id.btnPickRegEndDate);
+        btnPickRegEndTime = findViewById(R.id.btnPickRegEndTime);
+
+        // Date/Time Display TextViews
+        txtStartDateTime = findViewById(R.id.txtStartDateTime);
+        txtEndDateTime = findViewById(R.id.txtEndDateTime);
+        txtRegStartDateTime = findViewById(R.id.txtRegStartDateTime);
+        txtRegEndDateTime = findViewById(R.id.txtRegEndDateTime);
     }
+
+    // ================= CATEGORY SPINNER SETUP =================
+
+    private void setupCategorySpinner() {
+        // Categories from user stories: Music, Sports, Education, Arts, Technology
+        String[] categories = {
+                "Select a category",
+                "Music",
+                "Sports",
+                "Education",
+                "Arts",
+                "Technology"
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                categories
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCategory.setAdapter(adapter);
+    }
+
+    // ================= DATE/TIME PICKERS SETUP =================
+
+    private void setupDateTimePickers() {
+        // Start Date/Time
+        btnPickStartDate.setOnClickListener(v -> showDatePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
+        btnPickStartTime.setOnClickListener(v -> showTimePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
+
+        // End Date/Time
+        btnPickEndDate.setOnClickListener(v -> showDatePicker(endCalendar, () -> updateDateTimeDisplay(txtEndDateTime, endCalendar)));
+        btnPickEndTime.setOnClickListener(v -> showTimePicker(endCalendar, () -> updateDateTimeDisplay(txtEndDateTime, endCalendar)));
+
+        // Registration Start Date/Time
+        btnPickRegStartDate.setOnClickListener(v -> showDatePicker(regStartCalendar, () -> updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar)));
+        btnPickRegStartTime.setOnClickListener(v -> showTimePicker(regStartCalendar, () -> updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar)));
+
+        // Registration End Date/Time
+        btnPickRegEndDate.setOnClickListener(v -> showDatePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
+        btnPickRegEndTime.setOnClickListener(v -> showTimePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
+    }
+
+    private void showDatePicker(Calendar calendar, Runnable onDateSet) {
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    calendar.set(Calendar.YEAR, selectedYear);
+                    calendar.set(Calendar.MONTH, selectedMonth);
+                    calendar.set(Calendar.DAY_OF_MONTH, selectedDay);
+                    onDateSet.run();
+                },
+                year, month, day
+        );
+        datePickerDialog.show();
+    }
+
+    private void showTimePicker(Calendar calendar, Runnable onTimeSet) {
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(
+                this,
+                (view, selectedHour, selectedMinute) -> {
+                    calendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                    calendar.set(Calendar.MINUTE, selectedMinute);
+                    onTimeSet.run();
+                },
+                hour, minute, true
+        );
+        timePickerDialog.show();
+    }
+
+    private void updateDateTimeDisplay(TextView textView, Calendar calendar) {
+        String formatted = dateTimeFormat.format(calendar.getTime());
+        textView.setText(formatted);
+        textView.setTextColor(Color.parseColor("#212121")); // Make it dark when set
+    }
+
+    // ================= POSTER PICKER SETUP =================
 
     private void setupPosterPicker() {
         posterPickerLauncher = registerForActivityResult(
@@ -216,33 +340,56 @@ public class CreateEventActivity extends AppCompatActivity {
         posterPickerLauncher.launch(Intent.createChooser(intent, "Select event poster"));
     }
 
+    // ================= CREATE EVENT =================
+
     private void createEvent() {
+        // Get basic info
         String title = editTitle.getText().toString().trim();
         String description = editDescription.getText().toString().trim();
         String location = editLocation.getText().toString().trim();
-        String category = editCategory.getText().toString().trim();
 
-        String startDate = editStartDate.getText().toString().trim();
-        String endDate = editEndDate.getText().toString().trim();
-        String regStart = editRegStart.getText().toString().trim();
-        String regEnd = editRegEnd.getText().toString().trim();
-
-        String maxSpotsStr = editMaxSpots.getText().toString().trim();
-        String lotterySizeStr = editLotterySampleSize.getText().toString().trim();
-
-        boolean geoRequired = checkGeoRequired.isChecked();
-
-        if (title.isEmpty() || description.isEmpty() || location.isEmpty() || startDate.isEmpty()) {
-            Toast.makeText(this, "Please fill in title, description, location, and start date.", Toast.LENGTH_SHORT).show();
+        // Get category from spinner
+        int categoryPosition = spinnerCategory.getSelectedItemPosition();
+        if (categoryPosition == 0) {
+            Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
             return;
         }
+        String category = spinnerCategory.getSelectedItem().toString();
+
+        // Validate required fields
+        if (title.isEmpty() || description.isEmpty() || location.isEmpty()) {
+            Toast.makeText(this, "Please fill in title, description, and location", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Check if start date/time was set
+        if (txtStartDateTime.getText().toString().equals("No date/time selected")) {
+            Toast.makeText(this, "Please set a start date and time", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Get date/time strings
+        String startDate = dateTimeFormat.format(startCalendar.getTime());
+        String endDate = txtEndDateTime.getText().toString().equals("No date/time selected")
+                ? null
+                : dateTimeFormat.format(endCalendar.getTime());
+        String regStart = txtRegStartDateTime.getText().toString().equals("No date/time selected")
+                ? null
+                : dateTimeFormat.format(regStartCalendar.getTime());
+        String regEnd = txtRegEndDateTime.getText().toString().equals("No date/time selected")
+                ? null
+                : dateTimeFormat.format(regEndCalendar.getTime());
+
+        // Get capacity/lottery options
+        String maxSpotsStr = editMaxSpots.getText().toString().trim();
+        String lotterySizeStr = editLotterySampleSize.getText().toString().trim();
 
         Long maxSpots = null;
         if (!maxSpotsStr.isEmpty()) {
             try {
                 maxSpots = Long.parseLong(maxSpotsStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(this, "Maximum entrants must be a number.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Maximum entrants must be a number", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -252,11 +399,14 @@ public class CreateEventActivity extends AppCompatActivity {
             try {
                 lotterySampleSize = Long.parseLong(lotterySizeStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(this, "Lottery sample size must be a number.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Lottery sample size must be a number", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
 
+        boolean geoRequired = checkGeoRequired.isChecked();
+
+        // Upload poster if selected, otherwise create event without poster
         if (selectedPosterUri != null) {
             uploadPosterAndCreateEvent(selectedPosterUri, title, description, location, category,
                     startDate, endDate, regStart, regEnd,
@@ -329,26 +479,26 @@ public class CreateEventActivity extends AppCompatActivity {
         // For older parts of the app that expect a "date" string
         event.put("date", startDate);
 
-        // Registration window (US 02.01.04)
+        // Registration window
         event.put("registrationStart", regStart);
         event.put("registrationEnd", regEnd);
 
-        // Capacity / lottery (US 02.03.01, 02.05.02)
+        // Capacity / lottery
         event.put("maxSpots", maxSpots);
         event.put("lotterySampleSize", lotterySampleSize);
 
-        // Geo requirement (US 02.02.03)
+        // Geo requirement
         event.put("geoRequired", geoRequired);
 
-        // Poster (US 02.04.01 / 02.04.02)
+        // Poster
         event.put("posterUrl", posterUrl);
 
-        // Organizer that created this (IMPORTANT for organiser dashboard)
+        // Organizer
         String organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getString("user_email", null);
         event.put("organizerEmail", organizerEmail);
 
-        // Lists for later organizer features:
+        // Lists for lottery management
         event.put("waitingList", new ArrayList<String>());
         event.put("selectedEntrants", new ArrayList<String>());
         event.put("finalEntrants", new ArrayList<String>());
@@ -360,8 +510,13 @@ public class CreateEventActivity extends AppCompatActivity {
         db.collection("events")
                 .add(event)
                 .addOnSuccessListener(ref -> {
-                    String deepLink = "aurora://event/" + ref.getId();
+                    String eventId = ref.getId();
+                    String deepLink = "aurora://event/" + eventId;
                     ref.update("deepLink", deepLink);
+
+
+                    ActivityLogger.logEventCreated(eventId, title);
+
                     showQrDialogAndReturnHome(deepLink);
                     Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
                 })
@@ -369,9 +524,6 @@ public class CreateEventActivity extends AppCompatActivity {
                         Toast.makeText(this, "Error creating event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    /**
-     * Show QR code then return to OrganizerActivity.
-     */
     private void showQrDialogAndReturnHome(String deepLink) {
         try {
             int size = 800;

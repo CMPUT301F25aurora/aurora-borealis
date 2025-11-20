@@ -1,225 +1,500 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:background="#F8F8F8">
+    android:background="@drawable/bg_gradient_aurora">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <!-- Header -->
-        <TextView
+        <!-- ✨ GRADIENT HEADER using GradientTextView -->
+        <com.example.aurora.GradientTextView
             android:id="@+id/createEventTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create New Event"
-            android:textSize="22sp"
+            android:textSize="36sp"
             android:textStyle="bold"
-            android:textColor="#212121"
-            android:layout_marginBottom="12dp" />
-
-        <!-- ================= BASIC INFO ================= -->
+            android:layout_marginBottom="8dp"
+            android:shadowColor="#000000"
+            android:shadowDx="0"
+            android:shadowDy="3"
+            android:shadowRadius="8" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Basic information"
-            android:textStyle="bold"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="2dp" />
+            android:text="Fill in the details to create your event"
+            android:textSize="14sp"
+            android:textColor="#E0E0E0"
+            android:layout_marginBottom="24dp"
+            android:alpha="0.9" />
 
-        <EditText
-            android:id="@+id/editTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Event title"
-            android:padding="10dp"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/editDescription"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Description"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:minLines="3"
-            android:gravity="top"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/editLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Location"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/editCategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Category (Music, Sports, Arts...)"
-            android:padding="10dp"
-            android:layout_marginTop="8dp"
-            android:background="@android:drawable/edit_text" />
-
-        <!-- ================= EVENT DATES ================= -->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Event dates"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="2dp" />
-
-        <EditText
-            android:id="@+id/editStartDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Start date and time (e.g. 2025-11-10 18:00)"
-            android:padding="10dp"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/editEndDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="End date and time (optional)"
-            android:padding="10dp"
-            android:layout_marginTop="4dp"
-            android:background="@android:drawable/edit_text" />
-
-        <!-- ================= REGISTRATION WINDOW ================= -->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Registration period"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="2dp" />
-
-        <EditText
-            android:id="@+id/editRegStart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Registration opens (e.g. 2025-11-01 09:00)"
-            android:padding="10dp"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/editRegEnd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Registration closes (e.g. 2025-11-08 23:59)"
-            android:padding="10dp"
-            android:layout_marginTop="4dp"
-            android:background="@android:drawable/edit_text" />
-
-        <!-- ================= CAPACITY / LOTTERY OPTIONS ================= -->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Capacity and lottery options"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="2dp" />
-
-        <EditText
-            android:id="@+id/editMaxSpots"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Maximum entrants on waiting list (optional)"
-            android:inputType="number"
-            android:padding="10dp"
-            android:background="@android:drawable/edit_text" />
-
-        <EditText
-            android:id="@+id/editLotterySampleSize"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Number of entrants to invite (optional)"
-            android:inputType="number"
-            android:padding="10dp"
-            android:layout_marginTop="4dp"
-            android:background="@android:drawable/edit_text" />
-
-        <!-- ================= GEOLOCATION REQUIREMENT ================= -->
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Location requirement"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="2dp" />
+        <!-- ================= BASIC INFO GLASS CARD ================= -->
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
 
-            <CheckBox
-                android:id="@+id/checkGeoRequired"
+            <!-- Section Header with Gradient -->
+            <com.example.aurora.GradientTextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="Basic information"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Transparent Input Fields -->
+            <EditText
+                android:id="@+id/editTitle"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Event title"
+                android:textColorHint="#AAAAAA"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_transparent_input"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp"
+                android:inputType="text" />
+
+            <EditText
+                android:id="@+id/editDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Description"
+                android:textColorHint="#AAAAAA"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_transparent_input"
+                android:padding="16dp"
+                android:minLines="3"
+                android:gravity="top"
+                android:layout_marginBottom="12dp"
+                android:inputType="textMultiLine" />
+
+            <EditText
+                android:id="@+id/editLocation"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Location"
+                android:textColorHint="#AAAAAA"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_transparent_input"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp"
+                android:inputType="text" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Require entrants to share approximate location when joining"
-                android:layout_marginStart="6dp" />
+                android:text="Category"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_transparent_input"
+                android:padding="12dp"
+                android:spinnerMode="dropdown" />
+
         </LinearLayout>
 
-        <!-- ================= POSTER / QR ================= -->
+        <!-- ================= EVENT DATES GLASS CARD ================= -->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Event poster"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="2dp" />
-
-        <Button
-            android:id="@+id/btnChoosePoster"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Choose poster image" />
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
 
-        <ImageView
-            android:id="@+id/imgPosterPreview"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="8dp"
-            android:scaleType="centerCrop"
-            android:visibility="gone" />
+            <com.example.aurora.GradientTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event dates"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="16dp" />
 
-        <TextView
-            android:id="@+id/txtQrHint"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start date and time"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <Button
+                    android:id="@+id/btnPickStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Date"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickStartTime"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Time"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtStartDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No date/time selected"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:padding="16dp"
+                android:background="@drawable/bg_transparent_input"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End date and time (optional)"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <Button
+                    android:id="@+id/btnPickEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Date"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickEndTime"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Time"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtEndDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No date/time selected"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:padding="16dp"
+                android:background="@drawable/bg_transparent_input" />
+
+        </LinearLayout>
+
+        <!-- ================= REGISTRATION PERIOD GLASS CARD ================= -->
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="After you create this event, a unique QR code will be generated that links to this event in the app."
-            android:textSize="12sp"
-            android:textColor="#666666"
-            android:layout_marginTop="8dp" />
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
 
-        <!-- ================= CREATE BUTTON ================= -->
+            <com.example.aurora.GradientTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration period"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration opens"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <Button
+                    android:id="@+id/btnPickRegStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Date"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickRegStartTime"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Time"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtRegStartDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No date/time selected"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:padding="16dp"
+                android:background="@drawable/bg_transparent_input"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration closes"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <Button
+                    android:id="@+id/btnPickRegEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Date"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickRegEndTime"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:text="Pick Time"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_glass_button" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtRegEndDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No date/time selected"
+                android:textColor="#CCCCCC"
+                android:textSize="14sp"
+                android:padding="16dp"
+                android:background="@drawable/bg_transparent_input" />
+
+        </LinearLayout>
+
+        <!-- ================= CAPACITY GLASS CARD ================= -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <com.example.aurora.GradientTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Capacity and lottery options"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="(optional)"
+                android:textColor="#CCCCCC"
+                android:textSize="12sp"
+                android:layout_marginBottom="16dp" />
+
+            <EditText
+                android:id="@+id/editMaxSpots"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Maximum entrants on waiting list"
+                android:textColorHint="#AAAAAA"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_transparent_input"
+                android:padding="16dp"
+                android:layout_marginBottom="12dp"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/editLotterySampleSize"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Number of entrants to invite"
+                android:textColorHint="#AAAAAA"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_transparent_input"
+                android:padding="16dp"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <!-- ================= LOCATION REQUIREMENT GLASS CARD ================= -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <com.example.aurora.GradientTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location requirement"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <CheckBox
+                    android:id="@+id/checkGeoRequired"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Require entrants to share approximate location when joining"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ================= POSTER GLASS CARD ================= -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <com.example.aurora.GradientTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event poster"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnChoosePoster"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Choose poster image"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_glass_button" />
+
+            <ImageView
+                android:id="@+id/imgPosterPreview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="12dp"
+                android:scaleType="centerCrop"
+                android:background="@drawable/bg_transparent_input"
+                android:visibility="gone"
+                android:contentDescription="Event poster preview" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="After you create this event, a unique QR code will be generated"
+                android:textSize="12sp"
+                android:textColor="#CCCCCC"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+
+        <!-- ================= CREATE BUTTON (GRADIENT) ================= -->
 
         <Button
             android:id="@+id/btnCreateEvent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Create event"
-            android:layout_marginTop="20dp" />
+            android:layout_height="64dp"
+            android:text="Create Event"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_gradient_button"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp" />
 
     </LinearLayout>
 
