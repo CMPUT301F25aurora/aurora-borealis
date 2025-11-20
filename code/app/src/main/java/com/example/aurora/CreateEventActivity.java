@@ -96,7 +96,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -116,7 +115,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
@@ -128,6 +126,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
+import android.database.Cursor;              // for file size check
+import android.graphics.ImageDecoder;        // for modern preview
+import android.os.Build;                     // to check API level
+import android.provider.OpenableColumns;     // to read file size
+import android.provider.MediaStore;
+
+
 /**
  * CreateEventActivity
  *
@@ -320,18 +326,29 @@ public class CreateEventActivity extends AppCompatActivity {
                         selectedPosterUri = result.getData().getData();
                         if (selectedPosterUri != null) {
                             imgPosterPreview.setVisibility(View.VISIBLE);
-                            try {
-                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(
-                                        getContentResolver(), selectedPosterUri);
-                                imgPosterPreview.setImageBitmap(bitmap);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
-                            }
+                            loadPosterPreview(selectedPosterUri);   // use helper
                         }
                     }
                 }
         );
+    }
+
+    private void loadPosterPreview(Uri uri) {
+        try {
+            Bitmap bitmap;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.Source src = ImageDecoder.createSource(getContentResolver(), uri);
+                bitmap = ImageDecoder.decodeBitmap(src);
+            } else {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            }
+
+            imgPosterPreview.setImageBitmap(bitmap);
+
+        } catch (IOException e) {
+            Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openPosterPicker() {
@@ -405,56 +422,33 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         boolean geoRequired = checkGeoRequired.isChecked();
-
-        // Upload poster if selected, otherwise create event without poster
+        // ⭐ FIX — image size validation OK
         if (selectedPosterUri != null) {
-            uploadPosterAndCreateEvent(selectedPosterUri, title, description, location, category,
-                    startDate, endDate, regStart, regEnd,
-                    maxSpots, lotterySampleSize, geoRequired);
-        } else {
-            createEventInFirestore(null, title, description, location, category,
-                    startDate, endDate, regStart, regEnd,
-                    maxSpots, lotterySampleSize, geoRequired);
+            Cursor cursor = getContentResolver().query(selectedPosterUri, null, null, null, null);
+            if (cursor != null) {
+                int idx = cursor.getColumnIndex(OpenableColumns.SIZE);
+                cursor.moveToFirst();
+                long fileSize = cursor.getLong(idx);
+                cursor.close();
+                if (fileSize > 5 * 1024 * 1024) {
+                    Toast.makeText(this, "Image too large (max 5MB)", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
         }
+
+        // ⭐ FIX — this CALL was missing
+        createEventInFirestore(
+                selectedPosterUri,
+                title, description, location, category,
+                startDate, endDate, regStart, regEnd,
+                maxSpots, lotterySampleSize, geoRequired
+        );
     }
 
-    private void uploadPosterAndCreateEvent(
-            Uri posterUri,
-            String title,
-            String description,
-            String location,
-            String category,
-            String startDate,
-            String endDate,
-            String regStart,
-            String regEnd,
-            Long maxSpots,
-            Long lotterySampleSize,
-            boolean geoRequired
-    ) {
-        String fileName = "poster_" + System.currentTimeMillis() + ".jpg";
-        StorageReference ref = posterStorageRef.child(fileName);
-        UploadTask uploadTask = ref.putFile(posterUri);
-
-        uploadTask
-                .continueWithTask(task -> {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    return ref.getDownloadUrl();
-                })
-                .addOnSuccessListener(uri -> {
-                    String url = uri.toString();
-                    createEventInFirestore(url, title, description, location, category,
-                            startDate, endDate, regStart, regEnd,
-                            maxSpots, lotterySampleSize, geoRequired);
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Failed to upload poster: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
-
+    // ⭐ FIX — moved OUTSIDE createEvent() (was illegally nested)
     private void createEventInFirestore(
-            String posterUrl,
+            Uri posterUri,
             String title,
             String description,
             String location,
@@ -491,7 +485,9 @@ public class CreateEventActivity extends AppCompatActivity {
         event.put("geoRequired", geoRequired);
 
         // Poster
-        event.put("posterUrl", posterUrl);
+        // ⭐ CHANGE — at creation, file doesn't exist yet
+        event.put("posterUrl", null);
+
 
         // Organizer
         String organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
@@ -514,15 +510,39 @@ public class CreateEventActivity extends AppCompatActivity {
                     String deepLink = "aurora://event/" + eventId;
                     ref.update("deepLink", deepLink);
 
-
                     ActivityLogger.logEventCreated(eventId, title);
 
-                    showQrDialogAndReturnHome(deepLink);
-                    Toast.makeText(this, "Event created!", Toast.LENGTH_SHORT).show();
+                    // ⭐ CHANGE — upload poster BEFORE showing QR / navigating home
+                    if (posterUri != null) {
+                        uploadPosterAndAttachToEvent(eventId, posterUri, deepLink); // ⭐ FIX added deepLink param
+                    } else {
+                        showQrDialogAndReturnHome(deepLink);
+                    }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error creating event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+    // ⭐ CHANGE — clean Option A upload method
+    private void uploadPosterAndAttachToEvent(String eventId, Uri posterUri, String deepLink) {
+        StorageReference ref = posterStorageRef.child(eventId + ".jpg");
+
+        ref.putFile(posterUri)
+                .continueWithTask(task -> {
+                    if (!task.isSuccessful()) throw task.getException();
+                    return ref.getDownloadUrl();
+                })
+                .addOnSuccessListener(downloadUri -> {
+                    db.collection("events")
+                            .document(eventId)
+                            .update("posterUrl", downloadUri.toString())
+                            .addOnSuccessListener(unused -> showQrDialogAndReturnHome(deepLink)); // ⭐ FIX
+                })
+                .addOnFailureListener(err -> {
+                    Toast.makeText(this, "Poster upload failed", Toast.LENGTH_SHORT).show();
+                    showQrDialogAndReturnHome(deepLink); // still show QR
+                });
+    }
+
 
     private void showQrDialogAndReturnHome(String deepLink) {
         try {
