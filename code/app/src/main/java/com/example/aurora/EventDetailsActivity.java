@@ -52,6 +52,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -210,6 +211,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         String location = doc.getString("location");
         String regStart = doc.getString("registrationStart");
         String regEnd = doc.getString("registrationEnd");
+        // ⭐ Load poster image
+        String posterUrl = doc.getString("posterUrl");
+        if (posterUrl != null && !posterUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(posterUrl)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .error(R.drawable.ic_launcher_background)
+                    .into(imgBanner);
+        } else {
+            imgBanner.setImageResource(R.drawable.ic_launcher_background);
+        }
 
         Long capacity = null;
         Long maxSpots = doc.getLong("maxSpots");
