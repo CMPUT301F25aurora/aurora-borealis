@@ -18,6 +18,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+import android.net.Uri;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
+
 /**
  * OrganizerEntrantsActivity
  *
@@ -61,6 +72,13 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     private EntrantsAdapter entrantsAdapter;
 
     private String eventId;
+    private ImageView imgEventPoster;
+    private Button btnUpdatePoster;
+
+    private Uri newPosterUri = null;
+    private ActivityResultLauncher<Intent> posterPickerLauncher;
+    private StorageReference posterStorageRef;
+
 
     // Email lists from the event doc
     private List<String> waitingEmails = new ArrayList<>();
@@ -87,15 +105,24 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             return;
         }
 
+        // 🔥 Initialize storage
+        posterStorageRef = FirebaseStorage.getInstance()
+                .getReference()
+                .child("event_posters");
+
         bindViews();
         setupRecycler();
         setupButtons();
         setupTabs();
-
+        setupPosterPicker();
+        btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
     }
 
     private void bindViews() {
+        imgEventPoster = findViewById(R.id.imgEventPoster);
+        btnUpdatePoster = findViewById(R.id.btnUpdatePoster);
+
         btnBack = findViewById(R.id.btnBackEntrants);
         tvEventTitle = findViewById(R.id.tvEventTitle);
         tvEventSubtitle = findViewById(R.id.tvEventSubtitle);
@@ -175,12 +202,10 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(this::bindEventData)
                 .addOnFailureListener(e ->
-                        Toast.makeText(this,
-                                "Failed to load event: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to load event: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 
-    @SuppressWarnings("unchecked")
     private void bindEventData(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
@@ -188,32 +213,34 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             return;
         }
 
-        // Title / subtitle
+        // Title
         String title = doc.getString("title");
-        if (title == null || title.isEmpty()) {
-            title = doc.getString("name");
-        }
-        if (title == null || title.isEmpty()) {
-            title = "Event";
-        }
-
-        String date = doc.getString("date");
-        if (date == null || date.isEmpty()) {
-            date = doc.getString("startDate");
-        }
-        String location = doc.getString("location");
-
+        if (title == null) title = doc.getString("name");
+        if (title == null) title = "Event";
         tvEventTitle.setText(title);
 
+        // Subtitle
+        String date = doc.getString("date");
+        if (date == null) date = doc.getString("startDate");
+
+        String location = doc.getString("location");
+
         String subtitle = "";
-        if (date != null && !date.isEmpty()) {
-            subtitle += date;
-        }
-        if (location != null && !location.isEmpty()) {
+        if (date != null) subtitle += date;
+        if (location != null) {
             if (!subtitle.isEmpty()) subtitle += " • ";
             subtitle += location;
         }
         tvEventSubtitle.setText(subtitle);
+
+        // Poster URL 🔥🔥🔥
+        String posterUrl = doc.getString("posterUrl");
+        if (posterUrl != null && !posterUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(posterUrl)
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(imgEventPoster);
+        }
 
         // Lists
         waitingEmails = (List<String>) doc.get("waitingList");
@@ -230,16 +257,10 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
         // Capacity
         Long max = doc.getLong("maxSpots");
-        if (max == null) {
-            Object capObj = doc.get("capacity");
-            if (capObj instanceof Number) {
-                max = ((Number) capObj).longValue();
-            }
-        }
         if (max == null) max = 0L;
         maxSpots = max;
 
-        // Update stat cards
+        // Cards
         tvWaitingCount.setText(String.valueOf(waitingEmails.size()));
         tvSelectedCount.setText(String.valueOf(selectedEmails.size()));
         tvCancelledCount.setText(String.valueOf(cancelledEmails.size()));
@@ -334,4 +355,53 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show());
         }
     }
+    private void setupPosterPicker() {
+        posterPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        newPosterUri = result.getData().getData();
+                        if (newPosterUri != null) {
+                            uploadNewPoster();
+                        }
+                    }
+                }
+        );
+    }
+
+    private void openPosterPicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        posterPickerLauncher.launch(
+                Intent.createChooser(intent, "Select New Poster")
+        );
+    }
+
+    private void uploadNewPoster() {
+        if (newPosterUri == null) return;
+
+        StorageReference ref = posterStorageRef.child(eventId + ".jpg");
+
+        Toast.makeText(this, "Uploading...", Toast.LENGTH_SHORT).show();
+
+        ref.putFile(newPosterUri)
+                .continueWithTask(task -> ref.getDownloadUrl())
+                .addOnSuccessListener(downloadUrl -> {
+                    db.collection("events")
+                            .document(eventId)
+                            .update("posterUrl", downloadUrl.toString())
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(this, "Poster Updated!", Toast.LENGTH_SHORT).show();
+
+                                Glide.with(this)
+                                        .load(downloadUrl)
+                                        .placeholder(R.drawable.ic_launcher_background)
+                                        .into(imgEventPoster);
+                            });
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
+    }
+
 }

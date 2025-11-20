@@ -47,7 +47,24 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Stat Cards (Row 1) -->
+    <ImageView
+        android:id="@+id/imgEventPoster"
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:scaleType="centerCrop"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_launcher_background" />
+
+    <!-- UPDATE POSTER BUTTON -->
+    <Button
+        android:id="@+id/btnUpdatePoster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Update Poster"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/purple_500"
+        android:textColor="@android:color/white" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
