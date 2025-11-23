@@ -34,8 +34,10 @@ package com.example.aurora;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -72,6 +74,23 @@ public class SignUpActivity extends AppCompatActivity {
 
         db    = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
+        ImageView toggleSignup = findViewById(R.id.passwordToggleSignup);
+
+        final boolean[] visible = {false};
+
+        toggleSignup.setOnClickListener(v -> {
+            if (visible[0]) {
+                signupPassword.setTransformationMethod(new PasswordTransformationMethod());
+                toggleSignup.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                signupPassword.setTransformationMethod(null);
+                toggleSignup.setImageResource(R.drawable.ic_eye_open);
+            }
+            visible[0] = !visible[0];
+            signupPassword.setSelection(signupPassword.getText().length());
+        });
+
 
         signupButton.setOnClickListener(v -> saveUser());
 

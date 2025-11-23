@@ -27,9 +27,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,6 +103,26 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
         createAccountButton = findViewById(R.id.createAccountButton);
         db = FirebaseFirestore.getInstance();
+
+        ImageView passwordToggle = findViewById(R.id.passwordToggle);
+
+        final boolean[] isVisible = {false};
+
+        passwordToggle.setOnClickListener(v -> {
+            if (isVisible[0]) {
+                // Hide password
+                loginPassword.setTransformationMethod(new PasswordTransformationMethod());
+                passwordToggle.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                // Show password
+                loginPassword.setTransformationMethod(null);
+                passwordToggle.setImageResource(R.drawable.ic_eye_open);
+            }
+
+            isVisible[0] = !isVisible[0];
+            loginPassword.setSelection(loginPassword.getText().length());
+        });
+
 
         createDefaultEntrantProfile();
 
