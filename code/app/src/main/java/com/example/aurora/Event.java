@@ -200,9 +200,9 @@ public class Event {
         this.maxSpots = maxSpots;
     }
 
-    // Geo requirement 
-
-    public Boolean getGeoRequired() {
+    // Geo requirement
+    public boolean getGeoRequired() {
+        if (geoRequired == null) return false;
         return geoRequired;
     }
 
