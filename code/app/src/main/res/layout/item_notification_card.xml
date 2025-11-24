@@ -5,32 +5,60 @@
     android:orientation="vertical"
     android:background="@drawable/rounded_card"
     android:padding="12dp"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="10dp">
 
     <TextView
         android:id="@+id/notifTitle"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notification title"
+        android:text="Notification Title"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:textColor="#333333" />
+        android:textColor="#333" />
 
     <TextView
         android:id="@+id/notifMessage"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notification message"
-        android:textSize="14sp"
-        android:textColor="#666666"
-        android:layout_marginTop="4dp" />
+        android:text="Message content"
+        android:layout_marginTop="4dp"
+        android:textColor="#666"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/notifTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2 hours ago"
+        android:layout_marginTop="4dp"
+        android:textColor="#999"
+        android:textSize="12sp" />
+
+    <!-- Buttons -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Just now"
-        android:textSize="12sp"
-        android:textColor="#999999"
-        android:layout_marginTop="4dp" />
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btnAccept"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Accept"
+            android:textColor="@android:color/white"
+            android:backgroundTint="#4CAF50" />
+
+        <Button
+            android:id="@+id/btnDecline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Decline"
+            android:textColor="@android:color/white"
+            android:layout_marginStart="12dp"
+            android:backgroundTint="#E53935" />
+
+    </LinearLayout>
+
 </LinearLayout>
