@@ -129,7 +129,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         tvCancelledCount = findViewById(R.id.tvCancelledCount);
         tvTotalSpots = findViewById(R.id.tvTotalSpots);
 
-        btnDrawLottery = findViewById(R.id.btnDrawLottery);
+
         btnNotify = findViewById(R.id.btnNotify);
         btnReplace = findViewById(R.id.btnReplace);
 
@@ -152,12 +152,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        btnDrawLottery.setOnClickListener(v -> {
-            // TODO: implement your real lottery logic here.
-            Toast.makeText(this,
-                    "Draw Lottery clicked (UI only for now)",
-                    Toast.LENGTH_SHORT).show();
-        });
+
 
         btnNotify.setOnClickListener(v -> {
             List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();

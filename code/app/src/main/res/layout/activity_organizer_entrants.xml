@@ -206,15 +206,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Draw Lottery Button -->
-    <Button
-        android:id="@+id/btnDrawLottery"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Draw Lottery"
-        android:layout_marginTop="16dp"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/purple_500" />
+
 
     <!-- Notify / Replace -->
     <LinearLayout
