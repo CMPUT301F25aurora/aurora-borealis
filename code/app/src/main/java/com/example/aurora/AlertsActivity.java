@@ -99,28 +99,34 @@ public class AlertsActivity extends AppCompatActivity {
 
         String notifId = doc.getId();
         String eventId = doc.getString("eventId");
+        String notifType = doc.getString("type");   // 👈 IMPORTANT
 
         title.setText(doc.getString("title"));
         msg.setText(doc.getString("message"));
 
-        // Timestamp or Long
-        if (doc.get("createdAt") instanceof Timestamp) {
-            Timestamp t = doc.getTimestamp("createdAt");
-            time.setText(formatTime(t != null ? t.toDate().getTime() : 0));
-        } else if (doc.get("createdAt") instanceof Long) {
-            time.setText(formatTime((Long) doc.get("createdAt")));
+        // Time formatting
+        Object t = doc.get("createdAt");
+        if (t instanceof com.google.firebase.Timestamp) {
+            com.google.firebase.Timestamp ts = (com.google.firebase.Timestamp)t;
+            time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(ts.toDate()));
+        } else if (t instanceof Long) {
+            long ms = (long) t;
+            time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(ms));
         }
 
-        btnAccept.setOnClickListener(v -> acceptEvent(eventId, notifId));
-        btnDecline.setOnClickListener(v -> declineEvent(eventId, notifId));
+        // 🚫 HIDE Accept/Decline for NOT_SELECTED
+        if ("not_selected".equals(notifType)) {
+            btnAccept.setVisibility(View.GONE);
+            btnDecline.setVisibility(View.GONE);
+        } else {
+            // Winners keep the buttons
+            btnAccept.setOnClickListener(v -> acceptEvent(eventId, notifId));
+            btnDecline.setOnClickListener(v -> declineEvent(eventId, notifId));
+        }
 
         alertsContainer.addView(card);
     }
 
-    private String formatTime(long ms) {
-        return new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
-                .format(ms);
-    }
 
     // ---------------------------------------------------------
     // ACCEPT / DECLINE ACTIONS

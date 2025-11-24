@@ -278,9 +278,31 @@ public class OrganizerActivity extends AppCompatActivity {
 
                             .addOnSuccessListener(x -> {
                                 sendWinnerNotifications(eventId, winners);
+                                sendNotSelectedNotifications(eventId, emailsOnly, winners);
                                 showWinnersDialog(winners);
+
+
                             });
                 });
+    }
+    private void sendNotSelectedNotifications(String eventId, List<String> allEntrants, List<String> winners) {
+
+        for (String email : allEntrants) {
+
+            // Skip winners
+            if (winners.contains(email)) continue;
+
+            NotificationModel notif = new NotificationModel(
+                    "not_selected",
+                    "Lottery Result",
+                    "Unfortunately, you were not selected for this event.",
+                    eventId,
+                    email,
+                    System.currentTimeMillis()
+            );
+
+            db.collection("notifications").add(notif);
+        }
     }
 
     private void sendWinnerNotifications(String eventId, List<String> winners) {
