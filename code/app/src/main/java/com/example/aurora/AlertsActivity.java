@@ -101,6 +101,10 @@ public class AlertsActivity extends AppCompatActivity {
 
         View btnAccept = card.findViewById(R.id.btnAccept);
         View btnDecline = card.findViewById(R.id.btnDecline);
+        ///// ADDED
+        View btnDismiss = card.findViewById(R.id.btnDismiss);
+///// END
+
 
         String notifId = doc.getId();
         String eventId = doc.getString("eventId");
@@ -110,7 +114,9 @@ public class AlertsActivity extends AppCompatActivity {
         msg.setText(doc.getString("message"));
 
         // Time formatting
-        Object t = doc.get("createdAt");
+        Object t = doc.get("timestamp");
+
+
         if (t instanceof com.google.firebase.Timestamp) {
             com.google.firebase.Timestamp ts = (com.google.firebase.Timestamp)t;
             time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(ts.toDate()));
@@ -120,14 +126,36 @@ public class AlertsActivity extends AppCompatActivity {
         }
 
         // 🚫 HIDE Accept/Decline for NOT_SELECTED
-        if ("not_selected".equals(notifType)) {
+        ///// CHANGED — Added waiting_list_info handling
+
+        if ("waiting_list_info".equals(notifType)) {
+
+            // Hide accept/decline
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
+
+            // Show dismiss button
+            btnDismiss.setVisibility(View.VISIBLE);
+
+            btnDismiss.setOnClickListener(v -> deleteNotification(notifId));
+
+        } else if ("not_selected".equals(notifType)) {
+
+            // Hide all buttons
+            btnAccept.setVisibility(View.GONE);
+            btnDecline.setVisibility(View.GONE);
+            btnDismiss.setVisibility(View.GONE);
+
         } else {
-            // Winners keep the buttons
+            // Winner notification (accept/decline)
+            btnDismiss.setVisibility(View.GONE);
+
             btnAccept.setOnClickListener(v -> acceptEvent(eventId, notifId));
             btnDecline.setOnClickListener(v -> declineEvent(eventId, notifId));
         }
+
+///// END
+
 
         alertsContainer.addView(card);
     }
