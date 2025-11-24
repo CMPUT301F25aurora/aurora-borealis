@@ -11,13 +11,18 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class AlertsActivity extends AppCompatActivity {
 
@@ -147,19 +152,36 @@ public class AlertsActivity extends AppCompatActivity {
         db.collection("events").document(eventId)
                 .update(
                         "cancelledEntrants", FieldValue.arrayUnion(userEmail),
-                        "waitingList", FieldValue.arrayRemove(userEmail),
                         "selectedEntrants", FieldValue.arrayRemove(userEmail)
                 )
                 .addOnSuccessListener(v -> {
 
                     deleteNotification(notifId);
+                    sendDeclineNoticeToOrganizer(eventId);
+
+                    pickReplacementEntrant(eventId);
+
                     Toast.makeText(this,
                             "You've declined your spot",
                             Toast.LENGTH_SHORT).show();
-
-                    // OPTIONAL: notify organizer
-                    sendDeclineNoticeToOrganizer(eventId);
                 });
+    }
+
+
+    private void sendReplacementNotification(String eventId, String email) {
+
+        String notifId = db.collection("notifications").document().getId();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", notifId);
+        data.put("eventId", eventId);
+        data.put("email", email);
+        data.put("title", "You Have Been Selected!");
+        data.put("message", "A spot opened up and you were selected to join the event.");
+        data.put("timestamp", System.currentTimeMillis());
+        data.put("status", "unread");
+
+        db.collection("notifications").document(notifId).set(data);
     }
 
     // ---------------------------------------------------------
@@ -197,4 +219,49 @@ public class AlertsActivity extends AppCompatActivity {
         super.onDestroy();
         if (notifListener != null) notifListener.remove();
     }
+
+    private void pickReplacementEntrant(String eventId) {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    if (!doc.exists()) return;
+
+                    List<String> waiting = (List<String>) doc.get("waitingList");
+                    List<String> selected = (List<String>) doc.get("selectedEntrants");
+
+                    if (waiting == null || waiting.isEmpty()) {
+                        return;
+                    }
+
+                    String replacement = waiting.get(0);
+
+                    db.collection("events").document(eventId)
+                            .update(
+                                    "selectedEntrants", FieldValue.arrayUnion(replacement),
+                                    "waitingList", FieldValue.arrayRemove(replacement)
+                            )
+                            .addOnSuccessListener(v -> sendReplacementNotification(eventId, replacement));
+                });
+    }
+
+
+    private void createReplacementNotification(String eventId, String userEmail) {
+
+        String notifId = db.collection("notifications").document().getId();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("id", notifId);
+        data.put("eventId", eventId);
+        data.put("userEmail", userEmail);
+        data.put("type", "replacement_offer");
+        data.put("title", "You have been selected!");
+        data.put("message", "A spot opened up for an event you joined.");
+        data.put("timestamp", System.currentTimeMillis());
+        data.put("status", "unread");
+
+        db.collection("notifications").document(notifId).set(data);
+    }
+
+
 }
