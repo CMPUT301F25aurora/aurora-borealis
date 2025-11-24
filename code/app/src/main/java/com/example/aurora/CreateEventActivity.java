@@ -145,10 +145,6 @@ import android.provider.MediaStore;
  * - US 02.04.01 / 02.04.02: upload/update event poster.
  * - US 02.05.02: specify how many entrants to sample for invitations.
  */
-
-
-
-
 public class CreateEventActivity extends AppCompatActivity {
 
     // UI Components
@@ -186,6 +182,14 @@ public class CreateEventActivity extends AppCompatActivity {
     // Date format for display
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
 
+
+    /**
+     * Called when the activity is first created.
+     * Initializes Firebase, binds UI elements, sets up pickers,
+     * configures the poster selector, and attaches button listeners.
+     *
+     * @param savedInstanceState the previously saved state bundle, if any
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -203,6 +207,10 @@ public class CreateEventActivity extends AppCompatActivity {
         btnCreateEvent.setOnClickListener(v -> createEvent());
     }
 
+    /**
+     * Binds all XML layout views to their corresponding fields.
+     * Called once during activity initialization.
+     */
     private void bindViews() {
         editTitle = findViewById(R.id.editTitle);
         editDescription = findViewById(R.id.editDescription);
@@ -234,8 +242,11 @@ public class CreateEventActivity extends AppCompatActivity {
         txtRegEndDateTime = findViewById(R.id.txtRegEndDateTime);
     }
 
-    // ================= CATEGORY SPINNER SETUP =================
 
+    /**
+     * Sets up the event category spinner with predefined category options.
+     * These correspond to the organizer user stories for event tagging.
+     */
     private void setupCategorySpinner() {
         // Categories from user stories: Music, Sports, Education, Arts, Technology
         String[] categories = {
@@ -256,8 +267,10 @@ public class CreateEventActivity extends AppCompatActivity {
         spinnerCategory.setAdapter(adapter);
     }
 
-    // ================= DATE/TIME PICKERS SETUP =================
-
+    /**
+     * Initializes all date and time picker buttons and attaches listeners.
+     * When a date/time is selected, the appropriate TextView is updated.
+     */
     private void setupDateTimePickers() {
         // Start Date/Time
         btnPickStartDate.setOnClickListener(v -> showDatePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
@@ -276,6 +289,12 @@ public class CreateEventActivity extends AppCompatActivity {
         btnPickRegEndTime.setOnClickListener(v -> showTimePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
     }
 
+    /**
+     * Displays a date picker dialog for the given calendar instance.
+     *
+     * @param calendar  the calendar object to update with the user's selection
+     * @param onDateSet a callback executed after the user selects a date
+     */
     private void showDatePicker(Calendar calendar, Runnable onDateSet) {
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -294,6 +313,12 @@ public class CreateEventActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * Displays a time picker dialog for the given calendar instance.
+     *
+     * @param calendar  the calendar object to update with the selected time
+     * @param onTimeSet a callback executed after the user selects a time
+     */
     private void showTimePicker(Calendar calendar, Runnable onTimeSet) {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minute = calendar.get(Calendar.MINUTE);
@@ -310,14 +335,23 @@ public class CreateEventActivity extends AppCompatActivity {
         timePickerDialog.show();
     }
 
+    /**
+     * Updates the provided TextView to display the formatted date/time
+     * from the associated calendar instance.
+     *
+     * @param textView the TextView to update
+     * @param calendar the calendar containing the new date/time
+     */
     private void updateDateTimeDisplay(TextView textView, Calendar calendar) {
         String formatted = dateTimeFormat.format(calendar.getTime());
         textView.setText(formatted);
         textView.setTextColor(Color.parseColor("#212121")); // Make it dark when set
     }
 
-    // ================= POSTER PICKER SETUP =================
-
+    /**
+     * Configures the ActivityResultLauncher used to pick images from the gallery.
+     * When an image is selected, a preview is displayed on the screen.
+     */
     private void setupPosterPicker() {
         posterPickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -333,6 +367,12 @@ public class CreateEventActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * Loads and decodes the selected poster image into a Bitmap preview.
+     * Uses ImageDecoder on API 28+ and MediaStore for older devices.
+     *
+     * @param uri the Uri of the poster image selected by the user
+     */
     private void loadPosterPreview(Uri uri) {
         try {
             Bitmap bitmap;
@@ -351,14 +391,22 @@ public class CreateEventActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Launches an image picker intent to allow the organizer
+     * to choose a poster image for the event.
+     */
     private void openPosterPicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         posterPickerLauncher.launch(Intent.createChooser(intent, "Select event poster"));
     }
 
-    // ================= CREATE EVENT =================
-
+    /**
+     * Validates all event fields and inputs.
+     * Ensures required fields are filled, dates are chosen,
+     * optional numeric fields are valid, and posters meet size limits.
+     * If validation succeeds, begins Firestore event creation.
+     */
     private void createEvent() {
         // Get basic info
         String title = editTitle.getText().toString().trim();
@@ -437,7 +485,6 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         }
 
-        // ⭐ FIX — this CALL was missing
         createEventInFirestore(
                 selectedPosterUri,
                 title, description, location, category,
@@ -446,7 +493,24 @@ public class CreateEventActivity extends AppCompatActivity {
         );
     }
 
-    // ⭐ FIX — moved OUTSIDE createEvent() (was illegally nested)
+    /**
+     * Creates the Firestore event document and populates all fields:
+     * event metadata, timing, category, organizer email, lists, and poster URL.
+     * After creation, uploads the poster if present.
+     *
+     * @param posterUri          URI of the selected poster image (nullable)
+     * @param title              event title
+     * @param description        event description
+     * @param location           event location
+     * @param category           event category
+     * @param startDate          starting date/time of the event
+     * @param endDate            ending date/time of the event (nullable)
+     * @param regStart           registration start timestamp (nullable)
+     * @param regEnd             registration end timestamp (nullable)
+     * @param maxSpots           optional limit on entrants (nullable)
+     * @param lotterySampleSize  optional lottery sample size (nullable)
+     * @param geoRequired        whether geolocation check-in is required
+     */
     private void createEventInFirestore(
             Uri posterUri,
             String title,
@@ -516,13 +580,21 @@ public class CreateEventActivity extends AppCompatActivity {
                     if (posterUri != null) {
                         uploadPosterAndAttachToEvent(eventId, posterUri, deepLink); // ⭐ FIX added deepLink param
                     } else {
-                        showQrDialogAndReturnHome(deepLink);
+                        goBackToOrganizerHome();
                     }
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error creating event: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-    // ⭐ CHANGE — clean Option A upload method
+
+    /**
+     * Uploads the event poster image to Firebase Storage and saves
+     * the resulting download URL in the Firestore event document.
+     *
+     * @param eventId   unique Firestore event ID
+     * @param posterUri URI of the selected poster file
+     * @param deepLink  deep link associated with this event
+     */
     private void uploadPosterAndAttachToEvent(String eventId, Uri posterUri, String deepLink) {
         StorageReference ref = posterStorageRef.child(eventId + ".jpg");
 
@@ -535,49 +607,18 @@ public class CreateEventActivity extends AppCompatActivity {
                     db.collection("events")
                             .document(eventId)
                             .update("posterUrl", downloadUri.toString())
-                            .addOnSuccessListener(unused -> showQrDialogAndReturnHome(deepLink)); // ⭐ FIX
+                            .addOnSuccessListener(unused -> goBackToOrganizerHome());
                 })
                 .addOnFailureListener(err -> {
                     Toast.makeText(this, "Poster upload failed", Toast.LENGTH_SHORT).show();
-                    showQrDialogAndReturnHome(deepLink); // still show QR
+                    goBackToOrganizerHome();
                 });
     }
 
-
-    private void showQrDialogAndReturnHome(String deepLink) {
-        try {
-            int size = 800;
-            QRCodeWriter writer = new QRCodeWriter();
-            BitMatrix matrix = writer.encode(deepLink, BarcodeFormat.QR_CODE, size, size);
-            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
-
-            for (int x = 0; x < size; x++) {
-                for (int y = 0; y < size; y++) {
-                    bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
-                }
-            }
-
-            ImageView qrView = new ImageView(this);
-            qrView.setImageBitmap(bitmap);
-            qrView.setPadding(40, 40, 40, 40);
-
-            new AlertDialog.Builder(this)
-                    .setTitle("Event QR Code")
-                    .setView(qrView)
-                    .setPositiveButton("Done", (dialog, which) -> {
-                        dialog.dismiss();
-                        goBackToOrganizerHome();
-                    })
-                    .setCancelable(false)
-                    .show();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
-            goBackToOrganizerHome();
-        }
-    }
-
+    /**
+     * Navigates the organizer back to the OrganizerActivity home screen.
+     * Clears the back stack to prevent users from returning to CreateEventActivity.
+     */
     private void goBackToOrganizerHome() {
         Intent intent = new Intent(CreateEventActivity.this, OrganizerActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
