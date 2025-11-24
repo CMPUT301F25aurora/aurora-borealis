@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 
@@ -140,13 +141,17 @@ public class AlertsActivity extends AppCompatActivity {
 
     private void declineEvent(String eventId, String notifId) {
         db.collection("events").document(eventId)
-                .update("selectedEntrants", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail))
+                .update(
+                        "cancelledEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(userEmail),
+                        "waitingList", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail),
+                        "selectedEntrants", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail)
+                )
                 .addOnSuccessListener(v -> {
                     markNotificationStatus(notifId, "declined");
-                    sendDeclineNoticeToOrganizer(eventId);
-                    Toast.makeText(this, "You declined the invite.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "You've declined your spot", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void markNotificationStatus(String notifId, String status) {
         db.collection("notifications")
