@@ -68,6 +68,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -82,6 +83,10 @@ import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.bumptech.glide.Glide;
+
 
 /**
  * The main dashboard for administrators in the Aurora app.
@@ -106,7 +111,7 @@ public class AdminActivity extends AppCompatActivity {
     private List<DocumentSnapshot> eventDocs = new ArrayList<>();
     private List<DocumentSnapshot> profileDocs = new ArrayList<>();
     private List<DocumentSnapshot> logDocs = new ArrayList<>();
-
+    private List<AdminImage> imageList = new ArrayList<>();
     private enum Mode { EVENTS, PROFILES, IMAGES, LOGS }
     private Mode currentMode = Mode.EVENTS;
 
@@ -132,8 +137,6 @@ public class AdminActivity extends AppCompatActivity {
 
         buttonSearch = findViewById(R.id.buttonSearch);
         btnBack = findViewById(R.id.btnBackAdmin);
-
-
 
 
         if (btnBack != null) {
@@ -186,7 +189,7 @@ public class AdminActivity extends AppCompatActivity {
                 break;
             case IMAGES:
                 sectionTitle.setText("Browse Images");
-                loadImagesPlaceholder();
+                loadImages();
                 break;
             case LOGS:
                 sectionTitle.setText("Activity Logs");
@@ -399,17 +402,70 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     // IMAGES TAB (placeholder)
+    //// MODIFIED — full real image loading
     private void loadImagesPlaceholder() {
         listContainer.removeAllViews();
-
-        TextView tv = new TextView(this);
-        tv.setText("Image moderation coming soon.");
-        tv.setTextSize(14f);
-        tv.setTextColor(0xFF555555);
-        tv.setPadding(8, 16, 8, 16);
-
-        listContainer.addView(tv);
+        loadImages();  // call actual loader
     }
+    //// ADDED — fetch all event posters
+    private void loadImages() {
+        listContainer.removeAllViews(); // clear old cards
+
+        db.collection("events").get().addOnSuccessListener(query -> {
+            imageList.clear();
+
+            for (DocumentSnapshot doc : query) {
+                String posterUrl = doc.getString("posterUrl");
+
+                if (posterUrl != null && !posterUrl.isEmpty()) {
+                    String title = nz(doc.getString("title"));
+                    String organizer = nz(doc.getString("organizerEmail"));
+                    String eventId = doc.getId();
+
+                    imageList.add(new AdminImage(eventId, title, organizer, posterUrl));
+                }
+            }
+
+            if (imageList.isEmpty()) {
+                TextView tv = new TextView(this);
+                tv.setText("No images found.");
+                tv.setPadding(16, 16, 16, 16);
+                listContainer.addView(tv);
+                return;
+            }
+
+            // Inflate cards manually into listContainer
+            for (AdminImage img : imageList) {
+                addImageCard(img);
+            }
+        });
+    }
+    //// ADDED — render each image as a card
+    private void addImageCard(AdminImage img) {
+        View card = getLayoutInflater()
+                .inflate(R.layout.item_admin_image, listContainer, false);
+
+        ImageView thumb = card.findViewById(R.id.adminPosterThumb);
+        TextView title = card.findViewById(R.id.adminImageEventTitle);
+        TextView eventIdTv = card.findViewById(R.id.adminImageEventId);
+        TextView organizerTv = card.findViewById(R.id.adminImageOrganizer);
+        Button removeBtn = card.findViewById(R.id.adminDeleteImageBtn);
+
+        title.setText(img.eventTitle);
+        eventIdTv.setText("ID: " + img.eventId);
+        organizerTv.setText("Organizer: " + img.organizerEmail);
+
+        Glide.with(this)
+                .load(img.posterUrl)
+                .placeholder(R.drawable.ic_launcher_background)
+                .into(thumb);
+
+        removeBtn.setOnClickListener(v -> deleteImage(img));
+
+        listContainer.addView(card);
+    }
+
+
 
     // LOGS TAB
     private void loadLogs() {
@@ -630,4 +686,23 @@ public class AdminActivity extends AppCompatActivity {
         long days = hours / 24;
         return days + " days ago";
     }
+    //// ADDED — delete image from Storage + Firestore
+    private void deleteImage(AdminImage img) {
+        StorageReference ref = FirebaseStorage.getInstance()
+                .getReferenceFromUrl(img.posterUrl);
+
+        ref.delete().addOnSuccessListener(aVoid -> {
+
+            db.collection("events").document(img.eventId)
+                    .update("posterUrl", null)
+                    .addOnSuccessListener(v -> {
+                        Toast.makeText(this, "Image removed.", Toast.LENGTH_SHORT).show();
+                        loadImages();
+                    });
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Failed to delete: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        });
+    }
+
 }
