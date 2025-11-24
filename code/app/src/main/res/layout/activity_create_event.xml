@@ -80,7 +80,7 @@
                 android:layout_marginBottom="12dp"
                 android:inputType="textMultiLine" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/editLocation"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -91,6 +91,16 @@
                 android:padding="16dp"
                 android:layout_marginBottom="12dp"
                 android:inputType="text" />
+
+            <Button
+                android:id="@+id/btnPickEventLocation"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="Pick Event Location on Map"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_glass_button"
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
