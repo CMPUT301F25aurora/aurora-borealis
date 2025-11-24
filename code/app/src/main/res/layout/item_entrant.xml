@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="@drawable/bg_card"
+    android:gravity="center_vertical"
+    android:layout_marginBottom="8dp">
+
+    <CheckBox
+        android:id="@+id/checkSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingStart="12dp">
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User Name"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#111"/>
+
+        <TextView
+            android:id="@+id/tvEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="email@example.com"
+            android:textSize="14sp"
+            android:textColor="#666"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waiting"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="#6A1B9A"
+        android:padding="8dp"
+        android:background="@drawable/bg_status_badge"/>
+</LinearLayout>

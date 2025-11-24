@@ -27,9 +27,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,7 +65,17 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView createAccountButton;
     private FirebaseFirestore db;
-
+    /**
+     * Initializes the login screen, checks for previously stored login data,
+     * and redirects returning users automatically.
+     *
+     * <p>If the user is not already logged in, this method loads the login layout,
+     * sets up UI listeners (password toggle, login button, create-account button),
+     * initializes Firestore, and generates a default entrant profile for the device
+     * if one does not already exist.</p>
+     *
+     * @param savedInstanceState Previously saved UI state, if any.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +114,26 @@ public class LoginActivity extends AppCompatActivity {
         createAccountButton = findViewById(R.id.createAccountButton);
         db = FirebaseFirestore.getInstance();
 
+        ImageView passwordToggle = findViewById(R.id.passwordToggle);
+
+        final boolean[] isVisible = {false};
+
+        passwordToggle.setOnClickListener(v -> {
+            if (isVisible[0]) {
+                // Hide password
+                loginPassword.setTransformationMethod(new PasswordTransformationMethod());
+                passwordToggle.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                // Show password
+                loginPassword.setTransformationMethod(null);
+                passwordToggle.setImageResource(R.drawable.ic_eye_open);
+            }
+
+            isVisible[0] = !isVisible[0];
+            loginPassword.setSelection(loginPassword.getText().length());
+        });
+
+
         createDefaultEntrantProfile();
 
         loginButton.setOnClickListener(v -> loginUser());
@@ -119,7 +151,24 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Creates a default entrant profile tied to the unique Android device ID.
+     *
+     * <p>This allows users to participate in events even without creating a full
+     * account. If a Firestore document already exists for this device, nothing is changed.</p>
+     *
+     * <p>Stored fields include:</p>
+     * <ul>
+     *     <li>role = "entrant"</li>
+     *     <li>notificationsEnabled = false</li>
+     *     <li>createdAt timestamp</li>
+     *     <li>deviceId (ANDROID_ID)</li>
+     * </ul>
+     *
+     * Logs success or failure using Logcat.
+     */
     private void createDefaultEntrantProfile() {
+
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         DocumentReference userRef = db.collection("users").document(deviceId);
 
@@ -143,6 +192,19 @@ public class LoginActivity extends AppCompatActivity {
                 Log.e("DeviceAuth", "❌ Failed to check entrant profile", e));
     }
 
+    /**
+     * Attempts to authenticate the user by checking their input (email or phone)
+     * along with their password against Firestore records.
+     *
+     * <p>Login order:</p>
+     * <ol>
+     *     <li>Try matching input as an email.</li>
+     *     <li>If email lookup fails, try matching input as a phone number.</li>
+     * </ol>
+     *
+     * <p>If a valid user document is found, {@link #handleLogin(DocumentSnapshot)}
+     * is called to complete the login process. Otherwise, an error toast is shown.</p>
+     */
     private void loginUser() {
         String input = loginEmail.getText().toString().trim();    // email or phone
         String password = loginPassword.getText().toString().trim();
@@ -187,7 +249,27 @@ public class LoginActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Completes the login process after a matching Firestore document is found.
+     *
+     * <p>This method:</p>
+     * <ul>
+     *     <li>Extracts user fields from Firestore (name, email, phone, role)</li>
+     *     <li>Saves the data in SharedPreferences for future auto-login</li>
+     *     <li>Handles deep-link navigation for pending event scans</li>
+     *     <li>Opens the correct activity based on role:
+     *         <ul>
+     *             <li>Admin → AdminActivity</li>
+     *             <li>Organizer → OrganizerActivity</li>
+     *             <li>Entrant → EventsActivity</li>
+     *         </ul>
+     *     </li>
+     * </ul>
+     *
+     * @param doc The Firestore user document representing the logged-in user.
+     */
     private void handleLogin(DocumentSnapshot doc) {
+
         String name = doc.getString("name");
         String email = doc.getString("email");
         String phone = doc.getString("phone");

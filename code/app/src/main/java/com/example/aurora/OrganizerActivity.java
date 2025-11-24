@@ -37,20 +37,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+
 /**
- * OrganizerActivity.java
+ * OrganizerActivity
  *
- * Main dashboard for organizers in the Aurora app.
- * - Displays all events from Firestore, marking which ones belong to the current organizer.
- * - Lets organizers create new events or manage existing ones.
- * - Shows event info such as title, date, capacity, category, and location.
- * - Generates and displays QR codes for event deep links.
- * - Provides navigation to profile and notifications pages, and supports logout.
+ * Main dashboard screen for organizer users.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *     <li>Display all events created by the logged-in organizer.</li>
+ *     <li>Provide navigation to create new events, view entrants, and manage organizer profile.</li>
+ *     <li>Handle logout, QR display, and basic event statistics.</li>
+ *     <li>Load organizer-specific events from Firestore using organizerEmail.</li>
+ * </ul>
  */
-
-
-
-
 public class OrganizerActivity extends AppCompatActivity {
 
     private Button myEventsButton, createEventButton;
@@ -63,6 +63,13 @@ public class OrganizerActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String organizerEmail;
 
+    /**
+     * Called when the activity is first created.
+     * Initializes UI elements, retrieves the organizer's email,
+     * and loads all events that belong to the current organizer.
+     *
+     * @param savedInstanceState previous state bundle (if any)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +87,10 @@ public class OrganizerActivity extends AppCompatActivity {
         loadEventsFromFirebase();
     }
 
+
+    /**
+     * Binds all UI components from the layout file to fields in this class.
+     */
     private void bindViews() {
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
@@ -93,6 +104,9 @@ public class OrganizerActivity extends AppCompatActivity {
         bottomAlerts = findViewById(R.id.bottomAlerts);
     }
 
+    /**
+     * Sets up the top bar, including the back button and logout button.
+     */
     private void setupTopBar() {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
@@ -103,6 +117,11 @@ public class OrganizerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Logs the organizer out of FirebaseAuth,
+     * clears stored SharedPreferences,
+     * and returns the user to the LoginActivity.
+     */
     private void logoutUser() {
 
         FirebaseAuth.getInstance().signOut();
@@ -116,6 +135,12 @@ public class OrganizerActivity extends AppCompatActivity {
         finish();
     }
 
+
+    /**
+     * Sets up the buttons for event tabs:
+     * - "My Events" button (currently placeholder toast),
+     * - "Create Event" button that opens CreateEventActivity.
+     */
     private void setupTabs() {
         myEventsButton.setOnClickListener(v -> {
             Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show();
@@ -127,6 +152,12 @@ public class OrganizerActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets up bottom navigation for:
+     * - Home (reloads organizer dashboard)
+     * - Profile page
+     * - Alerts/notifications screen
+     */
     private void setupBottomNav() {
         bottomHome.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
@@ -146,10 +177,15 @@ public class OrganizerActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Loads all events from Firestore that match the logged-in organizer's email.
+     * Clears the event list and creates a card for each event.
+     */
     private void loadEventsFromFirebase() {
         eventListContainer.removeAllViews();
 
         db.collection("events")
+                .whereEqualTo("organizerEmail", organizerEmail)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (querySnapshot.isEmpty()) {
@@ -167,6 +203,13 @@ public class OrganizerActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
+
+    /**
+     * Inflates an event card layout and fills it with event information.
+     * Also sets up the QR button and the "Manage Entrants" button.
+     *
+     * @param doc Firestore document containing event data
+     */
     private void addEventCard(DocumentSnapshot doc) {
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
@@ -175,8 +218,11 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
         TextView status = eventView.findViewById(R.id.eventStatus);
+
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
-        //Button btnManage = eventView.findViewById(R.id.btnManageEvent);
+
+        // NEW BUTTON
+        Button btnManage = eventView.findViewById(R.id.btnManage);
 
         String eventId = doc.getId();
 
@@ -219,7 +265,6 @@ public class OrganizerActivity extends AppCompatActivity {
         date.setText(dateText);
         stats.setText("Max spots: " + maxSpots);
 
-
         String emoji = "📍";
         String lowerCategory = category.toLowerCase();
 
@@ -238,11 +283,6 @@ public class OrganizerActivity extends AppCompatActivity {
         String statusText = emoji + " " + capitalize(category);
         if (!location.isEmpty()) statusText += " • " + location;
 
-        // Mark which ones are mine
-        boolean isMine = organizerEmail != null && organizerEmail.equalsIgnoreCase(creatorEmail);
-        if (isMine) {
-            statusText += " • My Event";
-        }
 
         status.setText(statusText);
 
@@ -257,16 +297,32 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         });
 
-
+        btnManage.setOnClickListener(v -> {
+            Intent intent = new Intent(OrganizerActivity.this, OrganizerEntrantsActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
+        });
 
         eventListContainer.addView(eventView);
     }
 
+    /**
+     * Capitalizes the first letter of a string.
+     *
+     * @param text input string
+     * @return capitalized version, or empty string if null
+     */
     private String capitalize(String text) {
         if (text == null || text.isEmpty()) return "";
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
+
+    /**
+     * Generates a QR code bitmap for the provided deepLink and shows it in a dialog.
+     *
+     * @param deepLink deep-link URL for the event
+     */
     private void showQrPopup(String deepLink) {
         try {
             int size = 800;

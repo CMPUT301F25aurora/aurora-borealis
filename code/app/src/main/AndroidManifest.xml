@@ -43,6 +43,8 @@
         <activity android:name=".EntrantNavigationActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".AlertsActivity" android:exported="false" />
+        <activity android:name=".EntrantEventHistoryActivity" />
+
 
         <!-- Details + deep-link: aurora://event/<id> or aurora://event?id=<id> -->
         <activity
@@ -56,6 +58,7 @@
         <activity android:name=".CreateEventActivity" android:exported="false" />
         <activity android:name=".OrganizerProfileActivity" android:exported="false" />
         <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
+        <activity android:name=".OrganizerEntrantsActivity" />
 
         <!-- Admin -->
         <activity android:name=".AdminActivity" android:exported="false" />
