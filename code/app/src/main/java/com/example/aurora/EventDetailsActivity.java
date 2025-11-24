@@ -21,15 +21,19 @@
  *    https://developer.android.com/reference/android/provider/Settings.Secure
  *    Used when reading a device identifier like ANDROID_ID to tag actions from this screen.
  *
- * 6) source: ChatGPT (OpenAI assistant)
+ * 6) source: Google Play Services Location API
+ *    https://developers.google.com/android/reference/com/google/android/gms/location/FusedLocationProviderClient
+ *    Used for getting user's current location when joining waiting list with geolocation enabled.
+ *
+ * 7) source: ChatGPT (OpenAI assistant)
  *    Used only to help tidy up wording in the Javadoc and choose some helper method names.
  */
-
 
 package com.example.aurora;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -53,20 +57,22 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Shows details for a single event.
  * As an entrant you can:
  *  - See title, time, location, description, stats.
  *  - Join / leave the waiting list.
+ *  - Share location when joining (if event requires it).
  *  - View selection criteria (dialog).
  *  - View the event's QR code (no scanning here).
  *
  * Waiting list entries are stored as the entrant's EMAIL when possible,
  * falling back to device ID only if no email is available.
  */
-
 
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -138,7 +144,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-
         btnCriteria.setOnClickListener(v -> showCriteriaDialog());
 
         btnShowQr.setOnClickListener(v -> {
@@ -195,7 +200,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void bindEvent(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-            // (Comment out finish() when doing certain UI tests if needed)
             finish();
             return;
         }
@@ -262,35 +266,139 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    // ================= JOIN/LEAVE WAITING LIST WITH GEOLOCATION =================
 
-    // Join / leave waiting list  (stores EMAIL or fallback key)
     private void toggleJoin() {
         if (eventId == null) return;
 
         if (!isJoined) {
+            // Check if event requires geolocation
             db.collection("events")
                     .document(eventId)
-                    .update("waitingList", FieldValue.arrayUnion(userId))
-                    .addOnSuccessListener(v -> {
-                        isJoined = true;
-                        updateJoinedUi();
-                        Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        Boolean geoRequired = doc.getBoolean("geoRequired");
+
+                        if (geoRequired != null && geoRequired) {
+                            // Location is required - get location first
+                            joinWithLocation();
+                        } else {
+                            // Location not required - join directly
+                            joinWaitingList(null);
+                        }
                     })
                     .addOnFailureListener(e ->
-                            Toast.makeText(this, "Failed to join: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         } else {
-            db.collection("events")
-                    .document(eventId)
-                    .update("waitingList", FieldValue.arrayRemove(userId))
-                    .addOnSuccessListener(v -> {
-                        isJoined = false;
-                        updateJoinedUi();
-                        Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Failed to leave: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            leaveWaitingList();
         }
     }
+
+    private void joinWithLocation() {
+        // Check if we have permission
+        if (!LocationHelper.hasLocationPermission(this)) {
+            // Request permission
+            LocationHelper.requestLocationPermission(this);
+            Toast.makeText(this,
+                    "This event requires location access. Please grant permission.",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Get location
+        Toast.makeText(this, "Getting your location...", Toast.LENGTH_SHORT).show();
+
+        LocationHelper.getCurrentLocation(this, new LocationHelper.LocationCallback() {
+            @Override
+            public void onLocationReceived(double latitude, double longitude) {
+                // Create location object
+                Map<String, Object> location = new HashMap<>();
+                location.put("latitude", latitude);
+                location.put("longitude", longitude);
+                location.put("timestamp", System.currentTimeMillis());
+
+                // Join with location
+                joinWaitingList(location);
+            }
+
+            @Override
+            public void onLocationFailed(String error) {
+                Toast.makeText(EventDetailsActivity.this,
+                        "Could not get location: " + error,
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void joinWaitingList(Map<String, Object> location) {
+        // Create entrant data with optional location
+        Map<String, Object> entrantData = new HashMap<>();
+        entrantData.put("userId", userId);
+        entrantData.put("joinedAt", System.currentTimeMillis());
+
+        if (location != null) {
+            entrantData.put("location", location);
+        }
+
+        // Add to waiting list array
+        db.collection("events")
+                .document(eventId)
+                .update("waitingList", FieldValue.arrayUnion(userId))
+                .addOnSuccessListener(v -> {
+                    // Also store detailed entrant info in a subcollection
+                    db.collection("events")
+                            .document(eventId)
+                            .collection("entrantDetails")
+                            .document(userId)
+                            .set(entrantData)
+                            .addOnSuccessListener(unused -> {
+                                isJoined = true;
+                                updateJoinedUi();
+                                Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Failed to save details: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to join: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    private void leaveWaitingList() {
+        db.collection("events")
+                .document(eventId)
+                .update("waitingList", FieldValue.arrayRemove(userId))
+                .addOnSuccessListener(v -> {
+                    // Also remove from entrant details subcollection
+                    db.collection("events")
+                            .document(eventId)
+                            .collection("entrantDetails")
+                            .document(userId)
+                            .delete();
+
+                    isJoined = false;
+                    updateJoinedUi();
+                    Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to leave: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    // Handle permission results
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == 1001) { // Location permission request code
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted - inform user to try again
+                Toast.makeText(this, "Permission granted. Tap 'Join' again.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Location permission denied. Cannot join this event.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // ================= DIALOGS =================
 
     private void showCriteriaDialog() {
         View view = LayoutInflater.from(this)
@@ -305,7 +413,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         btnGotIt.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
-
 
     private void showQrPopup(String deepLink) {
         try {
