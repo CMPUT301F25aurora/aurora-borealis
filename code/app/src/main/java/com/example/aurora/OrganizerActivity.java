@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
@@ -52,6 +51,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
         bindViews();
         setupTopBar();
+        setupTabs();
         setupBottomNav();
         loadEventsFromFirebase();
     }
@@ -70,18 +70,35 @@ public class OrganizerActivity extends AppCompatActivity {
     }
 
     private void setupTopBar() {
-        btnBack.setOnClickListener(v -> onBackPressed());
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> onBackPressed());
+        }
 
-        btnLogout.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
-            sp.edit().clear().apply();
+        if (btnLogout != null) {
+            btnLogout.setOnClickListener(v -> logoutUser());
+        }
+    }
 
-            Intent intent = new Intent(OrganizerActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        });
+    private void logoutUser() {
+        FirebaseAuth.getInstance().signOut();
+
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        sp.edit().clear().apply();
+
+        Intent intent = new Intent(OrganizerActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+    private void setupTabs() {
+        myEventsButton.setOnClickListener(v ->
+                Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show()
+        );
+
+        createEventButton.setOnClickListener(v ->
+                startActivity(new Intent(OrganizerActivity.this, CreateEventActivity.class))
+        );
     }
 
     private void setupBottomNav() {
@@ -105,6 +122,7 @@ public class OrganizerActivity extends AppCompatActivity {
         eventListContainer.removeAllViews();
 
         db.collection("events")
+                .whereEqualTo("organizerEmail", organizerEmail)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (querySnapshot.isEmpty()) {
@@ -139,9 +157,11 @@ public class OrganizerActivity extends AppCompatActivity {
         String eventId = doc.getId();
 
         String titleText = doc.getString("title");
+        if (titleText == null) titleText = doc.getString("name");
         if (titleText == null) titleText = "Untitled Event";
 
         String dateText = doc.getString("date");
+        if (dateText == null) dateText = doc.getString("startDate");
         if (dateText == null) dateText = "Date not set";
 
         Long maxSpots = doc.getLong("maxSpots");
@@ -149,23 +169,32 @@ public class OrganizerActivity extends AppCompatActivity {
 
         String location = doc.getString("location");
         if (location == null) location = "";
-
         String category = doc.getString("category");
         if (category == null) category = "";
 
         String deepLink = doc.getString("deepLink");
-        String creatorEmail = doc.getString("organizerEmail");
-
-        boolean isMine = organizerEmail != null && organizerEmail.equalsIgnoreCase(creatorEmail);
 
         title.setText(titleText);
         date.setText(dateText);
         stats.setText("Max spots: " + maxSpots);
 
-        String text = "📍 " + category + " • " + location;
-        if (isMine) text += " • My Event";
-        status.setText(text);
+        // CATEGORY EMOJI + FORMATTING
+        String emoji = "📍";
+        String c = category.toLowerCase();
 
+        switch (c) {
+            case "arts": emoji = "🎨"; break;
+            case "sports": emoji = "⚽"; break;
+            case "music": emoji = "🎵"; break;
+            case "technology": emoji = "💻"; break;
+            case "education": emoji = "📚"; break;
+        }
+
+        String statusText = emoji + " " + capitalize(category);
+        if (!location.isEmpty()) statusText += " • " + location;
+        status.setText(statusText);
+
+        // QR BUTTON
         btnShowQR.setOnClickListener(v -> {
             if (deepLink == null || deepLink.isEmpty()) {
                 Toast.makeText(this, "No QR saved", Toast.LENGTH_SHORT).show();
@@ -174,20 +203,21 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         });
 
+        // MANAGE ENTRANTS
         btnManage.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerEntrantsActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
 
+        // LOTTERY BUTTON
         btnLottery.setOnClickListener(v -> runLotteryDialog(eventId));
 
         eventListContainer.addView(eventView);
     }
 
     private void runLotteryDialog(String eventId) {
-        android.app.AlertDialog.Builder builder =
-                new android.app.AlertDialog.Builder(this);
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
 
         builder.setTitle("Run Lottery");
 
@@ -203,7 +233,6 @@ public class OrganizerActivity extends AppCompatActivity {
                 Toast.makeText(this, "Enter a number", Toast.LENGTH_SHORT).show();
                 return;
             }
-
             runLottery(eventId, Integer.parseInt(s));
         });
 
@@ -217,13 +246,11 @@ public class OrganizerActivity extends AppCompatActivity {
                 .addOnSuccessListener(doc -> {
 
                     List<String> waiting = (List<String>) doc.get("waitingList");
-
                     if (waiting == null || waiting.isEmpty()) {
                         Toast.makeText(this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
-                    // Keep EMAILS ONLY
                     List<String> emailsOnly = new ArrayList<>();
                     for (String w : waiting)
                         if (w.contains("@")) emailsOnly.add(w);
@@ -253,7 +280,6 @@ public class OrganizerActivity extends AppCompatActivity {
 
     private void sendWinnerNotifications(String eventId, List<String> winners) {
         for (String email : winners) {
-
             NotificationModel notif = new NotificationModel(
                     "winner_selected",
                     "You've Been Selected!",
@@ -278,32 +304,39 @@ public class OrganizerActivity extends AppCompatActivity {
                 .show();
     }
 
+    private String capitalize(String text) {
+        if (text == null || text.isEmpty()) return "";
+        return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
+    }
+
     private void showQrPopup(String deepLink) {
         try {
             int size = 800;
             QRCodeWriter writer = new QRCodeWriter();
             BitMatrix matrix = writer.encode(deepLink, BarcodeFormat.QR_CODE, size, size);
-
-            Bitmap bmp = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
+            Bitmap bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565);
 
             for (int x = 0; x < size; x++) {
                 for (int y = 0; y < size; y++) {
-                    bmp.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
+                    bitmap.setPixel(x, y, matrix.get(x, y) ? Color.BLACK : Color.WHITE);
                 }
             }
 
-            ImageView qr = new ImageView(this);
-            qr.setImageBitmap(bmp);
-            qr.setPadding(40, 40, 40, 40);
+            ImageView qrView = new ImageView(this);
+            qrView.setImageBitmap(bitmap);
+            qrView.setPadding(40, 40, 40, 40);
 
             new androidx.appcompat.app.AlertDialog.Builder(this)
-                    .setTitle("QR Code")
-                    .setView(qr)
-                    .setPositiveButton("Close", null)
+                    .setTitle("🎟️ Event QR Code")
+                    .setView(qrView)
+                    .setPositiveButton("Close", (d, w) -> d.dismiss())
                     .show();
 
         } catch (Exception e) {
-            Toast.makeText(this, "Failed to generate QR", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+            Toast.makeText(this,
+                    "Failed to generate QR code",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
