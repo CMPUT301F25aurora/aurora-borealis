@@ -31,13 +31,10 @@ import com.google.firebase.storage.StorageReference;
 
 /**
  * OrganizerEntrantsActivity
- *
  * Lottery-style management screen for a single event.
  * - Shows stats: waiting, selected, cancelled, total spots.
  * - Tabs: Waiting / Selected / Cancelled / Final.
  * - List of entrants with checkbox + status badge.
- *
- * NOTE: waitingList / selectedEntrants / cancelledEntrants / finalEntrants
  * are assumed to store EMAIL strings.
  */
 
