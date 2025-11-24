@@ -64,7 +64,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
     private Button btnNotify;
     private Button btnReplace;
-
     // Tabs
     private TextView tabWaiting;
     private TextView tabSelected;
@@ -116,8 +115,8 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
         bindViews();
         setupRecycler();
-        setupButtons();
         setupTabs();
+        setupNotifyButtonLogic();
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
@@ -159,19 +158,91 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         entrantsAdapter = new EntrantsAdapter(this, new ArrayList<>());
         recyclerEntrants.setLayoutManager(new LinearLayoutManager(this));
         recyclerEntrants.setAdapter(entrantsAdapter);
+        entrantsAdapter.setSelectionListener(() -> updateNotifyButtonMode());
+    }
+    private void setupNotifyButtonLogic() {
+
+        btnNotify.setText("Notify All"); // default
+
+        btnNotify.setOnClickListener(v -> {
+
+            List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
+
+            // ⭐ If no one selected → Notify All waiting list
+            if (selected.isEmpty()) {
+                notifyAllWaiting();
+                return;
+            }
+
+            // ⭐ Notify only selected entrants
+            notifySelectedEntrants(selected);
+        });
+    }
+
+    // ⭐ NEW FUNCTION — Notify the entire waiting list
+    private void notifyAllWaiting() {
+
+        if (waitingEmails.isEmpty()) {
+            Toast.makeText(this, "No entrants in waiting list.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events").document(eventId)
+                .get().addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+                    if (eventName == null) eventName = "Event";
+
+                    for (String email : waitingEmails) {
+                        FirestoreNotificationHelper.sendWaitingListNotification(
+                                db,
+                                email,
+                                eventName,
+                                eventId
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified ALL waiting entrants (" + waitingEmails.size() + ")",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // ⭐ NEW FUNCTION — Notify only selected entrants
+    private void notifySelectedEntrants(List<EntrantsAdapter.EntrantItem> selected) {
+
+        db.collection("events").document(eventId)
+                .get().addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+                    if (eventName == null) eventName = "Event";
+
+                    for (EntrantsAdapter.EntrantItem e : selected) {
+                        FirestoreNotificationHelper.sendWaitingListNotification(
+                                db, e.getEmail(), eventName, eventId
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified " + selected.size() + " selected entrant(s).",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // ⭐ ADDED — Automatically update button label based on selection state
+    private void updateNotifyButtonMode() {
+        List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
+
+        if (selected.isEmpty()) {
+            btnNotify.setText("Notify All");
+        } else {
+            btnNotify.setText("Notify Selected (" + selected.size() + ")");
+        }
     }
 
     private void setupButtons() {
 
-
-        btnNotify.setOnClickListener(v -> {
-            List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
-            Toast.makeText(this,
-                    "Notify " + selected.size() + " entrant(s) (UI only)",
-                    Toast.LENGTH_SHORT).show();
-        });
-
-        // US 02.06.04 – cancel entrants that did not sign up
+        // Only replace button stays here
         btnReplace.setOnClickListener(v -> {
             List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
 
@@ -192,6 +263,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             cancelUnconfirmedEntrants(selected);
         });
     }
+
 
     private void cancelUnconfirmedEntrants(List<EntrantsAdapter.EntrantItem> toCancel) {
         if (selectedEmails == null) selectedEmails = new ArrayList<>();

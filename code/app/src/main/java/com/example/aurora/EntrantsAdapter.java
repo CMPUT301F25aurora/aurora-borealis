@@ -19,12 +19,22 @@ import java.util.List;
  */
 public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.EntrantViewHolder> {
 
+    // ⭐ ADDED: Listener interface
+    public interface OnSelectionChanged {
+        void onChanged();
+    }
+
+    // ⭐ ADDED: Listener field
+    private OnSelectionChanged selectionListener;
+
+    public void setSelectionListener(OnSelectionChanged listener) {
+        this.selectionListener = listener;
+    }
     public static class EntrantItem {
         private final String name;
         private final String email;
         private final String status;
         private boolean checked;
-
         public EntrantItem(String name, String email, String status) {
             this.name = name;
             this.email = email;
@@ -46,7 +56,6 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         this.context = context;
         this.items = initial != null ? initial : new ArrayList<>();
     }
-
     @NonNull
     @Override
     public EntrantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,6 +64,7 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         return new EntrantViewHolder(v);
     }
 
+    @NonNull
     @Override
     public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
         EntrantItem item = items.get(position);
@@ -66,8 +76,13 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(item.isChecked());
 
+        // Only notify on actual checkbox toggle
         holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             item.setChecked(isChecked);
+
+            if (selectionListener != null) {
+                selectionListener.onChanged();   // correct
+            }
         });
 
         // Simple status pill styling
@@ -84,6 +99,9 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
     public void clearItems() {
         items.clear();
         notifyDataSetChanged();
+        if (selectionListener != null) {
+            selectionListener.onChanged();     // <--- HIGHLIGHTED FIX
+        }
     }
 
     public void addItem(EntrantItem item) {

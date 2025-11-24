@@ -34,7 +34,7 @@
         android:textColor="#999"
         android:textSize="12sp" />
 
-    <!-- Buttons -->
+    <!-- Buttons Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,6 +58,15 @@
             android:textColor="@android:color/white"
             android:layout_marginStart="12dp"
             android:backgroundTint="#E53935" />
+
+        <!-- ADDED: Dismiss button -->
+        <Button
+            android:id="@+id/btnDismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dismiss"
+            android:layout_marginStart="12dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 
