@@ -128,31 +128,35 @@ public class AlertsActivity extends AppCompatActivity {
         // 🚫 HIDE Accept/Decline for NOT_SELECTED
         ///// CHANGED — Added waiting_list_info handling
 
-        if ("waiting_list_info".equals(notifType)) {
+        // ⭐ DISMISS-ONLY NOTIFICATIONS
+        if ("waiting_list_info".equals(notifType)
+                || "selected_list_info".equals(notifType)
+                || "cancelled_list_info".equals(notifType)) {
 
-            // Hide accept/decline
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
 
-            // Show dismiss button
             btnDismiss.setVisibility(View.VISIBLE);
-
             btnDismiss.setOnClickListener(v -> deleteNotification(notifId));
+        }
+        else if ("not_selected".equals(notifType)) {
 
-        } else if ("not_selected".equals(notifType)) {
-
-            // Hide all buttons
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
             btnDismiss.setVisibility(View.GONE);
 
-        } else {
-            // Winner notification (accept/decline)
+        }
+        else {
+
             btnDismiss.setVisibility(View.GONE);
+
+            btnAccept.setVisibility(View.VISIBLE);
+            btnDecline.setVisibility(View.VISIBLE);
 
             btnAccept.setOnClickListener(v -> acceptEvent(eventId, notifId));
             btnDecline.setOnClickListener(v -> declineEvent(eventId, notifId));
         }
+
 
 ///// END
 
