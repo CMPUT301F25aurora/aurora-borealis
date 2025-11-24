@@ -9,7 +9,7 @@
     <!-- Top App Bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="90dp"
         android:background="#7E57C2"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -18,12 +18,12 @@
 
         <ImageButton
             android:id="@+id/btnBackOrganizer"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@android:color/transparent"
+            android:contentDescription="@string/back"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white"
-            android:contentDescription="@string/back" />
+            android:tint="@android:color/white" />
 
         <TextView
             android:id="@+id/dashboardTitle"
@@ -39,10 +39,10 @@
         <Button
             android:id="@+id/btnLogoutOrganizer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
+            android:background="@android:color/transparent"
             android:text="Logout"
             android:textAllCaps="false"
-            android:background="@android:color/transparent"
             android:textColor="@android:color/white" />
     </LinearLayout>
 

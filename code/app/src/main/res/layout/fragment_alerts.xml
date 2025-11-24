@@ -3,23 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FAF9FF"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#FAF9FF">
 
-    <!-- Top row: back + title -->
+    <!-- Top bar -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageButton
             android:id="@+id/backButtonAlerts"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_arrow_back_24"
-            android:contentDescription="Back" />
+            android:src="@drawable/ic_arrow_back_24" />
 
         <TextView
             android:id="@+id/alertsTitle"
@@ -28,18 +27,26 @@
             android:text="Alerts"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:layout_marginStart="8dp"
-            android:textColor="#333333" />
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
+    <!-- Empty message -->
     <TextView
         android:id="@+id/alertsMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="You don’t have any alerts right now."
         android:textSize="16sp"
-        android:textColor="#777777"
+        android:textColor="#666"
         android:gravity="center"
-        android:paddingHorizontal="24dp"
-        android:layout_marginTop="24dp" />
+        android:padding="24dp"
+        android:visibility="visible" />
+
+    <!-- Notification cards -->
+    <LinearLayout
+        android:id="@+id/alertsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
+
 </LinearLayout>

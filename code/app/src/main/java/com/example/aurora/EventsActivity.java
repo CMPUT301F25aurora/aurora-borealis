@@ -1,40 +1,13 @@
-/*
- * References for this screen:
- *
- * 1) author: Stack Overflow user — "Simple Android RecyclerView example"
- *    https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
- *    Used as a model for setting up RecyclerView with a LayoutManager and Adapter to show events.
- *
- * 2) source: Android Developers — "Create dynamic lists with RecyclerView"
- *    https://developer.android.com/develop/ui/views/layout/recyclerview
- *    Used for general RecyclerView structure and best practices.
- *
- * 3) source: Firebase docs — "Get data with Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/query-data/get-data
- *    Used for loading the events collection into memory.
- *
- * 4) source: Firebase docs — "Perform simple and compound queries in Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/query-data/queries
- *    Used for filtering and ordering events by fields like category or date.
- *
- * 5) author: Stack Overflow user — "How do I pass data between Activities in Android application?"
- *    https://stackoverflow.com/questions/2091465/how-do-i-pass-data-between-activities-in-android-application
- *    Used for passing the selected event id via Intent extras to EventDetailsActivity.
- *
- * 6) source: ChatGPT (OpenAI assistant)
- *    Used only to shorten some comments and pick simple method names for filters and click handlers.
- */
-
-
-
 package com.example.aurora;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -46,7 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -61,15 +36,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * <ul>
- *   <li>Scan event QR codes to open event details.</li>
- *   <li>Filter events by category (e.g. Music, Sports, Education).</li>
- *   <li>Use an availability filter for specific days or time slots.</li>
- *   <li>Log out or navigate to Profile and Alerts screens.</li>
- * </ul>
+ * Entrant home screen (main screen after login)
+ *
+ * Shows events + receives real-time notifications from organizers.
  */
-
 public class EventsActivity extends AppCompatActivity {
+
+    // 🔔 Notification listener
+    private ListenerRegistration notifListener;
 
     private EditText searchEvents;
     private Button logoutButton;
@@ -129,10 +103,7 @@ public class EventsActivity extends AppCompatActivity {
         btnArts.setOnClickListener(v -> loadEvents("Arts"));
         btnTechnology.setOnClickListener(v -> loadEvents("Technology"));
 
-
-        navEvents.setOnClickListener(v -> {
-
-        });
+        navEvents.setOnClickListener(v -> {});
         navProfile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
         navAlerts.setOnClickListener(v ->
@@ -154,9 +125,79 @@ public class EventsActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) {}
         });
 
+        // Load events
         loadEvents(null);
+
+        // 🔔 START NOTIFICATION LISTENER FOR ENTRANTS
+        listenForNotifications();
     }
 
+    // ------------------------------------------------------------
+    // 🔔 REALTIME NOTIFICATION LISTENER
+    // ------------------------------------------------------------
+
+    private void listenForNotifications() {
+
+        String email = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_email", null);
+
+        Log.d("DEBUG_EMAIL", "Entrant email from prefs: " + email);
+
+        if (email == null || email.isEmpty()) return;
+
+        notifListener = db.collection("notifications")
+                .whereEqualTo("userId", email)
+                .whereEqualTo("status", "pending")
+                .addSnapshotListener((snap, err) -> {
+
+                    if (err != null || snap == null) return;
+
+                    for (DocumentChange dc : snap.getDocumentChanges()) {
+
+                        if (dc.getType() == DocumentChange.Type.ADDED) {
+
+                            NotificationModel notif =
+                                    dc.getDocument().toObject(NotificationModel.class);
+
+                            showLocalNotification(notif);
+                        }
+                    }
+                });
+    }
+
+    // ------------------------------------------------------------
+    // 🔔 SHOW ANDROID NOTIFICATION
+    // ------------------------------------------------------------
+
+    private void showLocalNotification(NotificationModel notif) {
+
+        NotificationHelper helper = new NotificationHelper(this);
+
+        Intent intent = new Intent(this, AlertsActivity.class);
+        intent.putExtra("eventId", notif.getEventId());
+
+        PendingIntent pIntent = PendingIntent.getActivity(
+                this,
+                (int) System.currentTimeMillis(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        helper.getManager().notify(
+                (int) System.currentTimeMillis(),
+                helper.getNotification(notif.getTitle(), notif.getMessage(), pIntent).build()
+        );
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (notifListener != null) notifListener.remove();
+    }
+
+    // ------------------------------------------------------------
+    // EXISTING CODE — EVENTS, FILTERS, QR SCAN ETC (UNCHANGED)
+    // ------------------------------------------------------------
 
     private void logoutUser() {
         FirebaseAuth.getInstance().signOut();
@@ -207,7 +248,6 @@ public class EventsActivity extends AppCompatActivity {
         final android.widget.CheckBox cbMorning = view.findViewById(R.id.cbMorning);
         final android.widget.CheckBox cbAfternoon = view.findViewById(R.id.cbAfternoon);
         final android.widget.CheckBox cbEvening = view.findViewById(R.id.cbEvening);
-
 
         cbMon.setChecked(daySelected[0]);
         cbTue.setChecked(daySelected[1]);
