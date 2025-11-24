@@ -44,11 +44,11 @@ public class AlertsActivity extends AppCompatActivity {
         ImageButton back = findViewById(R.id.backButtonAlerts);
         if (back != null) back.setOnClickListener(v -> onBackPressed());
 
-        listenNotifications();   // 🔥 REAL-TIME LISTENER (FIXES EVERYTHING)
+        listenNotifications();   // 🔥 Real-time updates
     }
 
     // ---------------------------------------------------------
-    // 🔥 REAL-TIME SNAPSHOT LISTENER (not .get() anymore)
+    // 🔥 REAL-TIME FIRESTORE LISTENER
     // ---------------------------------------------------------
     private void listenNotifications() {
 
@@ -58,10 +58,8 @@ public class AlertsActivity extends AppCompatActivity {
             return;
         }
 
-        // Remove old listener if exists
-        if (notifListener != null) {
-            notifListener.remove();
-        }
+        // Clean old listener if reopening the screen
+        if (notifListener != null) notifListener.remove();
 
         notifListener = db.collection("notifications")
                 .whereEqualTo("userId", userEmail)
@@ -85,9 +83,10 @@ public class AlertsActivity extends AppCompatActivity {
     }
 
     // ---------------------------------------------------------
-    // 🔔 UI CARD FOR EACH NOTIFICATION
+    // 🔔 BUILD NOTIFICATION CARD UI
     // ---------------------------------------------------------
     private void addNotificationCard(DocumentSnapshot doc) {
+
         View card = LayoutInflater.from(this)
                 .inflate(R.layout.item_notification_card, alertsContainer, false);
 
@@ -104,17 +103,12 @@ public class AlertsActivity extends AppCompatActivity {
         title.setText(doc.getString("title"));
         msg.setText(doc.getString("message"));
 
-        // Support both Timestamp AND Long
+        // Timestamp or Long
         if (doc.get("createdAt") instanceof Timestamp) {
             Timestamp t = doc.getTimestamp("createdAt");
-            if (t != null) {
-                time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
-                        .format(t.toDate()));
-            }
+            time.setText(formatTime(t != null ? t.toDate().getTime() : 0));
         } else if (doc.get("createdAt") instanceof Long) {
-            long ms = (long) doc.get("createdAt");
-            time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
-                    .format(ms));
+            time.setText(formatTime((Long) doc.get("createdAt")));
         }
 
         btnAccept.setOnClickListener(v -> acceptEvent(eventId, notifId));
@@ -123,44 +117,63 @@ public class AlertsActivity extends AppCompatActivity {
         alertsContainer.addView(card);
     }
 
+    private String formatTime(long ms) {
+        return new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault())
+                .format(ms);
+    }
+
     // ---------------------------------------------------------
-    // ACCEPT / DECLINE HANDLERS
+    // ACCEPT / DECLINE ACTIONS
     // ---------------------------------------------------------
     private void acceptEvent(String eventId, String notifId) {
+
         db.collection("events").document(eventId)
                 .update(
-                        "finalEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(userEmail),
-                        "waitingList", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail),
-                        "selectedEntrants", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail)
+                        "finalEntrants", FieldValue.arrayUnion(userEmail),
+                        "waitingList", FieldValue.arrayRemove(userEmail),
+                        "selectedEntrants", FieldValue.arrayRemove(userEmail)
                 )
                 .addOnSuccessListener(v -> {
-                    markNotificationStatus(notifId, "accepted");
-                    Toast.makeText(this, "You've accepted your spot!", Toast.LENGTH_SHORT).show();
+
+                    deleteNotification(notifId);
+                    Toast.makeText(this,
+                            "You've accepted your spot!",
+                            Toast.LENGTH_SHORT).show();
                 });
     }
 
     private void declineEvent(String eventId, String notifId) {
+
         db.collection("events").document(eventId)
                 .update(
-                        "cancelledEntrants", com.google.firebase.firestore.FieldValue.arrayUnion(userEmail),
-                        "waitingList", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail),
-                        "selectedEntrants", com.google.firebase.firestore.FieldValue.arrayRemove(userEmail)
+                        "cancelledEntrants", FieldValue.arrayUnion(userEmail),
+                        "waitingList", FieldValue.arrayRemove(userEmail),
+                        "selectedEntrants", FieldValue.arrayRemove(userEmail)
                 )
                 .addOnSuccessListener(v -> {
-                    markNotificationStatus(notifId, "declined");
-                    Toast.makeText(this, "You've declined your spot", Toast.LENGTH_SHORT).show();
+
+                    deleteNotification(notifId);
+                    Toast.makeText(this,
+                            "You've declined your spot",
+                            Toast.LENGTH_SHORT).show();
+
+                    // OPTIONAL: notify organizer
+                    sendDeclineNoticeToOrganizer(eventId);
                 });
     }
 
-
-    private void markNotificationStatus(String notifId, String status) {
+    // ---------------------------------------------------------
+    // DELETE NOTIFICATION (listener removes it from UI)
+    // ---------------------------------------------------------
+    private void deleteNotification(String notifId) {
         db.collection("notifications")
                 .document(notifId)
-                .update("status", status);
+                .delete();
     }
 
     private void sendDeclineNoticeToOrganizer(String eventId) {
-        db.collection("events").document(eventId)
+        db.collection("events")
+                .document(eventId)
                 .get()
                 .addOnSuccessListener(doc -> {
                     String organizerEmail = doc.getString("organizerEmail");
@@ -175,8 +188,7 @@ public class AlertsActivity extends AppCompatActivity {
                             System.currentTimeMillis()
                     );
 
-                    db.collection("notifications")
-                            .add(nm);
+                    db.collection("notifications").add(nm);
                 });
     }
 
