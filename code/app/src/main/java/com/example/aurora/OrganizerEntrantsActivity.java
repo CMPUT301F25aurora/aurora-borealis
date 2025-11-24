@@ -17,6 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Environment;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 import android.content.Intent;
 import android.net.Uri;
@@ -114,6 +119,9 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
+        Button btnExport = findViewById(R.id.btnExportCsv);
+        btnExport.setOnClickListener(v -> exportFinalCsv());
+
     }
 
     private void bindViews() {
@@ -400,5 +408,44 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
     }
+
+    private void exportFinalCsv() {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) return;
+
+                    List<String> finalList = (List<String>) doc.get("finalEntrants");
+                    if (finalList == null || finalList.isEmpty()) {
+                        Toast.makeText(this, "No final entrants to export", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    try {
+                        File dir = new File(Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS
+                        ), "AuroraExports");
+
+                        if (!dir.exists()) dir.mkdirs();
+
+                        File file = new File(dir, "final_list_" + eventId + ".csv");
+                        FileWriter writer = new FileWriter(file);
+
+                        writer.append("Email\n");
+                        for (String email : finalList) {
+                            writer.append(email).append("\n");
+                        }
+
+                        writer.flush();
+                        writer.close();
+
+                        Toast.makeText(this, "CSV saved: Downloads/AuroraExports/", Toast.LENGTH_LONG).show();
+
+                    } catch (IOException e) {
+                        Toast.makeText(this, "Error writing CSV", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
 }
