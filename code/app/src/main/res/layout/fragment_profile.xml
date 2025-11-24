@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient_deep_space">
 
     <LinearLayout
         android:orientation="vertical"
@@ -22,7 +23,7 @@
                 android:layout_height="40dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back_24"
-                android:contentDescription="Back" />
+                android:contentDescription="@string/back" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -30,24 +31,29 @@
                 android:layout_marginStart="8dp"
                 android:text="Profile"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
         </LinearLayout>
 
-        <!-- Profile header card -->
+        <!-- Profile header glass card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="16dp"
             android:layout_marginTop="12dp"
-            android:background="#FFF5F7">
+            android:background="@drawable/bg_glass_card">
 
             <ImageView
                 android:id="@+id/avatarCircle"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_gravity="center_horizontal"
-                android:background="#E0E0E0"
+                android:background="#40FFFFFF"
                 android:src="@mipmap/ic_launcher_round" />
 
             <TextView
@@ -58,7 +64,8 @@
                 android:layout_marginTop="8dp"
                 android:text="Entrant"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/roleBadge"
@@ -70,10 +77,11 @@
                 android:paddingVertical="4dp"
                 android:text="Entrant"
                 android:textSize="12sp"
-                android:background="#EEEEEE" />
+                android:background="@drawable/bg_transparent_input"
+                android:textColor="#E0E0E0" />
         </LinearLayout>
 
-        <!-- Profile info header row -->
+        <!-- Profile info header glass row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -81,76 +89,86 @@
             android:gravity="center_vertical"
             android:layout_marginTop="16dp"
             android:padding="12dp"
-            android:background="#FAFAFA">
+            android:background="@drawable/bg_glass_card">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Profile Information"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/editToggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Edit"
-                android:textColor="#2962FF" />
+                android:textColor="#BBDEFB" />
         </LinearLayout>
 
-        <!-- Profile form -->
+        <!-- Profile form glass card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="12dp"
-            android:background="#FFFFFF">
+            android:background="@drawable/bg_glass_card">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Full Name" />
+                android:text="Full Name"
+                android:textColor="#E0E0E0" />
 
             <EditText
                 android:id="@+id/inputFullName"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="#F6F6F6"
+                android:background="@drawable/bg_transparent_input"
                 android:padding="12dp"
                 android:enabled="false"
-                android:hint="Your name" />
+                android:hint="Your name"
+                android:textColor="@android:color/white"
+                android:textColorHint="#B0BEC5" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Email Address" />
+                android:text="Email Address"
+                android:textColor="#E0E0E0" />
 
             <EditText
                 android:id="@+id/inputEmail"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="#F6F6F6"
+                android:background="@drawable/bg_transparent_input"
                 android:padding="12dp"
                 android:enabled="false"
                 android:inputType="textEmailAddress"
-                android:hint="you@email.com" />
+                android:hint="you@email.com"
+                android:textColor="@android:color/white"
+                android:textColorHint="#B0BEC5" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:text="Phone Number" />
+                android:text="Phone Number"
+                android:textColor="#E0E0E0" />
 
             <EditText
                 android:id="@+id/inputPhone"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="#F6F6F6"
+                android:background="@drawable/bg_transparent_input"
                 android:padding="12dp"
                 android:enabled="false"
                 android:inputType="phone"
-                android:hint="+1 (555) 123-4567" />
+                android:hint="+1 (555) 123-4567"
+                android:textColor="@android:color/white"
+                android:textColorHint="#B0BEC5" />
 
             <Button
                 android:id="@+id/btnSave"
@@ -158,25 +176,26 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="16dp"
                 android:text="Save"
-                android:backgroundTint="#2962FF"
+                android:background="@drawable/bg_gradient_button"
                 android:textColor="@android:color/white"
                 android:visibility="gone" />
         </LinearLayout>
 
-        <!-- Activity stats -->
+        <!-- Activity stats glass card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="16dp"
             android:padding="12dp"
-            android:background="#FFFFFF">
+            android:background="@drawable/bg_glass_card">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Activity"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@android:color/white" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -190,12 +209,13 @@
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="#F1F8FF">
+                    android:background="@drawable/bg_transparent_input">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Joined Events" />
+                        android:text="Joined Events"
+                        android:textColor="#E0E0E0" />
 
                     <TextView
                         android:id="@+id/joinedCount"
@@ -203,7 +223,8 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textStyle="bold"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -213,12 +234,13 @@
                     android:orientation="vertical"
                     android:gravity="center"
                     android:layout_marginStart="12dp"
-                    android:background="#F1FFF5">
+                    android:background="@drawable/bg_transparent_input">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lottery Wins" />
+                        android:text="Lottery Wins"
+                        android:textColor="#E0E0E0" />
 
                     <TextView
                         android:id="@+id/winsCount"
@@ -226,7 +248,8 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textStyle="bold"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -242,14 +265,20 @@
                 android:id="@+id/btnEventHistory"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:text="Event History" />
+                android:text="Event History"
+                android:background="@drawable/bg_transparent_input"
+                android:backgroundTint="#40FFFFFF"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnNotifSettings"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:text="Notification Settings"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_transparent_input"
+                android:backgroundTint="#40FFFFFF"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnDeleteAccount"

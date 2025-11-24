@@ -3,78 +3,79 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F7FB"
+    android:background="@drawable/bg_gradient_deep_space"
     tools:context=".OrganizerProfileActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
-        <!-- Top gradient header -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:gravity="center"
-            android:background="@drawable/bg_header_gradient">
+            android:gravity="center_horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="24dp">
 
-            <!-- Back Button -->
-            <ImageView
-                android:id="@+id/backButton"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_gravity="start"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/ic_arrow_back_24"
-                android:contentDescription="Back"
-                android:tint="#FFFFFF" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <!-- Profile Image -->
+                <ImageView
+                    android:id="@+id/backButton"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_arrow_back_24"
+                    android:contentDescription="Back"
+                    android:tint="@android:color/white" />
+            </LinearLayout>
+
             <ImageView
                 android:id="@+id/profileImage"
                 android:layout_width="120dp"
                 android:layout_height="120dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/circle_background"
                 android:src="@drawable/ic_person_24"
                 android:padding="8dp"
                 android:scaleType="fitCenter"
-                android:tint="#FFFFFF" />
+                android:tint="@android:color/white" />
 
-
-
-            <!-- Profile Title -->
             <TextView
                 android:id="@+id/profileHeaderName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
+                android:layout_marginTop="8dp"
                 android:text="Event Organizer"
-                android:textColor="#FFFFFF"
+                android:textColor="@android:color/white"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="3"
+                android:shadowRadius="6" />
 
             <TextView
                 android:id="@+id/profileHeaderRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event Organizer"
-                android:textColor="#D9EFFF"
+                android:text="Organizer"
+                android:textColor="#E0E0E0"
                 android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- Profile Information Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_card"
+            android:background="@drawable/bg_card_vibrant"
             android:orientation="vertical"
             android:padding="16dp"
-            android:layout_marginTop="16dp"
-            android:elevation="4dp">
+            android:layout_marginTop="4dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -82,67 +83,63 @@
                 android:text="Profile Information"
                 android:textStyle="bold"
                 android:textSize="16sp"
+                android:textColor="@android:color/white"
                 android:paddingBottom="8dp" />
 
-            <!-- Full Name -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Full Name"
                 android:textStyle="bold"
-                android:textColor="#333333" />
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/profileName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="#666666"
+                android:textColor="#E0E0E0"
                 android:paddingBottom="8dp" />
 
-            <!-- Email -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Email Address"
                 android:textStyle="bold"
-                android:textColor="#333333" />
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/profileEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="#666666"
+                android:textColor="#E0E0E0"
                 android:paddingBottom="8dp" />
 
-            <!-- Phone -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Phone Number"
                 android:textStyle="bold"
-                android:textColor="#333333" />
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/profilePhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text=""
-                android:textColor="#666666"
+                android:textColor="#E0E0E0"
                 android:paddingBottom="8dp" />
         </LinearLayout>
 
-        <!-- Organizer Stats -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/rounded_card"
+            android:background="@drawable/bg_card_vibrant"
             android:orientation="vertical"
             android:padding="16dp"
-            android:layout_marginTop="12dp"
-            android:elevation="4dp"
-            android:gravity="center">
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal">
 
             <TextView
                 android:id="@+id/activeEventsCount"
@@ -150,29 +147,27 @@
                 android:layout_height="wrap_content"
                 android:text="2"
                 android:textSize="24sp"
-                android:textColor="#6B4EFF"
+                android:textColor="#80CFFF"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Active Events"
-                android:textColor="#333333" />
+                android:textColor="@android:color/white" />
         </LinearLayout>
 
-        <!-- Delete Account Button -->
         <Button
             android:id="@+id/deleteAccountButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/delete_button_outline"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_glass_button"
             android:text="Delete Account"
             android:textColor="#E53935"
             android:drawableLeft="@drawable/ic_baseline_delete_24"
             android:drawablePadding="8dp"
-            android:elevation="2dp" />
-
+            android:textAllCaps="false" />
 
     </LinearLayout>
 </ScrollView>

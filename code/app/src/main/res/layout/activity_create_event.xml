@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_aurora">
+    android:background="@drawable/bg_gradient_deep_space">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,19 +10,38 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- ✨ GRADIENT HEADER using GradientTextView -->
-        <com.example.aurora.GradientTextView
-            android:id="@+id/createEventTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create New Event"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"
-            android:shadowColor="#000000"
-            android:shadowDx="0"
-            android:shadowDy="3"
-            android:shadowRadius="8" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="8dp">
+
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_back_24"
+                android:tint="@android:color/white"
+                android:contentDescription="Back"
+                android:padding="12dp" />
+
+            <TextView
+                android:id="@+id/createEventTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create New Event"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:shadowColor="#A0000000"
+                android:shadowDx="0"
+                android:shadowDy="3"
+                android:shadowRadius="8"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,26 +52,27 @@
             android:layout_marginBottom="24dp"
             android:alpha="0.9" />
 
-        <!-- ================= BASIC INFO GLASS CARD ================= -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_glass_card"
+            android:background="@drawable/bg_card_vibrant"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <!-- Section Header with Gradient -->
-            <com.example.aurora.GradientTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Basic information"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginBottom="16dp" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
 
-            <!-- Transparent Input Fields -->
             <EditText
                 android:id="@+id/editTitle"
                 android:layout_width="match_parent"
@@ -111,23 +130,26 @@
 
         </LinearLayout>
 
-        <!-- ================= EVENT DATES GLASS CARD ================= -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_glass_card"
+            android:background="@drawable/bg_card_vibrant"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <com.example.aurora.GradientTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event dates"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginBottom="16dp" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -152,7 +174,8 @@
                     android:text="Pick Date"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button"
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF"
                     android:layout_marginEnd="8dp" />
 
                 <Button
@@ -163,7 +186,8 @@
                     android:text="Pick Time"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button" />
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF" />
             </LinearLayout>
 
             <TextView
@@ -200,7 +224,8 @@
                     android:text="Pick Date"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button"
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF"
                     android:layout_marginEnd="8dp" />
 
                 <Button
@@ -211,7 +236,8 @@
                     android:text="Pick Time"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button" />
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF" />
             </LinearLayout>
 
             <TextView
@@ -226,23 +252,26 @@
 
         </LinearLayout>
 
-        <!-- ================= REGISTRATION PERIOD GLASS CARD ================= -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_glass_card"
+            android:background="@drawable/bg_card_vibrant"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <com.example.aurora.GradientTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Registration period"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginBottom="16dp" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -267,7 +296,8 @@
                     android:text="Pick Date"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button"
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF"
                     android:layout_marginEnd="8dp" />
 
                 <Button
@@ -278,7 +308,8 @@
                     android:text="Pick Time"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button" />
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF" />
             </LinearLayout>
 
             <TextView
@@ -315,7 +346,8 @@
                     android:text="Pick Date"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button"
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF"
                     android:layout_marginEnd="8dp" />
 
                 <Button
@@ -326,7 +358,8 @@
                     android:text="Pick Time"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:background="@drawable/bg_glass_button" />
+                    android:background="@drawable/bg_transparent_input"
+                    android:backgroundTint="#40FFFFFF" />
             </LinearLayout>
 
             <TextView
@@ -341,23 +374,26 @@
 
         </LinearLayout>
 
-        <!-- ================= CAPACITY GLASS CARD ================= -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_glass_card"
+            android:background="@drawable/bg_card_vibrant"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <com.example.aurora.GradientTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Capacity and lottery options"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginBottom="4dp" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="4dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -392,23 +428,26 @@
 
         </LinearLayout>
 
-        <!-- ================= LOCATION REQUIREMENT GLASS CARD ================= -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_glass_card"
+            android:background="@drawable/bg_card_vibrant"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <com.example.aurora.GradientTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location requirement"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginBottom="12dp" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="12dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -434,23 +473,26 @@
 
         </LinearLayout>
 
-        <!-- ================= POSTER GLASS CARD ================= -->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_glass_card"
+            android:background="@drawable/bg_card_vibrant"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
-            <com.example.aurora.GradientTextView
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event poster"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginBottom="12dp" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="12dp"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="2"
+                android:shadowRadius="4" />
 
             <Button
                 android:id="@+id/btnChoosePoster"
@@ -459,7 +501,8 @@
                 android:text="Choose poster image"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:background="@drawable/bg_glass_button" />
+                android:background="@drawable/bg_transparent_input"
+                android:backgroundTint="#40FFFFFF" />
 
             <ImageView
                 android:id="@+id/imgPosterPreview"
@@ -481,8 +524,6 @@
 
         </LinearLayout>
 
-        <!-- ================= CREATE BUTTON (GRADIENT) ================= -->
-
         <Button
             android:id="@+id/btnCreateEvent"
             android:layout_width="match_parent"
@@ -492,7 +533,7 @@
             android:textStyle="bold"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:background="@drawable/bg_gradient_button"
+            android:background="@drawable/bg_glass_button"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="24dp" />
 

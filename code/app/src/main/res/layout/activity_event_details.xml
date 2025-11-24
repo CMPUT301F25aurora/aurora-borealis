@@ -3,38 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="@drawable/bg_gradient_deep_space"> <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
 
-    <!-- Top bar with back arrow -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="#7E57C2"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+    <ImageButton
+        android:id="@+id/btnBackEvent"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_arrow_back_24"
+        android:tint="@android:color/white"
+        android:contentDescription="@string/back" />
 
-        <ImageButton
-            android:id="@+id/btnBackEvent"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white"
-            android:contentDescription="@string/back" />
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Event Details"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="Event Details"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-    </LinearLayout>
+</LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -51,15 +47,15 @@
                 android:id="@+id/imgBanner"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
-                android:background="#C5CAE9"
+                android:background="@drawable/bg_transparent_input"
                 android:scaleType="centerCrop" />
 
             <TextView
                 android:id="@+id/txtJoinedBadge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textColor="#388E3C"
+                android:text="JOINED"
+                android:textColor="#00E676"
                 android:textStyle="bold"
                 android:layout_marginTop="8dp" />
 
@@ -70,7 +66,7 @@
                 android:text="Event Title"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:textColor="#212121"
+                android:textColor="@android:color/white"
                 android:layout_marginTop="4dp" />
 
             <TextView
@@ -78,7 +74,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Subtitle"
-                android:textColor="#757575"
+                android:textColor="#E0E0E0"
+                android:textSize="14sp"
                 android:layout_marginTop="2dp" />
 
             <TextView
@@ -86,7 +83,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
-                android:textColor="#616161"
+                android:textColor="#E0E0E0"
                 android:layout_marginTop="6dp" />
 
             <TextView
@@ -94,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location"
-                android:textColor="#616161"
+                android:textColor="#E0E0E0"
                 android:layout_marginTop="2dp" />
 
             <TextView
@@ -102,7 +99,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Registration window"
-                android:textColor="#424242"
+                android:textColor="#E0E0E0"
                 android:layout_marginTop="6dp" />
 
             <TextView
@@ -110,7 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Spots / Joined"
-                android:textColor="#424242"
+                android:textColor="#E0E0E0"
                 android:layout_marginTop="4dp" />
 
             <TextView
@@ -118,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:text="About this event"
                 android:textStyle="bold"
-                android:textColor="#212121"
+                android:textColor="@android:color/white"
                 android:layout_marginTop="12dp" />
 
             <TextView
@@ -126,10 +123,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Description"
-                android:textColor="#424242"
+                android:textColor="#CCCCCC"
                 android:layout_marginTop="4dp" />
 
-            <!-- Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -139,12 +135,11 @@
 
                 <Button
                     android:id="@+id/btnJoinLeave"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="Join Waiting List"
                     android:textAllCaps="false"
-                    android:backgroundTint="#7E57C2"
+                    android:background="@drawable/bg_glass_button"
                     android:textColor="@android:color/white" />
 
             </LinearLayout>
@@ -163,8 +158,8 @@
                     android:layout_weight="1"
                     android:text="Criteria"
                     android:textAllCaps="false"
-                    android:backgroundTint="#D1C4E9"
-                    android:textColor="#3E2723" />
+                    android:background="@drawable/bg_glass_button"
+                    android:textColor="@android:color/white" />
 
                 <Button
                     android:id="@+id/btnShowQr"
@@ -174,8 +169,8 @@
                     android:layout_marginStart="8dp"
                     android:text="Show QR"
                     android:textAllCaps="false"
-                    android:backgroundTint="#D1C4E9"
-                    android:textColor="#3E2723" />
+                    android:background="@drawable/bg_glass_button"
+                    android:textColor="@android:color/white" />
             </LinearLayout>
 
         </LinearLayout>

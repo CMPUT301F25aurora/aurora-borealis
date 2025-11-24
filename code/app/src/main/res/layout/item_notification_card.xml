@@ -1,64 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/rounded_card"
-    android:padding="12dp"
-    android:layout_marginBottom="10dp">
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginBottom="10dp"
+    app:cardCornerRadius="18dp"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="6dp"
+    android:backgroundTint="@android:color/transparent">
 
-    <TextView
-        android:id="@+id/notifTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Notification Title"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="#333" />
-
-    <TextView
-        android:id="@+id/notifMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Message content"
-        android:layout_marginTop="4dp"
-        android:textColor="#666"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/notifTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="2 hours ago"
-        android:layout_marginTop="4dp"
-        android:textColor="#999"
-        android:textSize="12sp" />
-
-    <!-- Buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:layout_marginTop="8dp">
+        android:orientation="vertical"
+        android:background="@drawable/bg_card_vibrant" android:padding="12dp">
 
-        <Button
-            android:id="@+id/btnAccept"
+        <TextView
+            android:id="@+id/notifTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Accept"
+            android:text="Notification Title"
+            android:textStyle="bold"
+            android:textSize="16sp"
             android:textColor="@android:color/white"
-            android:backgroundTint="#4CAF50" />
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4" />
 
-        <Button
-            android:id="@+id/btnDecline"
+        <TextView
+            android:id="@+id/notifMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Decline"
-            android:textColor="@android:color/white"
-            android:layout_marginStart="12dp"
-            android:backgroundTint="#E53935" />
+            android:text="Message content"
+            android:layout_marginTop="4dp"
+            android:textColor="#E0E0E0"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/notifTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2 hours ago"
+            android:layout_marginTop="4dp"
+            android:textColor="#B0BEC5"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/btnAccept"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Accept"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:paddingHorizontal="18dp"
+                android:background="@drawable/bg_glass_button"
+                android:elevation="3dp" />
+
+            <Button
+                android:id="@+id/btnDecline"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Decline"
+                android:textColor="#E53935"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:paddingHorizontal="18dp"
+                android:layout_marginStart="12dp"
+                android:background="@drawable/bg_glass_button"
+                android:elevation="3dp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>
