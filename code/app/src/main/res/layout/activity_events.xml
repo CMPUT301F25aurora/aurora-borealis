@@ -13,29 +13,29 @@
         android:padding="12dp"
         android:gravity="center_vertical">
 
+        <!-- Filter button (top-right) -->
         <TextView
             android:id="@+id/titleEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Discover Events"
+            android:textColor="#111111"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#111111" />
+            android:textStyle="bold" />
 
-        <!-- Filter button (top-right) -->
         <Button
             android:id="@+id/btnFilter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="98dp"
+            android:layout_height="64dp"
+            android:layout_marginEnd="8dp"
             android:text="Filter"
-            android:textAllCaps="false"
-            android:layout_marginEnd="8dp" />
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/logoutButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="64dp"
             android:text="Logout"
             android:textAllCaps="false" />
     </LinearLayout>

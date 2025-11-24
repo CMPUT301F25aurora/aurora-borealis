@@ -1,17 +1,3 @@
-/*
- * References for this screen:
- *
- * 1) source: Android Developers — "The activity lifecycle"
- *    https://developer.android.com/guide/components/activities/activity-lifecycle
- *    Used for handling onCreate / onResume when building the organizer home screen.
- *
- *
- * 2) author: Stack Overflow user — "How to start new activity on button click"
- *    https://stackoverflow.com/questions/4186021/how-to-start-new-activity-on-button-click
- *    Used for launching other organizer screens from buttons or cards.
- */
-
-
 package com.example.aurora;
 
 import android.content.Intent;
@@ -38,19 +24,10 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
-/**
- * OrganizerActivity
- *
- * Main dashboard screen for organizer users.
- * <p>
- * Responsibilities:
- * <ul>
- *     <li>Display all events created by the logged-in organizer.</li>
- *     <li>Provide navigation to create new events, view entrants, and manage organizer profile.</li>
- *     <li>Handle logout, QR display, and basic event statistics.</li>
- *     <li>Load organizer-specific events from Firestore using organizerEmail.</li>
- * </ul>
- */
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class OrganizerActivity extends AppCompatActivity {
 
     private Button myEventsButton, createEventButton;
@@ -63,13 +40,6 @@ public class OrganizerActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String organizerEmail;
 
-    /**
-     * Called when the activity is first created.
-     * Initializes UI elements, retrieves the organizer's email,
-     * and loads all events that belong to the current organizer.
-     *
-     * @param savedInstanceState previous state bundle (if any)
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,14 +53,9 @@ public class OrganizerActivity extends AppCompatActivity {
         setupTopBar();
         setupTabs();
         setupBottomNav();
-
         loadEventsFromFirebase();
     }
 
-
-    /**
-     * Binds all UI components from the layout file to fields in this class.
-     */
     private void bindViews() {
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
@@ -104,9 +69,6 @@ public class OrganizerActivity extends AppCompatActivity {
         bottomAlerts = findViewById(R.id.bottomAlerts);
     }
 
-    /**
-     * Sets up the top bar, including the back button and logout button.
-     */
     private void setupTopBar() {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
@@ -117,13 +79,7 @@ public class OrganizerActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Logs the organizer out of FirebaseAuth,
-     * clears stored SharedPreferences,
-     * and returns the user to the LoginActivity.
-     */
     private void logoutUser() {
-
         FirebaseAuth.getInstance().signOut();
 
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
@@ -135,29 +91,16 @@ public class OrganizerActivity extends AppCompatActivity {
         finish();
     }
 
-
-    /**
-     * Sets up the buttons for event tabs:
-     * - "My Events" button (currently placeholder toast),
-     * - "Create Event" button that opens CreateEventActivity.
-     */
     private void setupTabs() {
-        myEventsButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show();
-        });
+        myEventsButton.setOnClickListener(v ->
+                Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show()
+        );
 
-        createEventButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerActivity.this, CreateEventActivity.class);
-            startActivity(intent);
-        });
+        createEventButton.setOnClickListener(v ->
+                startActivity(new Intent(OrganizerActivity.this, CreateEventActivity.class))
+        );
     }
 
-    /**
-     * Sets up bottom navigation for:
-     * - Home (reloads organizer dashboard)
-     * - Profile page
-     * - Alerts/notifications screen
-     */
     private void setupBottomNav() {
         bottomHome.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
@@ -166,21 +109,15 @@ public class OrganizerActivity extends AppCompatActivity {
             finish();
         });
 
-        bottomProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerActivity.this, OrganizerProfileActivity.class);
-            startActivity(intent);
-        });
+        bottomProfile.setOnClickListener(v ->
+                startActivity(new Intent(OrganizerActivity.this, OrganizerProfileActivity.class))
+        );
 
-        bottomAlerts.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class);
-            startActivity(intent);
-        });
+        bottomAlerts.setOnClickListener(v ->
+                startActivity(new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class))
+        );
     }
 
-    /**
-     * Loads all events from Firestore that match the logged-in organizer's email.
-     * Clears the event list and creates a card for each event.
-     */
     private void loadEventsFromFirebase() {
         eventListContainer.removeAllViews();
 
@@ -203,14 +140,8 @@ public class OrganizerActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
-
-    /**
-     * Inflates an event card layout and fills it with event information.
-     * Also sets up the QR button and the "Manage Entrants" button.
-     *
-     * @param doc Firestore document containing event data
-     */
     private void addEventCard(DocumentSnapshot doc) {
+
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
 
@@ -220,38 +151,21 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView status = eventView.findViewById(R.id.eventStatus);
 
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
-
-        // NEW BUTTON
         Button btnManage = eventView.findViewById(R.id.btnManage);
+        Button btnLottery = eventView.findViewById(R.id.btnLottery);
 
         String eventId = doc.getId();
 
-        // Title
         String titleText = doc.getString("title");
         if (titleText == null) titleText = doc.getString("name");
         if (titleText == null) titleText = "Untitled Event";
 
-        // Date
         String dateText = doc.getString("date");
         if (dateText == null) dateText = doc.getString("startDate");
         if (dateText == null) dateText = "Date not set";
 
-        // Max spots
         Long maxSpots = doc.getLong("maxSpots");
-        if (maxSpots == null) {
-            Object capObj = doc.get("capacity");
-            if (capObj instanceof Number) {
-                maxSpots = ((Number) capObj).longValue();
-            } else if (capObj instanceof String) {
-                try {
-                    maxSpots = Long.parseLong((String) capObj);
-                } catch (NumberFormatException e) {
-                    maxSpots = 0L;
-                }
-            } else {
-                maxSpots = 0L;
-            }
-        }
+        if (maxSpots == null) maxSpots = 0L;
 
         String location = doc.getString("location");
         if (location == null) location = "";
@@ -259,70 +173,142 @@ public class OrganizerActivity extends AppCompatActivity {
         if (category == null) category = "";
 
         String deepLink = doc.getString("deepLink");
-        String creatorEmail = doc.getString("organizerEmail");
 
         title.setText(titleText);
         date.setText(dateText);
         stats.setText("Max spots: " + maxSpots);
 
+        // CATEGORY EMOJI + FORMATTING
         String emoji = "📍";
-        String lowerCategory = category.toLowerCase();
+        String c = category.toLowerCase();
 
-        if (lowerCategory.equals("arts")) {
-            emoji = "🎨";
-        } else if (lowerCategory.equals("sport") || lowerCategory.equals("sports")) {
-            emoji = "⚽";
-        } else if (lowerCategory.equals("music")) {
-            emoji = "🎵";
-        } else if (lowerCategory.equals("technology") || lowerCategory.equals("tech")) {
-            emoji = "💻";
-        } else if (lowerCategory.equals("education")) {
-            emoji = "📚";
+        switch (c) {
+            case "arts": emoji = "🎨"; break;
+            case "sports": emoji = "⚽"; break;
+            case "music": emoji = "🎵"; break;
+            case "technology": emoji = "💻"; break;
+            case "education": emoji = "📚"; break;
         }
 
         String statusText = emoji + " " + capitalize(category);
         if (!location.isEmpty()) statusText += " • " + location;
-
-
         status.setText(statusText);
 
-        // QR button
+        // QR BUTTON
         btnShowQR.setOnClickListener(v -> {
             if (deepLink == null || deepLink.isEmpty()) {
-                Toast.makeText(this,
-                        "No QR link saved for this event yet",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No QR saved", Toast.LENGTH_SHORT).show();
             } else {
                 showQrPopup(deepLink);
             }
         });
 
+        // MANAGE ENTRANTS
         btnManage.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerEntrantsActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
 
+        // LOTTERY BUTTON
+        btnLottery.setOnClickListener(v -> runLotteryDialog(eventId));
+
         eventListContainer.addView(eventView);
     }
 
-    /**
-     * Capitalizes the first letter of a string.
-     *
-     * @param text input string
-     * @return capitalized version, or empty string if null
-     */
+    private void runLotteryDialog(String eventId) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+
+        builder.setTitle("Run Lottery");
+
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setHint("Number of entrants to pick");
+        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+
+        builder.setView(input);
+
+        builder.setPositiveButton("Run", (dialog, which) -> {
+            String s = input.getText().toString().trim();
+            if (s.isEmpty()) {
+                Toast.makeText(this, "Enter a number", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            runLottery(eventId, Integer.parseInt(s));
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+    private void runLottery(String eventId, int n) {
+        db.collection("events").document(eventId)
+                .get()
+                .addOnSuccessListener(doc -> {
+
+                    List<String> waiting = (List<String>) doc.get("waitingList");
+                    if (waiting == null || waiting.isEmpty()) {
+                        Toast.makeText(this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    List<String> emailsOnly = new ArrayList<>();
+                    for (String w : waiting)
+                        if (w.contains("@")) emailsOnly.add(w);
+
+                    if (emailsOnly.isEmpty()) {
+                        Toast.makeText(this, "No valid email entrants.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (n > emailsOnly.size()) {
+                        Toast.makeText(this, "Not enough entrants.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Collections.shuffle(emailsOnly);
+
+                    List<String> winners = emailsOnly.subList(0, n);
+
+                    db.collection("events").document(eventId)
+                            .update("selectedEntrants", winners)
+                            .addOnSuccessListener(x -> {
+                                sendWinnerNotifications(eventId, winners);
+                                showWinnersDialog(winners);
+                            });
+                });
+    }
+
+    private void sendWinnerNotifications(String eventId, List<String> winners) {
+        for (String email : winners) {
+            NotificationModel notif = new NotificationModel(
+                    "winner_selected",
+                    "You've Been Selected!",
+                    "You won the lottery! Accept or decline your spot.",
+                    eventId,
+                    email,
+                    System.currentTimeMillis()
+            );
+
+            db.collection("notifications").add(notif);
+        }
+    }
+
+    private void showWinnersDialog(List<String> winners) {
+        StringBuilder sb = new StringBuilder();
+        for (String w : winners) sb.append("• ").append(w).append("\n");
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Selected Entrants")
+                .setMessage(sb.toString())
+                .setPositiveButton("OK", null)
+                .show();
+    }
+
     private String capitalize(String text) {
         if (text == null || text.isEmpty()) return "";
         return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
-
-    /**
-     * Generates a QR code bitmap for the provided deepLink and shows it in a dialog.
-     *
-     * @param deepLink deep-link URL for the event
-     */
     private void showQrPopup(String deepLink) {
         try {
             int size = 800;

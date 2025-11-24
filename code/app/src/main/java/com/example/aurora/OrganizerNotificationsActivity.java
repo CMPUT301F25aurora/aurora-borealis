@@ -81,7 +81,8 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
     }
     private void addNotificationCard(String title, String message, String time) {
         View cardView = LayoutInflater.from(this)
-                .inflate(R.layout.item_notification_card, notificationsContainer, false);
+                .inflate(R.layout.item_notification_card_organizer, notificationsContainer, false);
+
 
         TextView notifTitle = cardView.findViewById(R.id.notifTitle);
         TextView notifMessage = cardView.findViewById(R.id.notifMessage);
