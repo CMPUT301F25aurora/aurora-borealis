@@ -150,39 +150,64 @@ public class AlertsActivity extends AppCompatActivity {
     private void declineEvent(String eventId, String notifId) {
 
         db.collection("events").document(eventId)
-                .update(
-                        "cancelledEntrants", FieldValue.arrayUnion(userEmail),
-                        "selectedEntrants", FieldValue.arrayRemove(userEmail)
-                )
-                .addOnSuccessListener(v -> {
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!snapshot.exists()) return;
 
-                    deleteNotification(notifId);
-                    sendDeclineNoticeToOrganizer(eventId);
+                    List<String> waiting = (List<String>) snapshot.get("waitingList");
+                    List<String> selected = (List<String>) snapshot.get("selectedEntrants");
 
-                    pickReplacementEntrant(eventId);
+                    // Remove declining user from selected + add to cancelled
+                    db.collection("events").document(eventId)
+                            .update(
+                                    "cancelledEntrants", FieldValue.arrayUnion(userEmail),
+                                    "selectedEntrants", FieldValue.arrayRemove(userEmail)
+                            )
+                            .addOnSuccessListener(v -> {
 
-                    Toast.makeText(this,
-                            "You've declined your spot",
-                            Toast.LENGTH_SHORT).show();
+                                deleteNotification(notifId);
+                                sendDeclineNoticeToOrganizer(eventId);
+
+                                // ---- PICK NEXT USER ----
+                                if (waiting != null && !waiting.isEmpty()) {
+
+                                    String nextUser = waiting.get(0);
+
+                                    db.collection("events").document(eventId)
+                                            .update(
+                                                    "selectedEntrants", FieldValue.arrayUnion(nextUser),
+                                                    "waitingList", FieldValue.arrayRemove(nextUser)
+                                            )
+                                            .addOnSuccessListener(r -> {
+
+                                                // Notify the next user
+                                                sendReplacementNotification(eventId, nextUser);
+
+                                                Toast.makeText(
+                                                        this,
+                                                        "You’ve declined your spot. Another entrant has been selected.",
+                                                        Toast.LENGTH_SHORT
+                                                ).show();
+                                            });
+                                }
+                            });
                 });
     }
 
 
-    private void sendReplacementNotification(String eventId, String email) {
 
-        String notifId = db.collection("notifications").document().getId();
+    private void sendReplacementNotification(String eventId, String userEmail) {
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("userEmail", userEmail);
+        notif.put("eventId", eventId);
+        notif.put("type", "replacement_chance");
+        notif.put("message", "A spot has opened for an event you joined. You have a new chance to register!");
+        notif.put("status", "unread");
+        notif.put("timestamp", Timestamp.now());
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", notifId);
-        data.put("eventId", eventId);
-        data.put("email", email);
-        data.put("title", "You Have Been Selected!");
-        data.put("message", "A spot opened up and you were selected to join the event.");
-        data.put("timestamp", System.currentTimeMillis());
-        data.put("status", "unread");
-
-        db.collection("notifications").document(notifId).set(data);
+        db.collection("notifications").add(notif);
     }
+
 
     // ---------------------------------------------------------
     // DELETE NOTIFICATION (listener removes it from UI)
@@ -263,5 +288,9 @@ public class AlertsActivity extends AppCompatActivity {
         db.collection("notifications").document(notifId).set(data);
     }
 
-
+    private void markNotificationStatus(String notifId, String status) {
+        db.collection("notifications")
+                .document(notifId)
+                .update("status", status);
+    }
 }
