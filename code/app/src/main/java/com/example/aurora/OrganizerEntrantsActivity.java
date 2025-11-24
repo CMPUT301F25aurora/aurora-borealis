@@ -17,6 +17,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Environment;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 import android.content.Intent;
 import android.net.Uri;
@@ -114,6 +121,9 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
+        Button btnExport = findViewById(R.id.btnExportCsv);
+        btnExport.setOnClickListener(v -> exportFinalCsv());
+
     }
 
     private void bindViews() {
@@ -152,7 +162,11 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-
+        btnDrawLottery.setOnClickListener(v -> {
+            Toast.makeText(this,
+                    "Draw Lottery clicked (UI only for now)",
+                    Toast.LENGTH_SHORT).show();
+        });
 
         btnNotify.setOnClickListener(v -> {
             List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
@@ -161,13 +175,78 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         });
 
+        // US 02.06.04 – cancel entrants that did not sign up
         btnReplace.setOnClickListener(v -> {
             List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
-            Toast.makeText(this,
-                    "Replace " + selected.size() + " entrant(s) (UI only)",
-                    Toast.LENGTH_SHORT).show();
+
+            if (currentTab != Tab.SELECTED) {
+                Toast.makeText(this,
+                        "Switch to the Selected tab to cancel entrants.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (selected.isEmpty()) {
+                Toast.makeText(this,
+                        "Select at least one entrant to cancel.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            cancelUnconfirmedEntrants(selected);
         });
     }
+
+    private void cancelUnconfirmedEntrants(List<EntrantsAdapter.EntrantItem> toCancel) {
+        if (selectedEmails == null) selectedEmails = new ArrayList<>();
+        if (cancelledEmails == null) cancelledEmails = new ArrayList<>();
+
+        List<String> emailsToMove = new ArrayList<>();
+
+        for (EntrantsAdapter.EntrantItem item : toCancel) {
+            String email = item.getEmail();
+            if (email == null || email.isEmpty()) continue;
+
+            // Only move if currently in selected list
+            if (selectedEmails.remove(email)) {
+                if (!cancelledEmails.contains(email)) {
+                    cancelledEmails.add(email);
+                }
+                emailsToMove.add(email);
+            }
+        }
+
+        if (emailsToMove.isEmpty()) {
+            Toast.makeText(this,
+                    "No selected entrants to cancel.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("selectedEntrants", selectedEmails);
+        updates.put("cancelledEntrants", cancelledEmails);
+
+        db.collection("events")
+                .document(eventId)
+                .update(updates)
+                .addOnSuccessListener(v -> {
+                    // Update stat cards
+                    tvSelectedCount.setText(String.valueOf(selectedEmails.size()));
+                    tvCancelledCount.setText(String.valueOf(cancelledEmails.size()));
+
+                    // Show them under the Cancelled tab
+                    setActiveTab(Tab.CANCELLED);
+
+                    Toast.makeText(this,
+                            "Cancelled " + emailsToMove.size() + " entrant(s) who did not sign up.",
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "Failed to cancel entrants: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show());
+    }
+
 
     private void setupTabs() {
         View.OnClickListener listener = v -> {
@@ -395,5 +474,44 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
     }
+
+    private void exportFinalCsv() {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) return;
+
+                    List<String> finalList = (List<String>) doc.get("finalEntrants");
+                    if (finalList == null || finalList.isEmpty()) {
+                        Toast.makeText(this, "No final entrants to export", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    try {
+                        File dir = new File(Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS
+                        ), "AuroraExports");
+
+                        if (!dir.exists()) dir.mkdirs();
+
+                        File file = new File(dir, "final_list_" + eventId + ".csv");
+                        FileWriter writer = new FileWriter(file);
+
+                        writer.append("Email\n");
+                        for (String email : finalList) {
+                            writer.append(email).append("\n");
+                        }
+
+                        writer.flush();
+                        writer.close();
+
+                        Toast.makeText(this, "CSV saved: Downloads/AuroraExports/", Toast.LENGTH_LONG).show();
+
+                    } catch (IOException e) {
+                        Toast.makeText(this, "Error writing CSV", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
 
 }

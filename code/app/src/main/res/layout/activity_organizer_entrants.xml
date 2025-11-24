@@ -280,6 +280,16 @@
             android:paddingVertical="8dp" />
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnExportCsv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Export Final List (CSV)"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="#7E57C2"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"/>
+
     <!-- Recycler View -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEntrants"
@@ -288,3 +298,5 @@
         android:layout_weight="1"
         android:layout_marginTop="12dp"/>
 </LinearLayout>
+
+

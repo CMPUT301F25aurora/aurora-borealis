@@ -71,7 +71,6 @@ public class ActivityLogger {
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
-
     private static void addLog(Map<String, Object> data) {
         if (!data.containsKey("timestamp")) {
             data.put("timestamp", FieldValue.serverTimestamp());
