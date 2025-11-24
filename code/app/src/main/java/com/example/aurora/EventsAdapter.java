@@ -14,7 +14,6 @@
  *    Used as a reference for using Settings.Secure.ANDROID_ID when joining events with a device-based identifier.
  */
 
-
 package com.example.aurora;
 
 import android.content.Context;
@@ -39,40 +38,18 @@ import java.util.ArrayList;
 import java.util.List;
 import com.bumptech.glide.Glide;
 
-
-/**
- * Adapter responsible for displaying a list of events to entrants.
- * <p>
- * Each event card shows:
- * - Event title
- * - Date
- * - Location
- * - Poster image
- * - A "View Details" button that opens EventDetailsActivity
- * - A "Join Waiting List" button that registers the current user into the event's waiting list
- * <p>
- * A stable identifier (email or device ID fallback) is stored in the event's waitingList array field.
- */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
     private final Context context;
     private final List<Event> events;
     private final FirebaseFirestore db;
-    /** Identifier stored in waitingList: email preferred, else device id. */
     private final String userKey;
 
-    /**
-     * Constructs the adapter for displaying event cards.
-     *
-     * @param context application context
-     * @param events list of Event objects to display
-     */
     public EventsAdapter(Context context, List<Event> events) {
         this.context = context;
         this.events = events;
         this.db = FirebaseFirestore.getInstance();
 
-        // Try to resolve an email-based key first
         String email = context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE)
                 .getString("user_email", null);
 
@@ -81,7 +58,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         }
 
-        // Fallback to device ID if no email available
         if (email == null || email.isEmpty()) {
             email = Settings.Secure.getString(
                     context.getContentResolver(),
@@ -92,9 +68,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         this.userKey = email;
     }
 
-    /**
-     * Inflates the event card layout for each RecyclerView row.
-     */
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -102,12 +75,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return new EventViewHolder(view);
     }
 
-    /**
-     * Binds event data into the view holder for a specific position.
-     *
-     * @param holder ViewHolder containing references to UI elements
-     * @param position index of the event in the list
-     */
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
         Event e = events.get(position);
@@ -128,39 +95,24 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         if (posterUrl != null && !posterUrl.isEmpty()) {
             Glide.with(context)
                     .load(posterUrl)
-                    .placeholder(R.drawable.ic_launcher_background)   // pick your placeholder
+                    .placeholder(R.drawable.ic_launcher_background)
                     .error(R.drawable.ic_launcher_background)
                     .into(holder.eventImage);
         } else {
             holder.eventImage.setImageResource(R.drawable.ic_launcher_background);
         }
 
-        // View Details
         holder.btnViewDetails.setOnClickListener(v -> {
             Intent i = new Intent(context, EventDetailsActivity.class);
             i.putExtra("eventId", e.getEventId());
             context.startActivity(i);
         });
 
-        // Join Waiting List...
         holder.btnJoin.setOnClickListener(v -> {
             joinWaitingList(e, holder.btnJoin);
         });
     }
 
-
-    /**
-     * Attempts to add the current user to the event's waiting list.
-     * <p>
-     * Behavior:
-     * - Prevents joining twice
-     * - Checks maxSpots (if exists)
-     * - Updates Firestore using FieldValue.arrayUnion
-     * - Updates UI button text to "Waiting List Joined" after success
-     *
-     * @param e      the event being joined
-     * @param button the UI button to update text on successful join
-     */
     private void joinWaitingList(Event e, Button button) {
 
         String eventId = e.getEventId();
@@ -177,11 +129,27 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                     Boolean geoRequired = doc.getBoolean("geoRequired");
                     if (geoRequired == null) geoRequired = false;
 
-                    // If event requires geolocation, enforce it
+                    // ===========================
+                    // LOCATION PERMISSION CHECK
+                    // ===========================
                     if (geoRequired) {
                         if (!LocationUtils.isLocationPermissionGranted(context)) {
                             Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
                             LocationUtils.requestLocationPermission(context);
+                            return;
+                        }
+
+                        // ===========================
+                        // GPS MUST BE ENABLED
+                        // ===========================
+                        if (!LocationUtils.isGpsEnabled(context)) {
+                            Toast.makeText(context,
+                                    "Please enable GPS to join this event.",
+                                    Toast.LENGTH_LONG).show();
+
+                            context.startActivity(
+                                    new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                            );
                             return;
                         }
                     }
@@ -205,18 +173,26 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-
-                    // Get location if available
+                    // ===========================
+                    // FETCH LOCATION (BLOCK IF NAN)
+                    // ===========================
                     LocationUtils.getUserLocation(context, (lat, lng) -> {
 
-                        // First save join location
+                        // BLOCK if no real location
+                        if (Double.isNaN(lat) || Double.isNaN(lng)) {
+                            Toast.makeText(context,
+                                    "Unable to get your location. Please ensure GPS is ON.",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        // SAVE LOCATION THEN JOIN
                         db.collection("events")
                                 .document(eventId)
                                 .collection("waitingLocations")
                                 .add(new JoinLocation(userKey, lat, lng))
                                 .addOnSuccessListener(s -> {
 
-                                    // THEN add to waiting list once
                                     db.collection("events")
                                             .document(eventId)
                                             .update("waitingList", FieldValue.arrayUnion(userKey))
@@ -229,32 +205,17 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 });
     }
 
-
-
-
-    /**
-     * @return total number of events displayed.
-     */
     @Override
     public int getItemCount() {
         return events.size();
     }
 
-    /**
-     * ViewHolder class that stores UI references for each event card.
-     * Contains the poster image, title, date, location, and action buttons.
-     */
     public static class EventViewHolder extends RecyclerView.ViewHolder {
 
         ImageView eventImage;
         TextView eventTitle, eventDate, eventLocation;
         Button btnViewDetails, btnJoin;
 
-        /**
-         * Initializes view references for an event card.
-         *
-         * @param itemView the inflated row view
-         */
         public EventViewHolder(@NonNull View itemView) {
             super(itemView);
             eventImage = itemView.findViewById(R.id.eventImage);
