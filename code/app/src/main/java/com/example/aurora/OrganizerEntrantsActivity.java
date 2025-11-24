@@ -139,7 +139,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         tvCancelledCount = findViewById(R.id.tvCancelledCount);
         tvTotalSpots = findViewById(R.id.tvTotalSpots);
 
-        btnDrawLottery = findViewById(R.id.btnDrawLottery);
+
         btnNotify = findViewById(R.id.btnNotify);
         btnReplace = findViewById(R.id.btnReplace);
 
