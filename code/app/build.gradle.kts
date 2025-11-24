@@ -53,6 +53,7 @@ dependencies {
 
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation(libs.play.services.location)
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 

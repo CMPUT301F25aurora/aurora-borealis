@@ -6,6 +6,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- QR scanner -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Fine (GPS) location -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Coarse (approximate) location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
 
     <application
         android:allowBackup="true"
@@ -39,7 +44,6 @@
 
         <!-- Entrant surfaces -->
         <activity android:name=".EventsActivity" android:exported="false" />
-        <activity android:name=".EntrantActivity" android:exported="false" />
         <activity android:name=".EntrantNavigationActivity" android:exported="false" />
         <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".AlertsActivity" android:exported="false" />

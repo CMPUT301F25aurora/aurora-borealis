@@ -275,33 +275,83 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
 
-    // Join / leave waiting list  (stores EMAIL or fallback key)
+    // Join / leave waiting list  (stores EMAIL or fallback key and lat/lng)
     private void toggleJoin() {
         if (eventId == null) return;
 
-        if (!isJoined) {
-            db.collection("events")
-                    .document(eventId)
-                    .update("waitingList", FieldValue.arrayUnion(userId))
-                    .addOnSuccessListener(v -> {
-                        isJoined = true;
-                        updateJoinedUi();
-                        Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Failed to join: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        } else {
-            db.collection("events")
-                    .document(eventId)
-                    .update("waitingList", FieldValue.arrayRemove(userId))
-                    .addOnSuccessListener(v -> {
-                        isJoined = false;
-                        updateJoinedUi();
-                        Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(this, "Failed to leave: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-        }
+        db.collection("events")
+                .document(eventId)
+                .get()
+                .addOnSuccessListener(doc -> {
+
+                    if (!doc.exists()) {
+                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Boolean geoRequired = doc.getBoolean("geoRequired");
+                    if (geoRequired == null) geoRequired = false;
+
+                    // --- LEAVING WAITING LIST ---
+                    if (isJoined) {
+                        db.collection("events")
+                                .document(eventId)
+                                .update("waitingList", FieldValue.arrayRemove(userId))
+                                .addOnSuccessListener(v -> {
+                                    removeUserLocation(eventId, userId);
+                                    isJoined = false;
+                                    updateJoinedUi();
+                                    Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
+                                });
+                        return;
+                    }
+
+                    // --- JOINING WAITING LIST ---
+
+                    // If location required → enforce permission
+                    if (geoRequired) {
+                        if (!LocationUtils.isLocationPermissionGranted(this)) {
+                            Toast.makeText(this, "This event requires location to join.", Toast.LENGTH_LONG).show();
+                            LocationUtils.requestLocationPermission(this);
+                            return;
+                        }
+                    }
+
+                    // Get user's lat/lng
+                    LocationUtils.getUserLocation(this, (lat, lng) -> {
+
+                        // Save join location
+                        db.collection("events")
+                                .document(eventId)
+                                .collection("waitingLocations")
+                                .add(new JoinLocation(userId, lat, lng))
+                                .addOnSuccessListener(s -> {
+
+                                    // Now add user to waiting list
+                                    db.collection("events")
+                                            .document(eventId)
+                                            .update("waitingList", FieldValue.arrayUnion(userId))
+                                            .addOnSuccessListener(v -> {
+                                                isJoined = true;
+                                                updateJoinedUi();
+                                                Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                            });
+                                });
+                    });
+                });
+    }
+
+    private void removeUserLocation(String eventId, String userId) {
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingLocations")
+                .whereEqualTo("userKey", userId)
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query.getDocuments()) {
+                        doc.getReference().delete();
+                    }
+                });
     }
 
     private void showCriteriaDialog() {

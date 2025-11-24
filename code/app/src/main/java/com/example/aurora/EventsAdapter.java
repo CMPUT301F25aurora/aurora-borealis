@@ -173,6 +173,19 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 .document(eventId)
                 .get()
                 .addOnSuccessListener(doc -> {
+
+                    Boolean geoRequired = doc.getBoolean("geoRequired");
+                    if (geoRequired == null) geoRequired = false;
+
+                    // If event requires geolocation, enforce it
+                    if (geoRequired) {
+                        if (!LocationUtils.isLocationPermissionGranted(context)) {
+                            Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
+                            LocationUtils.requestLocationPermission(context);
+                            return;
+                        }
+                    }
+
                     if (!doc.exists()) {
                         Toast.makeText(context, "Event no longer exists", Toast.LENGTH_SHORT).show();
                         return;
@@ -192,16 +205,30 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    button.setText("Waiting List Joined");
 
-                    db.collection("events")
-                            .document(eventId)
-                            .update("waitingList", FieldValue.arrayUnion(userKey))
-                            .addOnSuccessListener(unused ->
-                                    Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show()
-                            );
+                    // Get location if available
+                    LocationUtils.getUserLocation(context, (lat, lng) -> {
+
+                        // First save join location
+                        db.collection("events")
+                                .document(eventId)
+                                .collection("waitingLocations")
+                                .add(new JoinLocation(userKey, lat, lng))
+                                .addOnSuccessListener(s -> {
+
+                                    // THEN add to waiting list once
+                                    db.collection("events")
+                                            .document(eventId)
+                                            .update("waitingList", FieldValue.arrayUnion(userKey))
+                                            .addOnSuccessListener(unused -> {
+                                                button.setText("Waiting List Joined");
+                                                Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                            });
+                                });
+                    });
                 });
     }
+
 
 
 
