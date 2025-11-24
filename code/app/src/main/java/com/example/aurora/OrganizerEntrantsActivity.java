@@ -61,7 +61,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     private TextView tvTotalSpots;
 
     // Buttons
-    private Button btnDrawLottery;
+
     private Button btnNotify;
     private Button btnReplace;
 
@@ -162,11 +162,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
     private void setupButtons() {
-        btnDrawLottery.setOnClickListener(v -> {
-            Toast.makeText(this,
-                    "Draw Lottery clicked (UI only for now)",
-                    Toast.LENGTH_SHORT).show();
-        });
+
 
         btnNotify.setOnClickListener(v -> {
             List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
