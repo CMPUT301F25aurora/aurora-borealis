@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.BarcodeFormat;
@@ -270,7 +271,11 @@ public class OrganizerActivity extends AppCompatActivity {
                     List<String> winners = emailsOnly.subList(0, n);
 
                     db.collection("events").document(eventId)
-                            .update("selectedEntrants", winners)
+                            .update(
+                                    "selectedEntrants", winners,
+                                    "waitingList", FieldValue.arrayRemove(winners.toArray())   // ⭐ REMOVE FROM WAITING
+                            )
+
                             .addOnSuccessListener(x -> {
                                 sendWinnerNotifications(eventId, winners);
                                 showWinnersDialog(winners);
