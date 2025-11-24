@@ -410,6 +410,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
     private void exportFinalCsv() {
+
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(doc -> {
                     if (!doc.exists()) return;
