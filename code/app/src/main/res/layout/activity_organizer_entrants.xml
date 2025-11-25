@@ -17,7 +17,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@android:color/transparent"
-            android:src="@android:drawable/ic_menu_revert"
+            android:src="@drawable/ic_arrow_back_24"
             android:contentDescription="Back"
             android:tint="@android:color/white" />
 
@@ -231,7 +231,8 @@
             android:text="Notify"
             android:background="@drawable/bg_glass_button"
             android:textColor="@android:color/white"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textSize="12sp"/>
 
         <Button
             android:id="@+id/btnReplace"
@@ -239,10 +240,24 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:text="Replace"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="4dp"
             android:background="@drawable/bg_glass_button"
             android:textColor="@android:color/white"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:textSize="12sp"/>
+
+        <Button
+            android:id="@+id/btnExportCsv"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Export"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_glass_button"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false"
+            android:textSize="12sp"/>
+
     </LinearLayout>
 
     <LinearLayout

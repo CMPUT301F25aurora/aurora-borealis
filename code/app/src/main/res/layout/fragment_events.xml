@@ -64,7 +64,7 @@
         android:layout_marginHorizontal="8dp"
         android:text="📷  Scan Event QR"
         android:textAllCaps="false"
-        android:background="@drawable/bg_card_vibrant"
+        android:background="@drawable/bg_transparent_input"
         android:textColor="@android:color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
