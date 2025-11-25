@@ -30,7 +30,7 @@
 
         <!-- Launcher -->
         <activity
-            android:name=".WelcomeActivity"
+            android:name=".activities.WelcomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,39 +45,39 @@
         </activity>
 
         <!-- Auth -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".SignUpActivity" android:exported="false" />
+        <activity android:name=".activities.LoginActivity" android:exported="false" />
+        <activity android:name=".activities.SignUpActivity" android:exported="false" />
 
         <!-- Entrant surfaces -->
-        <activity android:name=".EventsActivity" android:exported="false" />
-        <activity android:name=".EntrantNavigationActivity" android:exported="false" />
-        <activity android:name=".ProfileActivity" android:exported="false" />
-        <activity android:name=".AlertsActivity" android:exported="false" />
-        <activity android:name=".EntrantEventHistoryActivity" />
+        <activity android:name=".activities.EventsActivity" android:exported="false" />
+        <activity android:name=".activities.EntrantNavigationActivity" android:exported="false" />
+        <activity android:name=".activities.ProfileActivity" android:exported="false" />
+        <activity android:name=".activities.AlertsActivity" android:exported="false" />
+        <activity android:name=".activities.EntrantEventHistoryActivity" />
 
 
         <!-- Details + deep-link: aurora://event/<id> or aurora://event?id=<id> -->
         <activity
-            android:name=".EventDetailsActivity"
+            android:name=".activities.EventDetailsActivity"
             android:exported="true">
 
         </activity>
 
         <!-- Organizer -->
-        <activity android:name=".OrganizerActivity" android:exported="false" />
-        <activity android:name=".CreateEventActivity" android:exported="false" />
-        <activity android:name=".OrganizerProfileActivity" android:exported="false" />
-        <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
-        <activity android:name=".OrganizerEntrantsActivity" />
-        <activity android:name=".MapPickerActivity" />
+        <activity android:name=".activities.OrganizerActivity" android:exported="false" />
+        <activity android:name=".activities.CreateEventActivity" android:exported="false" />
+        <activity android:name=".activities.OrganizerProfileActivity" android:exported="false" />
+        <activity android:name=".activities.OrganizerNotificationsActivity" android:exported="false" />
+        <activity android:name=".activities.OrganizerEntrantsActivity" />
+        <activity android:name=".map.MapPickerActivity" />
         <activity
-            android:name=".EventMapActivity"
+            android:name=".map.EventMapActivity"
             android:exported="false" />
 
 
 
         <!-- Admin -->
-        <activity android:name=".AdminActivity" android:exported="false" />
+        <activity android:name=".activities.AdminActivity" android:exported="false" />
 
     </application>
 </manifest>

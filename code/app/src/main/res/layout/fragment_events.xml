@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="8dp"
     android:background="@drawable/bg_gradient_deep_space"
-    tools:context=".EventsFragment">
+    tools:context=".fragments.EventsFragment">
 
     <TextView
         android:id="@+id/discoverTitle"
