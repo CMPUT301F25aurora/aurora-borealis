@@ -4,7 +4,13 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
+/**
+ * Utility class for sending different types of notifications
+ * into the Firestore "notifications" collection.
+ *
+ * Each method looks up the user by email or document ID,
+ * then writes a NotificationModel entry.
+ */
 public class FirestoreNotificationHelper {
 
     public static void sendWaitingListNotification(FirebaseFirestore db,
