@@ -49,12 +49,9 @@ public class AlertsActivity extends AppCompatActivity {
         ImageButton back = findViewById(R.id.backButtonAlerts);
         if (back != null) back.setOnClickListener(v -> onBackPressed());
 
-        listenNotifications();   // 🔥 Real-time updates
+        listenNotifications();
     }
 
-    // ---------------------------------------------------------
-    // 🔥 REAL-TIME FIRESTORE LISTENER
-    // ---------------------------------------------------------
     private void listenNotifications() {
 
         if (userEmail == null || userEmail.isEmpty()) {
@@ -87,9 +84,6 @@ public class AlertsActivity extends AppCompatActivity {
                 });
     }
 
-    // ---------------------------------------------------------
-    // 🔔 BUILD NOTIFICATION CARD UI
-    // ---------------------------------------------------------
     private void addNotificationCard(DocumentSnapshot doc) {
 
         View card = LayoutInflater.from(this)
@@ -179,10 +173,6 @@ public class AlertsActivity extends AppCompatActivity {
         alertsContainer.addView(card);
     }
 
-
-    // ---------------------------------------------------------
-    // ACCEPT / DECLINE ACTIONS
-    // ---------------------------------------------------------
     private void acceptEvent(String eventId, String notifId) {
 
         db.collection("events").document(eventId)
@@ -262,9 +252,6 @@ public class AlertsActivity extends AppCompatActivity {
     }
 
 
-    // ---------------------------------------------------------
-    // DELETE NOTIFICATION (listener removes it from UI)
-    // ---------------------------------------------------------
     private void deleteNotification(String notifId) {
         db.collection("notifications")
                 .document(notifId)

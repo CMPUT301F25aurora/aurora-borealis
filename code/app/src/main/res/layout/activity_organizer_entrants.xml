@@ -1,24 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/organizerEntrantsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@drawable/bg_gradient_deep_space"
+    android:clipToPadding="false"
+
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     android:padding="20dp">
 
+
+    <!-- ⭐ NOTCH-SAFE HEADER -->
     <LinearLayout
+        android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:paddingStart="16dp"
+        android:paddingTop="@dimen/status_bar_height"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp">
 
         <ImageButton
             android:id="@+id/btnBackEntrants"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_arrow_back_24"
             android:contentDescription="Back"
+            android:src="@drawable/ic_arrow_back_24"
             android:tint="@android:color/white" />
 
         <LinearLayout
@@ -33,13 +44,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lottery Management"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:textColor="@android:color/white"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="3"
-                android:shadowRadius="6" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tvEventSubtitle"
@@ -50,55 +57,57 @@
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
+    <!-- END HEADER -->
+
 
     <ImageView
         android:id="@+id/imgEventPoster"
         android:layout_width="match_parent"
         android:layout_height="180dp"
-        android:scaleType="centerCrop"
         android:layout_marginTop="12dp"
         android:background="@drawable/bg_transparent_input"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background" />
 
     <Button
         android:id="@+id/btnUpdatePoster"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:text="Update Poster"
-        android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_glass_button"
-        android:textColor="@android:color/white"
+        android:paddingHorizontal="24dp"
+        android:text="Update Poster"
         android:textAllCaps="false"
-        android:paddingHorizontal="24dp" />
+        android:textColor="@android:color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:padding="16dp"
             android:background="@drawable/bg_card_vibrant"
-            android:layout_marginEnd="8dp">
+            android:padding="16dp">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tvWaitingCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
+                    android:textColor="#80CFFF"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#80CFFF" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -111,24 +120,24 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:padding="16dp"
             android:background="@drawable/bg_card_vibrant"
-            android:layout_marginStart="8dp">
+            android:padding="16dp">
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tvSelectedCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
+                    android:textColor="#00E676"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#00E676" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -142,16 +151,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:padding="16dp"
             android:background="@drawable/bg_card_vibrant"
-            android:layout_marginEnd="8dp">
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -163,9 +172,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
+                    android:textColor="#FF5252"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#FF5252" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -178,10 +187,10 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:padding="16dp"
             android:background="@drawable/bg_card_vibrant"
-            android:layout_marginStart="8dp">
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -193,9 +202,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
+                    android:textColor="#80CFFF"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#80CFFF" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -210,62 +219,62 @@
         android:id="@+id/btnDrawLottery"
         android:layout_width="match_parent"
         android:layout_height="52dp"
-        android:text="Draw Lottery"
         android:layout_marginTop="16dp"
-        android:textColor="@android:color/white"
         android:background="@drawable/bg_glass_button"
+        android:text="Draw Lottery"
         android:textAllCaps="false"
+        android:textColor="@android:color/white"
         android:textSize="16sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnNotify"
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_weight="1"
-            android:text="Notify"
             android:background="@drawable/bg_glass_button"
-            android:textColor="@android:color/white"
+            android:text="Notify"
             android:textAllCaps="false"
-            android:textSize="12sp"/>
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnReplace"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Replace"
             android:layout_marginStart="4dp"
+            android:layout_weight="1"
             android:background="@drawable/bg_glass_button"
-            android:textColor="@android:color/white"
+            android:text="Replace"
             android:textAllCaps="false"
-            android:textSize="12sp"/>
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnExportCsv"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="Export"
             android:layout_marginStart="4dp"
+            android:layout_weight="1"
             android:background="@drawable/bg_glass_button"
-            android:textColor="@android:color/white"
+            android:text="Export"
             android:textAllCaps="false"
-            android:textSize="12sp"/>
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="16dp"
         android:background="@drawable/bg_card_vibrant"
+        android:orientation="horizontal"
         android:padding="4dp">
 
         <TextView
@@ -274,10 +283,10 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="Waiting"
-            android:textStyle="bold"
             android:textColor="@android:color/white"
-            android:paddingVertical="8dp" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tabSelected"
@@ -285,9 +294,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="Selected"
-            android:textColor="@android:color/white"
-            android:paddingVertical="8dp" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/tabCancelled"
@@ -295,9 +304,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="Cancelled"
-            android:textColor="@android:color/white"
-            android:paddingVertical="8dp" />
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/tabFinal"
@@ -305,15 +314,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:paddingVertical="8dp"
             android:text="Final"
-            android:textColor="@android:color/white"
-            android:paddingVertical="8dp" />
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEntrants"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"
+        android:layout_weight="1" />
 </LinearLayout>

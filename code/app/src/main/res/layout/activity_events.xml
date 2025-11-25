@@ -3,12 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_deep_space">
+    android:background="@drawable/bg_gradient_deep_space"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false">
 
     <LinearLayout
+        android:id="@+id/headerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:paddingTop="@dimen/status_bar_height"
         android:padding="12dp"
         android:gravity="center_vertical">
 
