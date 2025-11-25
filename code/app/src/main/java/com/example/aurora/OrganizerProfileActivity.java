@@ -45,7 +45,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  */
 
 
-public class OrganizerProfileActivity extends AppCompatActivity {
+public class OrganizerProfileActivity extends BaseActivity {
 
     private ImageView backButton;
     private TextView profileName, profileEmail, profilePhone, profileHeaderName, profileHeaderRole, activeEventsCount;

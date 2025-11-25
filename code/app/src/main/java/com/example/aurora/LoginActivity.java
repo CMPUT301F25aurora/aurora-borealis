@@ -59,7 +59,7 @@ import java.util.Map;
  */
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity {
 
     private EditText loginEmail, loginPassword;
     private Button loginButton;

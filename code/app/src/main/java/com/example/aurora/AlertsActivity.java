@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class AlertsActivity extends AppCompatActivity {
+public class AlertsActivity extends BaseActivity {
 
     private LinearLayout alertsContainer;
     private TextView emptyMsg;

@@ -4,5 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="purple_400">#9C27B0</color>
     <color name="purple_500">#6200EE</color>
+    <color name="deep_space_top">#050C33</color>
+
 
 </resources>

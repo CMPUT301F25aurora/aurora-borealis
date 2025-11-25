@@ -14,7 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
 
-public class EntrantEventHistoryActivity extends AppCompatActivity {
+public class EntrantEventHistoryActivity extends BaseActivity {
 
     private FirebaseFirestore db;
     private LinearLayout historyContainer;

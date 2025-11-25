@@ -69,7 +69,7 @@ import java.util.List;
  */
 
 
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends BaseActivity {
 
     private ImageView imgBanner;
     private TextView txtJoinedBadge, txtTitle,  txtTime,

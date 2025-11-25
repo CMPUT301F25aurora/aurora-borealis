@@ -47,7 +47,7 @@ import com.google.firebase.storage.StorageReference;
  * are assumed to store EMAIL strings.
  */
 
-public class OrganizerEntrantsActivity extends AppCompatActivity {
+public class OrganizerEntrantsActivity extends BaseActivity {
 
     private FirebaseFirestore db;
 

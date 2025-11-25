@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapPickerActivity extends BaseActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Marker currentMarker;

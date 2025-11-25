@@ -159,7 +159,7 @@ import android.provider.MediaStore;
  * - US 02.04.01 / 02.04.02: upload/update event poster.
  * - US 02.05.02: specify how many entrants to sample for invitations.
  */
-public class CreateEventActivity extends AppCompatActivity {
+public class CreateEventActivity extends BaseActivity {
 
     // UI Components
     private EditText editTitle, editDescription;

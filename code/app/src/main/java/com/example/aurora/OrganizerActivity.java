@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class OrganizerActivity extends AppCompatActivity {
+public class OrganizerActivity extends BaseActivity {
 
     private Button myEventsButton, createEventButton;
     private Button btnLogout;

@@ -30,7 +30,7 @@ import androidx.viewpager2.widget.ViewPager2;
  */
 
 
-public class EntrantNavigationActivity extends AppCompatActivity {
+public class EntrantNavigationActivity extends BaseActivity {
 
     private ViewPager2 pager;
     private Button tabEvents, tabProfile, tabAlerts;

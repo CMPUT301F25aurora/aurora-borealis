@@ -40,7 +40,7 @@ import java.util.Locale;
  *
  * Shows events + receives real-time notifications from organizers.
  */
-public class EventsActivity extends AppCompatActivity {
+public class EventsActivity extends BaseActivity {
 
     // 🔔 Notification listener
     private ListenerRegistration notifListener;

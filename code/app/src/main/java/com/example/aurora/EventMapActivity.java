@@ -22,7 +22,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-public class EventMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class EventMapActivity extends BaseActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FirebaseFirestore db;

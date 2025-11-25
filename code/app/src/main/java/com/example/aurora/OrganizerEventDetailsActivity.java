@@ -48,7 +48,7 @@ import java.util.List;
 
 
 
-public class OrganizerEventDetailsActivity extends AppCompatActivity {
+public class OrganizerEventDetailsActivity extends BaseActivity {
 
     private FirebaseFirestore db;
 

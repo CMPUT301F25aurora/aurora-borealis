@@ -97,7 +97,7 @@ import com.bumptech.glide.Glide;
 
 
 
-public class AdminActivity extends AppCompatActivity {
+public class AdminActivity extends BaseActivity {
 
     private TextView countEvents, countUsers, countImages, countLogs;
     private TextView sectionTitle;

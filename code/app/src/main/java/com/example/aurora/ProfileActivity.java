@@ -50,7 +50,7 @@ import java.util.HashMap;
  */
 
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
 
     private FirebaseFirestore db;
     private DocumentReference userRef;

@@ -66,7 +66,7 @@ import java.util.Map;
  *     <li>Android SharedPreferences</li>
  * </ul>
  */
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends BaseActivity {
 
     private EditText signupName, signupEmail, signupPhone, signupPassword;
     private RadioGroup radioGroupRole;

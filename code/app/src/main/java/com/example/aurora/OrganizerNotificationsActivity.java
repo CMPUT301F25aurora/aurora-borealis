@@ -40,7 +40,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class OrganizerNotificationsActivity extends AppCompatActivity {
+public class OrganizerNotificationsActivity extends BaseActivity {
     private LinearLayout notificationsContainer;
     private FirebaseFirestore db;
 
