@@ -109,4 +109,35 @@ public class FirestoreNotificationHelper {
             db.collection("notifications").add(nm);
         });
     }
+    public static void sendCustomNotification(
+            FirebaseFirestore db,
+            String userIdentifier,
+            String eventName,
+            String eventId,
+            String message
+    ) {
+
+        CollectionReference users = db.collection("users");
+        Query query = userIdentifier.contains("@")
+                ? users.whereEqualTo("email", userIdentifier)
+                : users.whereEqualTo(FieldPath.documentId(), userIdentifier);
+
+        query.get().addOnSuccessListener(snapshot -> {
+            if (snapshot.isEmpty()) return;
+
+            String email = snapshot.getDocuments().get(0).getString("email");
+
+            NotificationModel nm = new NotificationModel(
+                    "custom_message",
+                    eventName,
+                    message,
+                    eventId,
+                    email,
+                    System.currentTimeMillis()
+            );
+
+            db.collection("notifications").add(nm);
+        });
+    }
+
 }
