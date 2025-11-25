@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import static org.junit.Assert.*;
 
+import com.example.aurora.models.Event;
+
 /**
 
  Unit tests for Event.java data model.

@@ -31,6 +31,8 @@ package com.example.aurora;
 
 import static org.junit.Assert.assertEquals;
 
+import com.example.aurora.utils.AdminUtils;
+
 import org.junit.Test;
 
 import java.util.Calendar;

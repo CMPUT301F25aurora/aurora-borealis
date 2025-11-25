@@ -30,7 +30,7 @@
             android:contentDescription="Aurora Chance Logo" />
 
         <!-- Gradient title AURORA -->
-        <com.example.aurora.GradientTextView
+        <com.example.aurora.utils.GradientTextView
             android:id="@+id/welcomeTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             android:layout_marginTop="24dp" />
 
         <!-- Gradient title CHANCE -->
-        <com.example.aurora.GradientTextView
+        <com.example.aurora.utils.GradientTextView
             android:id="@+id/welcomeTitle2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
