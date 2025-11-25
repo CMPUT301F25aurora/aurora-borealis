@@ -148,38 +148,57 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Get email passed from intent (or from prefs)
-        String email = getIntent().getStringExtra("email");
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        String email = sp.getString("user_email", null);
+
+        if (email == null || email.isEmpty()) {
+            Toast.makeText(this, "No user email found in session.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (email == null || email.isEmpty()) {
             Toast.makeText(this, "No user email found.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Delete Firestore doc by matching email
-        db.collection("users")
-                .whereEqualTo("email", email)
+        // 1️⃣ Delete ALL events created by this organizer
+        db.collection("events")
+                .whereEqualTo("organizerEmail", email)
                 .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        String docId = querySnapshot.getDocuments().get(0).getId();
-                        db.collection("users").document(docId)
-                                .delete()
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(this, "Account deleted successfully.", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(this, LoginActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                    startActivity(intent);
-                                    finish();
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(this, "Failed to delete Firestore data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                    } else {
-                        Toast.makeText(this, "No matching user found in Firestore.", Toast.LENGTH_SHORT).show();
+                .addOnSuccessListener(eventQuery -> {
+                    for (DocumentSnapshot eventDoc : eventQuery.getDocuments()) {
+                        db.collection("events").document(eventDoc.getId()).delete();
                     }
+
+                    // 2️⃣ Now delete the user account document
+                    db.collection("users")
+                            .whereEqualTo("email", email)
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                if (!querySnapshot.isEmpty()) {
+                                    String docId = querySnapshot.getDocuments().get(0).getId();
+
+                                    db.collection("users").document(docId)
+                                            .delete()
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(this, "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+
+                                                // 3️⃣ Redirect back to login
+                                                Intent intent = new Intent(this, LoginActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                startActivity(intent);
+                                                finish();
+                                            })
+                                            .addOnFailureListener(e ->
+                                                    Toast.makeText(this, "Failed to delete Firestore data: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                                } else {
+                                    Toast.makeText(this, "No matching user found in Firestore.", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Error accessing Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error accessing Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to delete organizer events: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
-
 }
