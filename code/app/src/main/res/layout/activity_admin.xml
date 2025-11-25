@@ -8,7 +8,7 @@
     android:background="#FFF9E6"
     tools:context=".AdminActivity">
 
-    <!-- Scrollable content -->
+    <!-- Scrollable content i am cool -->
     <ScrollView
         android:id="@+id/adminScroll"
         android:layout_width="0dp"
