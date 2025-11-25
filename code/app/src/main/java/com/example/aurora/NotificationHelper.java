@@ -8,7 +8,14 @@ import android.content.ContextWrapper;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
-
+/**
+ * Helper class for creating and managing notification channels and
+ * building notifications for the Aurora app.
+ *
+ * <p>This wrapper ensures that a notification channel exists (Android O+),
+ * and provides a clean API for building notifications with a title,
+ * message, and optional tap intent.</p>
+ */
 public class NotificationHelper extends ContextWrapper {
 
     public static final String CHANNEL_ID = "aurora_notifications";
