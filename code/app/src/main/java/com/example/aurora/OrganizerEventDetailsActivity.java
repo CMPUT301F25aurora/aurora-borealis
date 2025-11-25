@@ -28,6 +28,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -57,6 +58,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
     private String eventId;
     private String myEmail;
+    private Button notifyWaitingBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
         bindViews();
         backButton.setOnClickListener(v -> onBackPressed());
-
+        notifyWaitingBtn.setOnClickListener(v -> notifyWaitingList());
         loadEvent();
     }
 
@@ -89,6 +91,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         capacityView = findViewById(R.id.detailCapacity);
         regWindowView = findViewById(R.id.detailRegWindow);
         waitingListContainer = findViewById(R.id.waitingListContainer);
+        notifyWaitingBtn = findViewById(R.id.btnNotifyWaiting);
     }
 
     private void loadEvent() {
@@ -185,5 +188,36 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         tv.setTextSize(14f);
         tv.setPadding(8, 4, 8, 4);
         return tv;
+    }
+    private void notifyWaitingList() {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    List<String> waitingList = (List<String>) doc.get("waitingList");
+
+                    if (waitingList == null || waitingList.isEmpty()) {
+                        Toast.makeText(this, "Waiting list is empty.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String eventName = doc.getString("title");
+                    if (eventName == null) eventName = "Event";
+
+                    for (String userIdOrEmail : waitingList) {
+                        FirestoreNotificationHelper.sendWaitingListNotification(
+                                db,
+                                userIdOrEmail,
+                                eventName,
+                                eventId
+                        );
+                    }
+
+                    Toast.makeText(this, "Waiting list notified!", Toast.LENGTH_SHORT).show();
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to notify waiting list.", Toast.LENGTH_SHORT).show()
+                );
     }
 }

@@ -279,8 +279,12 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void toggleJoin() {
         if (eventId == null) return;
 
+        // Fix for lambda: make effectively final copies
+        final String finalEventId = eventId;
+        final String finalUserId = userId;
+
         db.collection("events")
-                .document(eventId)
+                .document(finalEventId)
                 .get()
                 .addOnSuccessListener(doc -> {
 
@@ -289,16 +293,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                         return;
                     }
 
-                    Boolean geoRequired = doc.getBoolean("geoRequired");
-                    if (geoRequired == null) geoRequired = false;
+                    // ---- FIX: make geoRequired final ----
+                    Boolean tmpGeo = doc.getBoolean("geoRequired");
+                    final boolean geoRequiredFinal = (tmpGeo != null && tmpGeo);
 
-                    // --- LEAVING WAITING LIST ---
+                    // --------------------------
+                    // LEAVE WAITING LIST
+                    // --------------------------
                     if (isJoined) {
                         db.collection("events")
-                                .document(eventId)
-                                .update("waitingList", FieldValue.arrayRemove(userId))
+                                .document(finalEventId)
+                                .update("waitingList", FieldValue.arrayRemove(finalUserId))
                                 .addOnSuccessListener(v -> {
-                                    removeUserLocation(eventId, userId);
+                                    removeUserLocation(finalEventId, finalUserId);
                                     isJoined = false;
                                     updateJoinedUi();
                                     Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
@@ -306,31 +313,53 @@ public class EventDetailsActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // --- JOINING WAITING LIST ---
+                    // --------------------------
+                    // JOIN WAITING LIST
+                    // --------------------------
+                    if (geoRequiredFinal) {
 
-                    // If location required → enforce permission
-                    if (geoRequired) {
+                        // Permission check
                         if (!LocationUtils.isLocationPermissionGranted(this)) {
-                            Toast.makeText(this, "This event requires location to join.", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this,
+                                    "This event requires location to join.",
+                                    Toast.LENGTH_LONG).show();
                             LocationUtils.requestLocationPermission(this);
+                            return;
+                        }
+
+                        // GPS setting check
+                        if (!LocationUtils.isGpsEnabled(this)) {
+                            Toast.makeText(this,
+                                    "Please enable GPS to join this event.",
+                                    Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                             return;
                         }
                     }
 
-                    // Get user's lat/lng
+                    // --------------------------
+                    // Fetch actual location
+                    // --------------------------
                     LocationUtils.getUserLocation(this, (lat, lng) -> {
 
-                        // Save join location
+                        if (geoRequiredFinal && (Double.isNaN(lat) || Double.isNaN(lng))) {
+                            Toast.makeText(this,
+                                    "Unable to get your location. Make sure GPS is enabled.",
+                                    Toast.LENGTH_LONG).show();
+                            return;
+                        }
+
+                        // Save location for entrant
                         db.collection("events")
-                                .document(eventId)
+                                .document(finalEventId)
                                 .collection("waitingLocations")
-                                .add(new JoinLocation(userId, lat, lng))
+                                .add(new JoinLocation(finalUserId, lat, lng))
                                 .addOnSuccessListener(s -> {
 
-                                    // Now add user to waiting list
+                                    // Add to waiting list
                                     db.collection("events")
-                                            .document(eventId)
-                                            .update("waitingList", FieldValue.arrayUnion(userId))
+                                            .document(finalEventId)
+                                            .update("waitingList", FieldValue.arrayUnion(finalUserId))
                                             .addOnSuccessListener(v -> {
                                                 isJoined = true;
                                                 updateJoinedUi();
@@ -340,6 +369,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     });
                 });
     }
+
 
     private void removeUserLocation(String eventId, String userId) {
         db.collection("events")

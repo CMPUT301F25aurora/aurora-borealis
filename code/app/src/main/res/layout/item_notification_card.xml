@@ -81,6 +81,15 @@
 
         </LinearLayout>
 
+        <!-- ADDED: Dismiss button -->
+        <Button
+            android:id="@+id/btnDismiss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dismiss"
+            android:layout_marginStart="12dp"
+            android:visibility="gone" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

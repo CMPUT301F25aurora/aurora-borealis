@@ -17,6 +17,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Environment;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import androidx.appcompat.app.AlertDialog;
+import android.widget.EditText;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -54,10 +63,9 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     private TextView tvTotalSpots;
 
     // Buttons
-    private Button btnDrawLottery;
+
     private Button btnNotify;
     private Button btnReplace;
-
     // Tabs
     private TextView tabWaiting;
     private TextView tabSelected;
@@ -109,11 +117,14 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
         bindViews();
         setupRecycler();
-        setupButtons();
         setupTabs();
+        setupNotifyButtonLogic();
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
+        Button btnExport = findViewById(R.id.btnExportCsv);
+        btnExport.setOnClickListener(v -> exportFinalCsv());
+
     }
 
     private void bindViews() {
@@ -129,7 +140,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         tvCancelledCount = findViewById(R.id.tvCancelledCount);
         tvTotalSpots = findViewById(R.id.tvTotalSpots);
 
-        btnDrawLottery = findViewById(R.id.btnDrawLottery);
+
         btnNotify = findViewById(R.id.btnNotify);
         btnReplace = findViewById(R.id.btnReplace);
 
@@ -149,30 +160,281 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         entrantsAdapter = new EntrantsAdapter(this, new ArrayList<>());
         recyclerEntrants.setLayoutManager(new LinearLayoutManager(this));
         recyclerEntrants.setAdapter(entrantsAdapter);
+        entrantsAdapter.setSelectionListener(() -> updateNotifyButtonMode());
     }
+    private void setupNotifyButtonLogic() {
 
-    private void setupButtons() {
-        btnDrawLottery.setOnClickListener(v -> {
-            // TODO: implement your real lottery logic here.
-            Toast.makeText(this,
-                    "Draw Lottery clicked (UI only for now)",
-                    Toast.LENGTH_SHORT).show();
-        });
+        btnNotify.setText("Notify All");
 
         btnNotify.setOnClickListener(v -> {
-            List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
-            Toast.makeText(this,
-                    "Notify " + selected.size() + " entrant(s) (UI only)",
-                    Toast.LENGTH_SHORT).show();
-        });
 
-        btnReplace.setOnClickListener(v -> {
             List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
-            Toast.makeText(this,
-                    "Replace " + selected.size() + " entrant(s) (UI only)",
-                    Toast.LENGTH_SHORT).show();
+
+            if (currentTab == Tab.WAITING) {
+                showCustomMessageDialog(msg -> {
+                    if (selected.isEmpty()) notifyAllWaiting(msg);
+                    else notifySelectedEntrants_Waiting(msg, selected);
+                });
+            }
+
+            else if (currentTab == Tab.SELECTED) {
+                showCustomMessageDialog(msg -> {
+                    if (selected.isEmpty()) notifyAllSelected(msg);
+                    else notifySelectedEntrants_SelectedTab(msg, selected);
+                });
+            }
+
+            else if (currentTab == Tab.CANCELLED) {
+                showCustomMessageDialog(msg -> {
+                    if (selected.isEmpty()) notifyAllCancelled(msg);
+                    else notifySelectedEntrants_Cancelled(msg, selected);
+                });
+            }
         });
     }
+
+
+    // WAITING — notify ALL
+    private void notifyAllWaiting(String msg) {
+        if (waitingEmails.isEmpty()) {
+            Toast.makeText(this, "No entrants in waiting list.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    String eventName = doc.getString("title");
+                    if (eventName == null) eventName = "Event";
+
+                    for (String email : waitingEmails) {
+                        FirestoreNotificationHelper.sendCustomNotification(
+                                db, email, eventName, eventId, msg
+                        );
+                    }
+
+                    Toast.makeText(this, "Notified all waiting entrants.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    // WAITING — notify SELECTED (checkbox)
+    private void notifySelectedEntrants_Waiting(String msg, List<EntrantsAdapter.EntrantItem> selected) {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+
+                    for (EntrantsAdapter.EntrantItem e : selected) {
+                        FirestoreNotificationHelper.sendCustomNotification(
+                                db, e.getEmail(), eventName, eventId, msg
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified " + selected.size() + " waiting entrant(s).",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    // SELECTED — notify ALL
+    private void notifyAllSelected(String msg) {
+
+        if (selectedEmails.isEmpty()) {
+            Toast.makeText(this, "No selected entrants.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+
+                    for (String email : selectedEmails) {
+                        FirestoreNotificationHelper.sendCustomNotification(
+                                db, email, eventName, eventId, msg
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified ALL selected entrants (" + selectedEmails.size() + ")",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    // SELECTED — notify SELECTED (checkbox)
+    private void notifySelectedEntrants_SelectedTab(String msg, List<EntrantsAdapter.EntrantItem> selected) {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+
+                    for (EntrantsAdapter.EntrantItem e : selected) {
+                        FirestoreNotificationHelper.sendCustomNotification(
+                                db, e.getEmail(), eventName, eventId, msg
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified " + selected.size() + " selected entrant(s).",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    // CANCELLED — notify ALL
+    private void notifyAllCancelled(String msg) {
+        if (cancelledEmails.isEmpty()) {
+            Toast.makeText(this, "No cancelled entrants.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+
+                    for (String email : cancelledEmails) {
+                        FirestoreNotificationHelper.sendCustomNotification(
+                                db, email, eventName, eventId, msg
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified all cancelled entrants.",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    // CANCELLED — notify SELECTED (checkbox)
+    private void notifySelectedEntrants_Cancelled(String msg, List<EntrantsAdapter.EntrantItem> selected) {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+
+                    String eventName = doc.getString("title");
+
+                    for (EntrantsAdapter.EntrantItem e : selected) {
+                        FirestoreNotificationHelper.sendCustomNotification(
+                                db, e.getEmail(), eventName, eventId, msg
+                        );
+                    }
+
+                    Toast.makeText(this,
+                            "Notified " + selected.size() + " cancelled entrant(s).",
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    // ⭐ ADDED — Automatically update button label based on selection state
+    private void updateNotifyButtonMode() {
+
+        List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
+
+        if (selected.isEmpty()) {
+
+            if (currentTab == Tab.WAITING) {
+                btnNotify.setText("Notify All");
+            } else if (currentTab == Tab.SELECTED) {
+                btnNotify.setText("Notify All Selected");
+            } else if (currentTab == Tab.CANCELLED) {   // ⭐ ADD THIS
+                btnNotify.setText("Notify All Cancelled");
+            }
+
+        } else {
+
+            if (currentTab == Tab.WAITING) {
+                btnNotify.setText("Notify Selected (" + selected.size() + ")");
+            } else if (currentTab == Tab.SELECTED) {
+                btnNotify.setText("Notify Selected (" + selected.size() + ")");
+            } else if (currentTab == Tab.CANCELLED) {   // ⭐ ADD THIS
+                btnNotify.setText("Notify Selected (" + selected.size() + ")");
+            }
+        }
+    }
+
+
+
+    private void setupButtons() {
+
+        // Only replace button stays here
+        btnReplace.setOnClickListener(v -> {
+            List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
+
+            if (currentTab != Tab.SELECTED) {
+                Toast.makeText(this,
+                        "Switch to the Selected tab to cancel entrants.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (selected.isEmpty()) {
+                Toast.makeText(this,
+                        "Select at least one entrant to cancel.",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            cancelUnconfirmedEntrants(selected);
+        });
+    }
+
+
+    private void cancelUnconfirmedEntrants(List<EntrantsAdapter.EntrantItem> toCancel) {
+        if (selectedEmails == null) selectedEmails = new ArrayList<>();
+        if (cancelledEmails == null) cancelledEmails = new ArrayList<>();
+
+        List<String> emailsToMove = new ArrayList<>();
+
+        for (EntrantsAdapter.EntrantItem item : toCancel) {
+            String email = item.getEmail();
+            if (email == null || email.isEmpty()) continue;
+
+            // Only move if currently in selected list
+            if (selectedEmails.remove(email)) {
+                if (!cancelledEmails.contains(email)) {
+                    cancelledEmails.add(email);
+                }
+                emailsToMove.add(email);
+            }
+        }
+
+        if (emailsToMove.isEmpty()) {
+            Toast.makeText(this,
+                    "No selected entrants to cancel.",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("selectedEntrants", selectedEmails);
+        updates.put("cancelledEntrants", cancelledEmails);
+
+        db.collection("events")
+                .document(eventId)
+                .update(updates)
+                .addOnSuccessListener(v -> {
+                    // Update stat cards
+                    tvSelectedCount.setText(String.valueOf(selectedEmails.size()));
+                    tvCancelledCount.setText(String.valueOf(cancelledEmails.size()));
+
+                    // Show them under the Cancelled tab
+                    setActiveTab(Tab.CANCELLED);
+
+                    Toast.makeText(this,
+                            "Cancelled " + emailsToMove.size() + " entrant(s) who did not sign up.",
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "Failed to cancel entrants: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show());
+    }
+
 
     private void setupTabs() {
         View.OnClickListener listener = v -> {
@@ -268,30 +530,45 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
     private void setActiveTab(Tab tab) {
-        currentTab = tab;
 
-        // Reset styles
+        currentTab = tab;
         resetTabStyles();
 
+        // Always show the notify button for Waiting, Selected, and Cancelled
+        // Only hide for Final
+        btnNotify.setVisibility(View.VISIBLE);
+
         switch (tab) {
+
             case WAITING:
                 highlightTab(tabWaiting);
                 loadEntrantsForEmails(waitingEmails, "Waiting");
+                btnNotify.setText("Notify All");
                 break;
+
             case SELECTED:
                 highlightTab(tabSelected);
                 loadEntrantsForEmails(selectedEmails, "Selected");
+                btnNotify.setText("Notify All Selected");
                 break;
+
             case CANCELLED:
                 highlightTab(tabCancelled);
                 loadEntrantsForEmails(cancelledEmails, "Cancelled");
+                btnNotify.setText("Notify All Cancelled");   // ⭐ NEW
                 break;
+
             case FINAL:
                 highlightTab(tabFinal);
                 loadEntrantsForEmails(finalEmails, "Final");
+                btnNotify.setVisibility(View.GONE);  // FINAL should NOT notify anyone
                 break;
         }
+
+        updateNotifyButtonMode(); // always recalc label based on selection
     }
+
+
 
     private void resetTabStyles() {
         int normalColor = getResources().getColor(android.R.color.darker_gray);
@@ -400,5 +677,71 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                 );
     }
+
+    private void exportFinalCsv() {
+
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) return;
+
+                    List<String> finalList = (List<String>) doc.get("finalEntrants");
+                    if (finalList == null || finalList.isEmpty()) {
+                        Toast.makeText(this, "No final entrants to export", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    try {
+                        File dir = new File(Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_DOWNLOADS
+                        ), "AuroraExports");
+
+                        if (!dir.exists()) dir.mkdirs();
+
+                        File file = new File(dir, "final_list_" + eventId + ".csv");
+                        FileWriter writer = new FileWriter(file);
+
+                        writer.append("Email\n");
+                        for (String email : finalList) {
+                            writer.append(email).append("\n");
+                        }
+
+                        writer.flush();
+                        writer.close();
+
+                        Toast.makeText(this, "CSV saved: Downloads/AuroraExports/", Toast.LENGTH_LONG).show();
+
+                    } catch (IOException e) {
+                        Toast.makeText(this, "Error writing CSV", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+    private interface CustomMessageCallback {
+        void onMessage(String msg);
+    }
+
+    private void showCustomMessageDialog(CustomMessageCallback callback) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Send Message");
+
+        final EditText input = new EditText(this);
+        input.setHint("Type your message...");
+        input.setMinLines(2);
+        input.setPadding(50, 40, 50, 20);
+        builder.setView(input);
+
+        builder.setPositiveButton("Send", (dialog, which) -> {
+            String msg = input.getText().toString().trim();
+            if (msg.isEmpty()) {
+                Toast.makeText(this, "Message cannot be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            callback.onMessage(msg);
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
+    }
+
+
 
 }

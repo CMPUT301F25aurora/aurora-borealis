@@ -94,10 +94,14 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -112,6 +116,12 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -123,11 +133,14 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.List;
 
+import android.location.Address;
 import android.database.Cursor;              // for file size check
 import android.graphics.ImageDecoder;        // for modern preview
 import android.os.Build;                     // to check API level
@@ -149,11 +162,14 @@ import android.provider.MediaStore;
 public class CreateEventActivity extends AppCompatActivity {
 
     // UI Components
-    private EditText editTitle, editDescription, editLocation;
+    private EditText editTitle, editDescription;
+    private AutoCompleteTextView editLocation;
     private Spinner spinnerCategory;
     private EditText editMaxSpots, editLotterySampleSize;
     private CheckBox checkGeoRequired;
     private Button btnChoosePoster, btnCreateEvent;
+    private Button btnPickEventLocation;
+
     private ImageView imgPosterPreview;
 
     // Date/Time Pickers
@@ -172,6 +188,12 @@ public class CreateEventActivity extends AppCompatActivity {
     private Calendar regStartCalendar = Calendar.getInstance();
     private Calendar regEndCalendar = Calendar.getInstance();
 
+    // Event Location (lat/lng chosen from map)
+    private Double eventLat = null;
+    private Double eventLng = null;
+
+    // ActivityResultLauncher for map picker
+    private ActivityResultLauncher<Intent> mapPickerLauncher;
     // Poster
     private Uri selectedPosterUri = null;
 
@@ -182,6 +204,9 @@ public class CreateEventActivity extends AppCompatActivity {
 
     // Date format for display
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+    private PlacesClient placesClient;
+    private ArrayAdapter<String> locationSuggestionsAdapter;
+    private List<AutocompletePrediction> currentPredictions = new ArrayList<>();
 
 
     /**
@@ -196,34 +221,60 @@ public class CreateEventActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
 
+
+        Places.initialize(getApplicationContext(), "AIzaSyD-mrZsFbU9NZq7kVC1MI7zloWy2_KSw_U");
+        placesClient = Places.createClient(this);
+
         db = FirebaseFirestore.getInstance();
         posterStorageRef = FirebaseStorage.getInstance().getReference("event_posters");
 
         bindViews();
+
+        locationSuggestionsAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_dropdown_item_1line
+        );
+
+        AutoCompleteTextView auto = (AutoCompleteTextView) editLocation;
+        auto.setAdapter(locationSuggestionsAdapter);
+
         setupCategorySpinner();
         setupDateTimePickers();
         setupPosterPicker();
+        setupMapPicker(); // ⭐ Add this
+        setupLocationAutocomplete();
+
 
         btnChoosePoster.setOnClickListener(v -> openPosterPicker());
         btnCreateEvent.setOnClickListener(v -> createEvent());
+        btnPickEventLocation.setOnClickListener(v -> openMapPicker());
+
     }
+
+    private void openMapPicker() {
+        Intent intent = new Intent(CreateEventActivity.this, MapPickerActivity.class);
+        mapPickerLauncher.launch(intent);
+    }
+
 
     /**
      * Binds all XML layout views to their corresponding fields.
      * Called once during activity initialization.
      */
     private void bindViews() {
-        editTitle = findViewById(R.id.editTitle);
-        editDescription = findViewById(R.id.editDescription);
-        editLocation = findViewById(R.id.editLocation);
-        spinnerCategory = findViewById(R.id.spinnerCategory);
+            editTitle = findViewById(R.id.editTitle);
+            editDescription = findViewById(R.id.editDescription);
+            editLocation = findViewById(R.id.editLocation);
+            btnPickEventLocation = findViewById(R.id.btnPickEventLocation);
 
-        editMaxSpots = findViewById(R.id.editMaxSpots);
-        editLotterySampleSize = findViewById(R.id.editLotterySampleSize);
-        checkGeoRequired = findViewById(R.id.checkGeoRequired);
+            spinnerCategory = findViewById(R.id.spinnerCategory);
 
-        btnChoosePoster = findViewById(R.id.btnChoosePoster);
-        imgPosterPreview = findViewById(R.id.imgPosterPreview);
+            editMaxSpots = findViewById(R.id.editMaxSpots);
+            editLotterySampleSize = findViewById(R.id.editLotterySampleSize);
+            checkGeoRequired = findViewById(R.id.checkGeoRequired);
+
+            btnChoosePoster = findViewById(R.id.btnChoosePoster);
+            imgPosterPreview = findViewById(R.id.imgPosterPreview);
         btnCreateEvent = findViewById(R.id.btnCreateEvent);
 
         // Date/Time Buttons
@@ -244,6 +295,89 @@ public class CreateEventActivity extends AppCompatActivity {
         // Inside bindViews() or onCreate():
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
+    }
+
+
+    /**
+     * Sets up a launcher to receive selected event coordinates
+     * from MapPickerActivity.
+     */
+    private void setupMapPicker() {
+        mapPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+
+                        eventLat = result.getData().getDoubleExtra("lat", 0);
+                        eventLng = result.getData().getDoubleExtra("lng", 0);
+
+                        // Auto-fill location field with reverse geocoding
+                        if (eventLat != null && eventLng != null) {
+                            fillLocationFromCoordinates(eventLat, eventLng);
+                        }
+                    }
+                }
+        );
+    }
+
+    private void setupLocationAutocomplete() {
+        AutoCompleteTextView auto = (AutoCompleteTextView) editLocation;
+
+        auto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() < 2) return;
+
+                FindAutocompletePredictionsRequest request =
+                        FindAutocompletePredictionsRequest.builder()
+                                .setQuery(s.toString())
+                                .build();
+
+                placesClient.findAutocompletePredictions(request)
+                        .addOnSuccessListener(response -> {
+                            currentPredictions.clear();
+                            locationSuggestionsAdapter.clear();
+
+                            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
+                                currentPredictions.add(prediction);
+                                locationSuggestionsAdapter.add(prediction.getFullText(null).toString());
+                            }
+
+                            locationSuggestionsAdapter.notifyDataSetChanged();
+                        });
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        auto.setOnItemClickListener((parent, view, position, id) -> {
+            AutocompletePrediction prediction = currentPredictions.get(position);
+
+            String placeId = prediction.getPlaceId();
+            List<Place.Field> fields = Arrays.asList(
+                    Place.Field.ID, Place.Field.NAME,
+                    Place.Field.ADDRESS, Place.Field.LAT_LNG);
+
+            FetchPlaceRequest request = FetchPlaceRequest.builder(placeId, fields).build();
+
+            placesClient.fetchPlace(request)
+                    .addOnSuccessListener(fetchResponse -> {
+                        Place place = fetchResponse.getPlace();
+
+                        // Set text
+                        editLocation.setText(place.getAddress());
+
+                        // Set lat/lng for event
+                        if (place.getLatLng() != null) {
+                            eventLat = place.getLatLng().latitude;
+                            eventLng = place.getLatLng().longitude;
+                        }
+                    });
+        });
     }
 
 
@@ -489,6 +623,17 @@ public class CreateEventActivity extends AppCompatActivity {
             }
         }
 
+        if (location.isEmpty()) {
+            Toast.makeText(this, "Please enter a location or pick on the map", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (eventLat == null || eventLng == null) {
+            geocodeTextLocation(location);
+            return; // createEventInFirestore will run AFTER geocoding
+        }
+
+
         createEventInFirestore(
                 selectedPosterUri,
                 title, description, location, category,
@@ -571,6 +716,10 @@ public class CreateEventActivity extends AppCompatActivity {
         // Metadata
         event.put("createdAt", FieldValue.serverTimestamp());
 
+        event.put("eventLat", eventLat);
+        event.put("eventLng", eventLng);
+
+
         db.collection("events")
                 .add(event)
                 .addOnSuccessListener(ref -> {
@@ -629,4 +778,64 @@ public class CreateEventActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
+    private void fillLocationFromCoordinates(double lat, double lng) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address addr = addresses.get(0);
+
+                String label = addr.getAddressLine(0);
+                editLocation.setText(label);
+            }
+        } catch (Exception e) {
+            editLocation.setText(lat + ", " + lng); // fallback
+        }
+    }
+
+    private void geocodeTextLocation(String textLocation) {
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            List<Address> results = geocoder.getFromLocationName(textLocation, 1);
+
+            if (results != null && !results.isEmpty()) {
+                Address addr = results.get(0);
+
+                eventLat = addr.getLatitude();
+                eventLng = addr.getLongitude();
+
+                // Directly create event — DO NOT call createEvent() again
+                createEventInFirestore(
+                        selectedPosterUri,
+                        editTitle.getText().toString().trim(),
+                        editDescription.getText().toString().trim(),
+                        editLocation.getText().toString().trim(),
+                        spinnerCategory.getSelectedItem().toString(),
+                        dateTimeFormat.format(startCalendar.getTime()),
+                        txtEndDateTime.getText().toString().equals("No date/time selected")
+                                ? null
+                                : dateTimeFormat.format(endCalendar.getTime()),
+                        txtRegStartDateTime.getText().toString().equals("No date/time selected")
+                                ? null
+                                : dateTimeFormat.format(regStartCalendar.getTime()),
+                        txtRegEndDateTime.getText().toString().equals("No date/time selected")
+                                ? null
+                                : dateTimeFormat.format(regEndCalendar.getTime()),
+                        editMaxSpots.getText().toString().isEmpty() ? null : Long.parseLong(editMaxSpots.getText().toString()),
+                        editLotterySampleSize.getText().toString().isEmpty() ? null : Long.parseLong(editLotterySampleSize.getText().toString()),
+                        checkGeoRequired.isChecked()
+                );
+
+            } else {
+                Toast.makeText(this, "Could not find that location", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Error finding location", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+
 }
