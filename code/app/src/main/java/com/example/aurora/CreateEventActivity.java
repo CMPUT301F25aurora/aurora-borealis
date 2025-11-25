@@ -105,6 +105,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -291,6 +292,9 @@ public class CreateEventActivity extends AppCompatActivity {
         txtEndDateTime = findViewById(R.id.txtEndDateTime);
         txtRegStartDateTime = findViewById(R.id.txtRegStartDateTime);
         txtRegEndDateTime = findViewById(R.id.txtRegEndDateTime);
+        // Inside bindViews() or onCreate():
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
     }
 
 

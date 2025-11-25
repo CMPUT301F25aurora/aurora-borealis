@@ -268,6 +268,10 @@ public class EventsActivity extends AppCompatActivity {
         Button btnClear = view.findViewById(R.id.btnClearFilters);
         Button btnApply = view.findViewById(R.id.btnApplyFilters);
 
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
         btnClear.setOnClickListener(v -> {
             for (int i = 0; i < daySelected.length; i++) daySelected[i] = false;
             slotMorning = slotAfternoon = slotEvening = false;
@@ -285,6 +289,7 @@ public class EventsActivity extends AppCompatActivity {
             cbEvening.setChecked(false);
 
             dialog.dismiss();
+            dialog.show();
             applyFiltersAndRefresh();
         });
 

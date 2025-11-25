@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/rounded_card"
+    android:background="@drawable/bg_card_vibrant"
     android:orientation="horizontal"
     android:padding="12dp"
     android:layout_marginTop="10dp">
@@ -20,23 +20,21 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:layout_marginStart="8dp">
-
         <TextView
             android:id="@+id/adminLogTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Event Created"
+            android:text="Title"
             android:textStyle="bold"
-            android:textColor="#111111"
+            android:textColor="@android:color/white"
             android:textSize="14sp" />
-
         <TextView
             android:id="@+id/adminLogSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="City Parks and Rec"
-            android:textColor="#555555"
+            android:text="Subtitle"
+            android:textColor="#B0BEC5"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -44,7 +42,7 @@
         android:id="@+id/adminLogTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2 hours ago"
-        android:textColor="#777777"
+        android:text="Time"
+        android:textColor="#90A4AE"
         android:textSize="12sp" />
 </LinearLayout>

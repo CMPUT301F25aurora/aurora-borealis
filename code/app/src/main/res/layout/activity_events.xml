@@ -3,9 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:background="@drawable/bg_gradient_deep_space">
 
-    <!-- Top bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,34 +12,36 @@
         android:padding="12dp"
         android:gravity="center_vertical">
 
-        <!-- Filter button (top-right) -->
         <TextView
             android:id="@+id/titleEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Discover Events"
-            android:textColor="#111111"
-            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnFilter"
             android:layout_width="98dp"
-            android:layout_height="64dp"
+            android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:text="Filter"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@drawable/bg_glass_button"
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/logoutButton"
             android:layout_width="wrap_content"
-            android:layout_height="64dp"
+            android:layout_height="48dp"
             android:text="Logout"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@drawable/bg_glass_button"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
-    <!-- Search -->
     <EditText
         android:id="@+id/searchEvents"
         android:layout_width="match_parent"
@@ -48,10 +49,14 @@
         android:layout_marginHorizontal="12dp"
         android:layout_marginBottom="8dp"
         android:hint="Search events"
-        android:padding="10dp"
-        android:background="@android:drawable/edit_text" />
+        android:textColorHint="#C0C0C0"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:background="@drawable/bg_transparent_input"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp"
+        android:inputType="text" />
 
-    <!-- Category filters -->
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -69,7 +74,9 @@
                 android:layout_height="wrap_content"
                 android:text="All"
                 android:textAllCaps="false"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_glass_button"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnMusic"
@@ -77,7 +84,9 @@
                 android:layout_height="wrap_content"
                 android:text="Music"
                 android:textAllCaps="false"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_glass_button"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnSports"
@@ -85,7 +94,9 @@
                 android:layout_height="wrap_content"
                 android:text="Sports"
                 android:textAllCaps="false"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_glass_button"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnEducation"
@@ -93,7 +104,9 @@
                 android:layout_height="wrap_content"
                 android:text="Education"
                 android:textAllCaps="false"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_glass_button"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnArts"
@@ -101,7 +114,9 @@
                 android:layout_height="wrap_content"
                 android:text="Arts"
                 android:textAllCaps="false"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_glass_button"
+                android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btnTechnology"
@@ -109,34 +124,39 @@
                 android:layout_height="wrap_content"
                 android:text="Tech"
                 android:textAllCaps="false"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:background="@drawable/bg_glass_button"
+                android:textColor="@android:color/white" />
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- Scan QR button -->
     <Button
         android:id="@+id/btnScanQr"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
+        android:layout_height="52dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginTop="12dp"
         android:text="📷 Scan Event QR"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:background="@drawable/bg_card_vibrant"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold" />
 
-    <!-- Events list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEvents"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:paddingHorizontal="8dp"
+        android:paddingTop="8dp"
         android:paddingBottom="8dp" />
 
-    <!-- Bottom nav -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
+        android:background="#80000000"
         android:gravity="center">
 
         <Button
@@ -145,7 +165,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Events"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/navProfile"
@@ -153,7 +175,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Profile"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/white" />
 
         <Button
             android:id="@+id/navAlerts"
@@ -161,7 +185,9 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Alerts"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            android:background="@android:color/transparent"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
 </LinearLayout>

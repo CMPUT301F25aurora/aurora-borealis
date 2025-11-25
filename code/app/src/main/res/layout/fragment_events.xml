@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="8dp"
+    android:background="@drawable/bg_gradient_deep_space"
     tools:context=".EventsFragment">
 
     <TextView
@@ -12,24 +13,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Discover Events"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
+        android:textColor="@android:color/white"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="12dp" />
 
     <EditText
         android:id="@+id/searchEvents"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Search events..."
+        android:textColorHint="#C0C0C0"
+        android:textColor="@android:color/white"
         android:padding="12dp"
-        android:background="@android:color/transparent"
-        android:layout_marginBottom="8dp" />
+        android:background="@drawable/bg_transparent_input"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginBottom="8dp"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="8dp"
-        android:scrollbars="none">
+        android:paddingHorizontal="4dp"
+        android:scrollbars="none"
+        android:layout_marginBottom="4dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -37,24 +47,24 @@
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
-            <Button android:id="@+id/btnAll" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
-            <Button android:id="@+id/btnMusic" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Music" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
-            <Button android:id="@+id/btnSports" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sports" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
-            <Button android:id="@+id/btnEducation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Education" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
-            <Button android:id="@+id/btnArts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Arts" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
-            <Button android:id="@+id/btnTechnology" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Technology" android:layout_margin="4dp" android:backgroundTint="#6750A4" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnAll" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="All" android:layout_margin="4dp" android:background="@drawable/bg_glass_button" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnMusic" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Music" android:layout_margin="4dp" android:background="@drawable/bg_glass_button" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnSports" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sports" android:layout_margin="4dp" android:background="@drawable/bg_glass_button" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnEducation" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Education" android:layout_margin="4dp" android:background="@drawable/bg_glass_button" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnArts" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Arts" android:layout_margin="4dp" android:background="@drawable/bg_glass_button" android:textColor="@android:color/white"/>
+            <Button android:id="@+id/btnTechnology" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Technology" android:layout_margin="4dp" android:background="@drawable/bg_glass_button" android:textColor="@android:color/white"/>
         </LinearLayout>
     </HorizontalScrollView>
 
-    <!-- Scan QR button for entrants -->
     <Button
         android:id="@+id/btnScanQr"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp"
         android:text="📷  Scan Event QR"
         android:textAllCaps="false"
-        android:backgroundTint="#6750A4"
+        android:background="@drawable/bg_transparent_input"
         android:textColor="@android:color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -62,14 +72,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="8dp" />
 
     <Button
         android:id="@+id/logoutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Logout"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#D32F2F"
-        android:textColor="@android:color/white" />
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:background="@drawable/bg_glass_button"
+        android:textColor="#E57373" />
 </LinearLayout>

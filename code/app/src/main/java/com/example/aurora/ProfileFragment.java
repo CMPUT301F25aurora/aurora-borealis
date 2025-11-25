@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -101,6 +102,13 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Event History coming soon", Toast.LENGTH_SHORT).show());
 
         btnNotifSettings.setOnClickListener(x -> toggleNotifications());
+
+        // Inside onViewCreated:
+        ImageButton btnEditPhoto = v.findViewById(R.id.btnEditPhoto);
+        btnEditPhoto.setOnClickListener(x -> {
+            Toast.makeText(getContext(), "Profile photo upload coming soon!", Toast.LENGTH_SHORT).show();
+            // Logic to open image picker would go here
+        });
 
         btnDelete.setOnClickListener(x -> {
             if (userRef == null) {
