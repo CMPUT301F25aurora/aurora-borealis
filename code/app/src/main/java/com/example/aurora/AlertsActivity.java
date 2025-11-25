@@ -108,7 +108,7 @@ public class AlertsActivity extends AppCompatActivity {
 
         String notifId = doc.getId();
         String eventId = doc.getString("eventId");
-        String notifType = doc.getString("type");   // 👈 IMPORTANT
+        String notifType = doc.getString("type");
 
         title.setText(doc.getString("title"));
         msg.setText(doc.getString("message"));
@@ -146,7 +146,14 @@ public class AlertsActivity extends AppCompatActivity {
             btnDismiss.setVisibility(View.GONE);
 
         }
-        else {
+        else if ("custom_message".equals(notifType)) {
+
+            btnAccept.setVisibility(View.GONE);
+            btnDecline.setVisibility(View.GONE);
+            btnDismiss.setVisibility(View.VISIBLE);
+            btnDismiss.setOnClickListener(v -> deleteNotification(notifId));
+        }
+        else if ("winner_selected".equals(notifType)){
 
             btnDismiss.setVisibility(View.GONE);
 
@@ -155,6 +162,14 @@ public class AlertsActivity extends AppCompatActivity {
 
             btnAccept.setOnClickListener(v -> acceptEvent(eventId, notifId));
             btnDecline.setOnClickListener(v -> declineEvent(eventId, notifId));
+        }
+        else {
+
+            btnAccept.setVisibility(View.GONE);
+            btnDecline.setVisibility(View.GONE);
+            btnDismiss.setVisibility(View.VISIBLE);
+
+            btnDismiss.setOnClickListener(v -> deleteNotification(notifId));
         }
 
 
