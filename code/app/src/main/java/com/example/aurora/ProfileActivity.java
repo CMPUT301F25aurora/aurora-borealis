@@ -38,8 +38,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.SetOptions;
 
-import java.util.HashMap;
+import com.google.firebase.firestore.DocumentSnapshot;
+import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Entrant profile screen.
@@ -248,35 +250,90 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void deleteAccount() {
+
         if (userRef == null) {
             Toast.makeText(this, "No user profile found to delete.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Get email for cleanup / info
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Entrant email needed for all cleanup
         final String emailValue = email.getText().toString().trim();
 
-        userRef.delete()
-                .addOnSuccessListener(v -> {
-                    // Clear prefs
-                    getSharedPreferences("aurora_prefs", MODE_PRIVATE)
-                            .edit()
-                            .clear()
-                            .apply();
+        // 1️⃣ Query ALL events where entrant may appear in ANY list
+        db.collection("events")
+                .get()
+                .addOnSuccessListener(allEventsQuery -> {
 
-                    Toast.makeText(this,
-                            "Account deleted successfully.",
-                            Toast.LENGTH_SHORT).show();
+                    for (DocumentSnapshot eventDoc : allEventsQuery.getDocuments()) {
+                        boolean updated = false;
+                        Map<String, Object> updates = new HashMap<>();
 
-                    Intent intent = new Intent(this, LoginActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
+                        // --- Remove from waitingList ---
+                        List<String> waitingList = (List<String>) eventDoc.get("waitingList");
+                        if (waitingList != null && waitingList.contains(emailValue)) {
+                            waitingList.remove(emailValue);
+                            updates.put("waitingList", waitingList);
+                            updated = true;
+                        }
+
+                        // --- Remove from selectedEntrants ---
+                        List<String> selected = (List<String>) eventDoc.get("selectedEntrants");
+                        if (selected != null && selected.contains(emailValue)) {
+                            selected.remove(emailValue);
+                            updates.put("selectedEntrants", selected);
+                            updated = true;
+                        }
+
+                        // --- Remove from cancelledEntrants ---
+                        List<String> cancelled = (List<String>) eventDoc.get("cancelledEntrants");
+                        if (cancelled != null && cancelled.contains(emailValue)) {
+                            cancelled.remove(emailValue);
+                            updates.put("cancelledEntrants", cancelled);
+                            updated = true;
+                        }
+
+                        // --- Remove from finalEntrants ---
+                        List<String> finalEntrants = (List<String>) eventDoc.get("finalEntrants");
+                        if (finalEntrants != null && finalEntrants.contains(emailValue)) {
+                            finalEntrants.remove(emailValue);
+                            updates.put("finalEntrants", finalEntrants);
+                            updated = true;
+                        }
+
+                        // If any updates were made, push to Firestore
+                        if (updated) {
+                            db.collection("events")
+                                    .document(eventDoc.getId())
+                                    .update(updates);
+                        }
+                    }
+
+                    // 2️⃣ After all cleanup, delete entrant profile
+                    userRef.delete()
+                            .addOnSuccessListener(v -> {
+
+                                // Clear device session
+                                getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                                        .edit().clear().apply();
+
+                                Toast.makeText(this, "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+
+                                Intent intent = new Intent(this, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this,
+                                            "Failed to delete account: " + e.getMessage(),
+                                            Toast.LENGTH_LONG).show());
+
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this,
-                                "Failed to delete account: " + e.getMessage(),
+                                "Error cleaning up entrant data: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show());
     }
 }
