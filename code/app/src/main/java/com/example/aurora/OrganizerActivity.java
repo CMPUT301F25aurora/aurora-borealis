@@ -154,6 +154,8 @@ public class OrganizerActivity extends AppCompatActivity {
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
         Button btnManage = eventView.findViewById(R.id.btnManage);
         Button btnLottery = eventView.findViewById(R.id.btnLottery);
+        Button btnMap = eventView.findViewById(R.id.btnMap);
+
 
         String eventId = doc.getId();
 
@@ -194,6 +196,13 @@ public class OrganizerActivity extends AppCompatActivity {
         String statusText = emoji + " " + capitalize(category);
         if (!location.isEmpty()) statusText += " • " + location;
         status.setText(statusText);
+
+        btnMap.setOnClickListener(v -> {
+            Intent i = new Intent(OrganizerActivity.this, EventMapActivity.class);
+            i.putExtra("eventId", eventId);
+            startActivity(i);
+        });
+
 
         // QR BUTTON
         btnShowQR.setOnClickListener(v -> {

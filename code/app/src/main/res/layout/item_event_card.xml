@@ -18,6 +18,7 @@
         android:padding="16dp">
 
         <!-- Event title -->
+
         <TextView
             android:id="@+id/eventTitle"
             android:layout_width="wrap_content"
@@ -31,7 +32,9 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+
         <!-- Date -->
+
         <TextView
             android:id="@+id/eventDate"
             android:layout_width="wrap_content"
@@ -42,6 +45,7 @@
             android:textSize="14sp" />
 
         <!-- Stats -->
+
         <TextView
             android:id="@+id/eventStats"
             android:layout_width="wrap_content"
@@ -52,6 +56,7 @@
             android:textSize="13sp" />
 
         <!-- Status / Location -->
+
         <TextView
             android:id="@+id/eventStatus"
             android:layout_width="wrap_content"
@@ -76,39 +81,8 @@
 
             <!-- QR button -->
             <Button
-                android:id="@+id/btnShowQR"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_button_outline"
-                android:backgroundTint="#40FFFFFF"
-                android:elevation="2dp"
-                android:paddingHorizontal="8dp"
-                android:text="QR"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="13sp" />
-
-            <!-- Manage button -->
-            <Button
-                android:id="@+id/btnManage"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_button_outline"
-                android:backgroundTint="#40FFFFFF"
-                android:elevation="2dp"
-                android:paddingHorizontal="8dp"
-                android:text="Manage"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="13sp" />
-
-            <!-- Lottery button -->
-            <Button
                 android:id="@+id/btnLottery"
-                android:layout_width="0dp"
+                android:layout_width="68dp"
                 android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
@@ -121,8 +95,60 @@
                 android:textColor="@android:color/white"
                 android:textSize="13sp" />
 
+            <Button
+                android:id="@+id/btnShowQR"
+                android:layout_width="3dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:backgroundTint="#40FFFFFF"
+                android:elevation="2dp"
+                android:paddingHorizontal="8dp"
+                android:text="QR"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnMap"
+                android:layout_width="3dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:backgroundTint="#4CAF50"
+                android:elevation="2dp"
+                android:paddingHorizontal="8dp"
+                android:text="Map"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <Button
+                android:id="@+id/btnManage"
+                android:layout_width="200dp"
+                android:layout_height="40dp"
+                android:gravity="center_horizontal"           android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:backgroundTint="#40FFFFFF"
+                android:elevation="2dp"
+                android:paddingHorizontal="8dp"
+                android:text="Manage"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+        </LinearLayout>
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

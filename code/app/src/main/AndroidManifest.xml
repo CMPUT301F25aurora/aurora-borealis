@@ -70,6 +70,10 @@
         <activity android:name=".OrganizerNotificationsActivity" android:exported="false" />
         <activity android:name=".OrganizerEntrantsActivity" />
         <activity android:name=".MapPickerActivity" />
+        <activity
+            android:name=".EventMapActivity"
+            android:exported="false" />
+
 
 
         <!-- Admin -->
