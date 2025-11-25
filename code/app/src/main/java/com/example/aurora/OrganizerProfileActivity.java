@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import android.content.SharedPreferences;
+
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -86,29 +88,52 @@ public class OrganizerProfileActivity extends AppCompatActivity {
     }
 
     private void loadProfileData() {
-        // We don't need FirebaseAuth if user data is passed via intent
-        String fullName = getIntent().getStringExtra("fullName");
-        String email = getIntent().getStringExtra("email");
-        String phone = getIntent().getStringExtra("phone");
 
-        profileName.setText(fullName != null ? fullName : "N/A");
-        profileEmail.setText(email != null ? email : "N/A");
-        profilePhone.setText(phone != null ? phone : "N/A");
-        profileHeaderName.setText(fullName != null ? fullName : "Event Organizer");
-        profileHeaderRole.setText("Event Organizer");
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        String docId = sp.getString("user_doc_id", null);
+        String email = sp.getString("user_email", null);
 
-        // Optionally, fetch extra fields from Firestore if you need
-        db.collection("organizers")
-                .whereEqualTo("email", email)
+        if (docId == null || email == null) {
+            Toast.makeText(this, "No saved user session found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("users")
+                .document(docId)
                 .get()
-                .addOnSuccessListener(query -> {
-                    if (!query.isEmpty()) {
-                        DocumentSnapshot document = query.getDocuments().get(0);
-                        Long activeEvents = document.getLong("activeEvents");
-                        activeEventsCount.setText(activeEvents != null ? String.valueOf(activeEvents) : "0");
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        Toast.makeText(this, "User profile not found.", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                });
+
+                    String fullName = doc.getString("name");
+                    String phone = doc.getString("phone");
+
+                    profileName.setText(fullName != null ? fullName : "N/A");
+                    profileEmail.setText(email);
+                    profilePhone.setText(phone != null ? phone : "N/A");
+
+                    profileHeaderName.setText(fullName != null ? fullName : "Event Organizer");
+                    profileHeaderRole.setText("Event Organizer");
+
+                    // 🔥 Count events by organizer's email (adjust field name to match your schema)
+                    db.collection("events")
+                            .whereEqualTo("organizerEmail", email)
+                            .get()
+                            .addOnSuccessListener(eventsQuery -> {
+                                int count = eventsQuery.size();
+                                activeEventsCount.setText(String.valueOf(count));
+                            })
+                            .addOnFailureListener(e -> {
+                                activeEventsCount.setText("0");
+                            });
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)
