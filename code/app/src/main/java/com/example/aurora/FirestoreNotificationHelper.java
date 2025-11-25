@@ -4,14 +4,35 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.DocumentSnapshot;
+
 /**
  * Utility class for sending different types of notifications
  * into the Firestore "notifications" collection.
- *
- * Each method looks up the user by email or document ID,
- * then writes a NotificationModel entry.
  */
 public class FirestoreNotificationHelper {
+
+    // 🔥 NEW: Universal method that checks user preference
+    public static void sendIfAllowed(FirebaseFirestore db, String email, NotificationModel nm) {
+
+        db.collection("users")
+                .whereEqualTo("email", email)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    if (snapshot.isEmpty()) return;
+
+                    DocumentSnapshot userDoc = snapshot.getDocuments().get(0);
+
+                    Boolean enabled = userDoc.getBoolean("entrant_notifications_enabled");
+
+                    // Default = true if missing
+                    if (enabled == null || enabled) {
+                        db.collection("notifications").add(nm);
+                    }
+                });
+    }
 
     public static void sendWaitingListNotification(FirebaseFirestore db,
                                                    String userIdentifier,
@@ -19,48 +40,38 @@ public class FirestoreNotificationHelper {
                                                    String eventId) {
 
         CollectionReference users = db.collection("users");
-        Query query;
-
-        if (userIdentifier.contains("@")) {
-            query = users.whereEqualTo("email", userIdentifier);
-        } else {
-            query = users.whereEqualTo(FieldPath.documentId(), userIdentifier);
-        }
+        Query query = userIdentifier.contains("@")
+                ? users.whereEqualTo("email", userIdentifier)
+                : users.whereEqualTo(FieldPath.documentId(), userIdentifier);
 
         query.get().addOnSuccessListener(snapshot -> {
             if (snapshot.isEmpty()) return;
 
             String email = snapshot.getDocuments().get(0).getString("email");
 
-            // Build consistent NotificationModel
             NotificationModel nm = new NotificationModel(
                     "waiting_list_info",
                     "Waiting List Update",
                     "You are currently on the waiting list for " + eventName,
                     eventId,
-                    email,                // <-- this maps to userId
-                    System.currentTimeMillis()  // <-- maps to createdAt
+                    email,
+                    System.currentTimeMillis()
             );
 
-            // Write to Firestore
-            db.collection("notifications").add(nm);
+            // 🔥 CHECK PREFERENCE BEFORE SENDING
+            sendIfAllowed(db, email, nm);
         });
     }
 
-    // ⭐ NEW — Selected list notification
     public static void sendSelectedListNotification(FirebaseFirestore db,
                                                     String userIdentifier,
                                                     String eventName,
                                                     String eventId) {
 
         CollectionReference users = db.collection("users");
-        Query query;
-
-        if (userIdentifier.contains("@")) {
-            query = users.whereEqualTo("email", userIdentifier);
-        } else {
-            query = users.whereEqualTo(FieldPath.documentId(), userIdentifier);
-        }
+        Query query = userIdentifier.contains("@")
+                ? users.whereEqualTo("email", userIdentifier)
+                : users.whereEqualTo(FieldPath.documentId(), userIdentifier);
 
         query.get().addOnSuccessListener(snapshot -> {
             if (snapshot.isEmpty()) return;
@@ -76,35 +87,28 @@ public class FirestoreNotificationHelper {
                     System.currentTimeMillis()
             );
 
-            db.collection("notifications").add(nm);
+            // 🔥 CHECK PREFERENCE BEFORE SENDING
+            sendIfAllowed(db, email, nm);
         });
     }
 
-    // ⭐ NEW — Send notification to CANCELLED entrants
-    public static void sendCancelledNotification(
-            FirebaseFirestore db,
-            String userIdentifier,
-            String eventName,
-            String eventId
-    ) {
+    public static void sendCancelledNotification(FirebaseFirestore db,
+                                                 String userIdentifier,
+                                                 String eventName,
+                                                 String eventId) {
 
         CollectionReference users = db.collection("users");
-        Query query;
-
-        if (userIdentifier.contains("@")) {
-            query = users.whereEqualTo("email", userIdentifier);
-        } else {
-            query = users.whereEqualTo(FieldPath.documentId(), userIdentifier);
-        }
+        Query query = userIdentifier.contains("@")
+                ? users.whereEqualTo("email", userIdentifier)
+                : users.whereEqualTo(FieldPath.documentId(), userIdentifier);
 
         query.get().addOnSuccessListener(snapshot -> {
             if (snapshot.isEmpty()) return;
 
             String email = snapshot.getDocuments().get(0).getString("email");
 
-            // ⭐ FIX: use the correct notification type
             NotificationModel nm = new NotificationModel(
-                    "cancelled_list_info",        // ⭐ CHANGED
+                    "cancelled_list_info",
                     "Cancelled Entrant Update",
                     "You are currently on the cancelled list for " + eventName,
                     eventId,
@@ -112,16 +116,16 @@ public class FirestoreNotificationHelper {
                     System.currentTimeMillis()
             );
 
-            db.collection("notifications").add(nm);
+            // 🔥 CHECK PREFERENCE BEFORE SENDING
+            sendIfAllowed(db, email, nm);
         });
     }
-    public static void sendCustomNotification(
-            FirebaseFirestore db,
-            String userIdentifier,
-            String eventName,
-            String eventId,
-            String message
-    ) {
+
+    public static void sendCustomNotification(FirebaseFirestore db,
+                                              String userIdentifier,
+                                              String eventName,
+                                              String eventId,
+                                              String message) {
 
         CollectionReference users = db.collection("users");
         Query query = userIdentifier.contains("@")
@@ -142,8 +146,8 @@ public class FirestoreNotificationHelper {
                     System.currentTimeMillis()
             );
 
-            db.collection("notifications").add(nm);
+            // 🔥 CHECK PREFERENCE BEFORE SENDING
+            sendIfAllowed(db, email, nm);
         });
     }
-
 }
