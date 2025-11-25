@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
+    android:background="@drawable/bg_card_vibrant"
+    android:padding="16dp"
+    android:layout_marginTop="10dp"
     android:gravity="center_vertical">
 
     <ImageView
@@ -11,7 +13,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:scaleType="centerCrop"
-        android:background="#E0E0E0"
+        android:background="@drawable/bg_transparent_input"
         android:layout_marginRight="12dp" />
 
     <LinearLayout
@@ -26,28 +28,34 @@
             android:layout_height="wrap_content"
             android:text="Event Title"
             android:textStyle="bold"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:textColor="@android:color/white" />
 
         <TextView
             android:id="@+id/adminImageEventId"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Event ID" />
+            android:text="Event ID"
+            android:textSize="12sp"
+            android:textColor="#B0BEC5" />
 
         <TextView
             android:id="@+id/adminImageOrganizer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Organizer Email" />
+            android:text="Organizer Email"
+            android:textSize="13sp"
+            android:textColor="#E0E0E0" />
 
     </LinearLayout>
 
     <Button
         android:id="@+id/adminDeleteImageBtn"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="Remove"
-        android:backgroundTint="#E57373"
-        android:textColor="#FFF" />
+        android:textAllCaps="false"
+        android:backgroundTint="#D32F2F"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>

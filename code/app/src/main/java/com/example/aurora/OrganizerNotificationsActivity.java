@@ -27,6 +27,7 @@
 package com.example.aurora;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,6 +51,9 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         notificationsContainer = findViewById(R.id.notificationsContainer);
+        // In onCreate:
+        ImageButton btnBack = findViewById(R.id.btnBackNotifications);
+        btnBack.setOnClickListener(v -> finish());
 
         loadNotifications();
     }

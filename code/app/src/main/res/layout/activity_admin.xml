@@ -2,13 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF9E6"
-    tools:context=".AdminActivity">
+    android:background="@drawable/bg_gradient_deep_space">
 
-    <!-- Scrollable content -->
     <ScrollView
         android:id="@+id/adminScroll"
         android:layout_width="0dp"
@@ -25,7 +22,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Header -->
             <TextView
                 android:id="@+id/adminTitle"
                 android:layout_width="wrap_content"
@@ -33,20 +29,17 @@
                 android:text="Admin Panel"
                 android:textSize="26sp"
                 android:textStyle="bold"
-                android:textColor="#000000" />
+                android:textColor="@android:color/white" />
+
             <TextView
                 android:id="@+id/btnBackAdmin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="← Go Back"
-                android:textColor="#1E88E5"
+                android:textColor="#BBDEFB"
                 android:textSize="16sp"
-                android:textStyle="bold"
                 android:padding="4dp"
-                android:layout_marginTop="8dp"
-                android:clickable="true"
-                android:focusable="true" />
-
+                android:layout_marginTop="8dp" />
 
             <TextView
                 android:id="@+id/adminSubtitle"
@@ -54,270 +47,112 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:text="System management"
-                android:textColor="#777777"
+                android:textColor="#E0E0E0"
                 android:textSize="13sp" />
 
-            <!-- Stats row 1: Events / Users -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    app:cardUseCompatPadding="true"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                    android:background="@drawable/bg_card_vibrant"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+                    <TextView android:text="Events" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:id="@+id/textEventCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center_vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Events"
-                            android:textSize="13sp"
-                            android:textColor="#777777" />
-
-                        <TextView
-                            android:id="@+id/textEventCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    app:cardUseCompatPadding="true"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center_vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Users"
-                            android:textSize="13sp"
-                            android:textColor="#777777" />
-
-                        <TextView
-                            android:id="@+id/textUserCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
+                    android:background="@drawable/bg_card_vibrant"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+                    <TextView android:text="Users" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:id="@+id/textUserCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Stats row 2: Images / Logs -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="12dp">
 
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    app:cardUseCompatPadding="true"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                    android:background="@drawable/bg_card_vibrant"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+                    <TextView android:text="Images" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:id="@+id/textImageCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center_vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Images"
-                            android:textSize="13sp"
-                            android:textColor="#777777" />
-
-                        <TextView
-                            android:id="@+id/textImageCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-                <androidx.cardview.widget.CardView
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    app:cardUseCompatPadding="true"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:gravity="center_vertical"
-                        android:padding="12dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Logs"
-                            android:textSize="13sp"
-                            android:textColor="#777777" />
-
-                        <TextView
-                            android:id="@+id/textLogCount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0"
-                            android:textSize="22sp"
-                            android:textStyle="bold"
-                            android:textColor="#000000" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
+                    android:background="@drawable/bg_card_vibrant"
+                    android:orientation="vertical"
+                    android:gravity="center_vertical"
+                    android:padding="12dp">
+                    <TextView android:text="Logs" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:id="@+id/textLogCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Small space -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="12dp" />
+            <View android:layout_width="match_parent" android:layout_height="16dp" />
 
-            <!-- Filter tab row (emoji icons) -->
             <LinearLayout
                 android:id="@+id/adminTabBar"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="56dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="4dp"
-                android:background="#F2EAFE">
+                android:background="@drawable/bg_glass_card">
 
-                <!-- Events -->
-                <LinearLayout
-                    android:id="@+id/tabEvents"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="#FFFFFFFF"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📅"
-                        android:textSize="20sp" />
+                <LinearLayout android:id="@+id/tabEvents" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
+                    <TextView android:text="📅" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <!-- Profiles -->
-                <LinearLayout
-                    android:id="@+id/tabProfiles"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="#FFFFFFFF"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginEnd="4dp"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="👥"
-                        android:textSize="20sp" />
+                <LinearLayout android:id="@+id/tabProfiles" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
+                    <TextView android:text="👥" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <!-- Images -->
-                <LinearLayout
-                    android:id="@+id/tabImages"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="#FFFFFFFF"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:layout_marginEnd="4dp"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🖼️"
-                        android:textSize="20sp" />
+                <LinearLayout android:id="@+id/tabImages" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
+                    <TextView android:text="🖼️" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <!-- Logs -->
-                <LinearLayout
-                    android:id="@+id/tabLogs"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="#FFFFFFFF"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="4dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📄"
-                        android:textSize="20sp" />
+                <LinearLayout android:id="@+id/tabLogs" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
+                    <TextView android:text="📄" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Section title -->
             <TextView
                 android:id="@+id/textSectionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Browse Events"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#000000" />
+                android:textColor="@android:color/white" />
 
-            <!-- Container that AdminActivity fills with cards -->
             <LinearLayout
                 android:id="@+id/adminListContainer"
                 android:layout_width="match_parent"
@@ -325,29 +160,18 @@
                 android:layout_marginTop="8dp"
                 android:orientation="vertical" />
 
-            <!-- Extra bottom padding so list isn't hidden behind FAB -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="72dp" />
-
+            <View android:layout_width="match_parent" android:layout_height="80dp" />
         </LinearLayout>
     </ScrollView>
 
-    <!-- Small round search button bottom-right -->
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/buttonSearch"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:text="🔍"
         android:textSize="22sp"
-        android:insetLeft="0dp"
-        android:insetRight="0dp"
-        android:insetTop="0dp"
-        android:insetBottom="0dp"
-        android:backgroundTint="#FFFFFF"
-        app:strokeWidth="1dp"
-        app:cornerRadius="28dp"
+        android:background="@drawable/bg_welcome_button"
+        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp" />
