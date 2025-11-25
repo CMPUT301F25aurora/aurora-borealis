@@ -3,10 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F4F6FB"
-    android:padding="16dp">
+    android:background="@drawable/bg_gradient_deep_space"
+    android:padding="20dp">
 
-    <!-- Top bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,7 +18,8 @@
             android:layout_height="36dp"
             android:background="@android:color/transparent"
             android:src="@android:drawable/ic_menu_revert"
-            android:contentDescription="Back" />
+            android:contentDescription="Back"
+            android:tint="@android:color/white" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -35,14 +35,18 @@
                 android:text="Lottery Management"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:textColor="#111111" />
+                android:textColor="@android:color/white"
+                android:shadowColor="#80000000"
+                android:shadowDx="0"
+                android:shadowDy="3"
+                android:shadowRadius="6" />
 
             <TextView
                 android:id="@+id/tvEventSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Subtitle"
-                android:textColor="#777777"
+                android:textColor="#E0E0E0"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
@@ -53,18 +57,21 @@
         android:layout_height="180dp"
         android:scaleType="centerCrop"
         android:layout_marginTop="12dp"
+        android:background="@drawable/bg_transparent_input"
         android:src="@drawable/ic_launcher_background" />
 
-    <!-- UPDATE POSTER BUTTON -->
     <Button
         android:id="@+id/btnUpdatePoster"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:text="Update Poster"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
-        android:backgroundTint="@color/purple_500"
-        android:textColor="@android:color/white" />
+        android:background="@drawable/bg_glass_button"
+        android:textColor="@android:color/white"
+        android:textAllCaps="false"
+        android:paddingHorizontal="24dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,8 +83,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="16dp"
-            android:background="#FFFFFF"
-            android:elevation="2dp"
+            android:background="@drawable/bg_card_vibrant"
             android:layout_marginEnd="8dp">
 
             <LinearLayout
@@ -92,13 +98,13 @@
                     android:text="0"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#2962FF" />
+                    android:textColor="#80CFFF" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Waiting List"
-                    android:textColor="#666666" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
 
@@ -107,8 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="16dp"
-            android:background="#FFFFFF"
-            android:elevation="2dp"
+            android:background="@drawable/bg_card_vibrant"
             android:layout_marginStart="8dp">
 
             <LinearLayout
@@ -123,18 +128,17 @@
                     android:text="0"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#00C853" />
+                    android:textColor="#00E676" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Selected"
-                    android:textColor="#666666" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Stat Cards (Row 2) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -146,8 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="16dp"
-            android:background="#FFFFFF"
-            android:elevation="2dp"
+            android:background="@drawable/bg_card_vibrant"
             android:layout_marginEnd="8dp">
 
             <LinearLayout
@@ -155,21 +158,20 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
-            <TextView
+                <TextView
                     android:id="@+id/tvCancelledCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#D50000" />
+                    android:textColor="#FF5252" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cancelled"
-                    android:textColor="#666666" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
 
@@ -178,8 +180,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="16dp"
-            android:background="#FFFFFF"
-            android:elevation="2dp"
+            android:background="@drawable/bg_card_vibrant"
             android:layout_marginStart="8dp">
 
             <LinearLayout
@@ -187,28 +188,35 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
-            <TextView
+                <TextView
                     android:id="@+id/tvTotalSpots"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="#2962FF" />
+                    android:textColor="#80CFFF" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Spots"
-                    android:textColor="#666666" />
+                    android:textColor="@android:color/white" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnDrawLottery"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="Draw Lottery"
+        android:layout_marginTop="16dp"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_glass_button"
+        android:textAllCaps="false"
+        android:textSize="16sp" />
 
-
-    <!-- Notify / Replace -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -218,29 +226,32 @@
         <Button
             android:id="@+id/btnNotify"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:text="Notify"
-            android:backgroundTint="#E0E0E0"
-            android:textColor="#333333" />
+            android:background="@drawable/bg_glass_button"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false" />
 
         <Button
             android:id="@+id/btnReplace"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:text="Replace"
             android:layout_marginStart="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:textColor="#333333" />
+            android:background="@drawable/bg_glass_button"
+            android:textColor="@android:color/white"
+            android:textAllCaps="false" />
     </LinearLayout>
 
-    <!-- Tabs -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp">
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_card_vibrant"
+        android:padding="4dp">
 
         <TextView
             android:id="@+id/tabWaiting"
@@ -250,6 +261,7 @@
             android:gravity="center"
             android:text="Waiting"
             android:textStyle="bold"
+            android:textColor="@android:color/white"
             android:paddingVertical="8dp" />
 
         <TextView
@@ -259,6 +271,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Selected"
+            android:textColor="@android:color/white"
             android:paddingVertical="8dp" />
 
         <TextView
@@ -268,6 +281,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Cancelled"
+            android:textColor="@android:color/white"
             android:paddingVertical="8dp" />
 
         <TextView
@@ -277,26 +291,14 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Final"
+            android:textColor="@android:color/white"
             android:paddingVertical="8dp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnExportCsv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Export Final List (CSV)"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="#7E57C2"
-        android:textColor="@android:color/white"
-        android:textAllCaps="false"/>
-
-    <!-- Recycler View -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEntrants"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="12dp"/>
+        android:layout_marginTop="12dp" />
 </LinearLayout>
-
-

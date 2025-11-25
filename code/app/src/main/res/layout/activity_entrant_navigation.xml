@@ -2,20 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient_deep_space"> <FrameLayout
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"/>
 
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
-        android:background="#FFFFFF"
+        android:background="#80000000"
         android:gravity="center">
 
         <Button
@@ -24,7 +23,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Events"
-            android:background="#FFFFFF"/>
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent" />
 
         <Button
             android:id="@+id/navProfile"
@@ -32,7 +32,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Profile"
-            android:background="#FFFFFF"/>
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent" />
 
         <Button
             android:id="@+id/navAlerts"
@@ -40,6 +41,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Alerts"
-            android:background="#FFFFFF"/>
+            android:textColor="@android:color/white"
+            android:background="@android:color/transparent" />
     </LinearLayout>
 </LinearLayout>

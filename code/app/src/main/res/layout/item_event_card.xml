@@ -1,98 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="#FFFFFF"
-    android:padding="16dp"
+    android:layout_marginHorizontal="10dp"
     android:layout_marginBottom="12dp"
-    android:elevation="4dp">
+    app:cardCornerRadius="20dp"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="8dp"
+    android:backgroundTint="@android:color/transparent">
 
-    <TextView
-        android:id="@+id/eventTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Event Title"
-        android:textStyle="bold"
-        android:textColor="#111"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/eventDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Date"
-        android:textColor="#666"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/eventStats"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Max spots: 0"
-        android:textColor="#666"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/eventStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="📍 Location"
-        android:textSize="14sp"
-        android:textColor="#4A148C"
-        android:layout_marginTop="6dp" />
-
-    <!-- BUTTON ROW -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:background="@drawable/bg_card_vibrant"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- QR button -->
-        <Button
-            android:id="@+id/btnShowQR"
+        <!-- Event title -->
+        <TextView
+            android:id="@+id/eventTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="QR"
-            android:textAllCaps="true"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="4"
+            android:text="Event Title"
             android:textColor="@android:color/white"
-            android:backgroundTint="?attr/colorPrimary"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="6dp"
-            android:textSize="14sp"
-            android:elevation="2dp" />
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-        <!-- Manage button -->
-        <Button
-            android:id="@+id/btnManage"
+        <!-- Date -->
+        <TextView
+            android:id="@+id/eventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manage"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:backgroundTint="?attr/colorPrimary"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="6dp"
-            android:textSize="14sp"
-            android:elevation="2dp"
-            android:layout_marginStart="12dp" />
+            android:layout_marginTop="4dp"
+            android:text="Date"
+            android:textColor="#E0E0E0"
+            android:textSize="14sp" />
 
-        <!-- LOTTERY button -->
-        <Button
-            android:id="@+id/btnLottery"
+        <!-- Stats -->
+        <TextView
+            android:id="@+id/eventStats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lottery"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:backgroundTint="#43A047"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="6dp"
-            android:textSize="14sp"
-            android:elevation="2dp"
-            android:layout_marginStart="12dp" />
+            android:layout_marginTop="4dp"
+            android:text="Max spots: 0"
+            android:textColor="#CFD8DC"
+            android:textSize="13sp" />
+
+        <!-- Status / Location -->
+        <TextView
+            android:id="@+id/eventStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:shadowColor="#40000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:text="Status / Location"
+            android:textColor="#BB86FC"
+            android:textSize="14sp" />
+
+        <!-- BUTTON ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <!-- QR button -->
+            <Button
+                android:id="@+id/btnShowQR"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:backgroundTint="#40FFFFFF"
+                android:elevation="2dp"
+                android:paddingHorizontal="8dp"
+                android:text="QR"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+
+            <!-- Manage button -->
+            <Button
+                android:id="@+id/btnManage"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:backgroundTint="#40FFFFFF"
+                android:elevation="2dp"
+                android:paddingHorizontal="8dp"
+                android:text="Manage"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+
+            <!-- Lottery button -->
+            <Button
+                android:id="@+id/btnLottery"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_button_outline"
+                android:backgroundTint="#4CAF50"
+                android:elevation="2dp"
+                android:paddingHorizontal="8dp"
+                android:text="Lottery"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textSize="13sp" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

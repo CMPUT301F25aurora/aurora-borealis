@@ -4,14 +4,15 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="12dp"
-    android:background="@drawable/bg_card"
+    android:background="@drawable/bg_card_vibrant"
     android:gravity="center_vertical"
     android:layout_marginBottom="8dp">
 
     <CheckBox
         android:id="@+id/checkSelect"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:buttonTint="@android:color/white"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -27,7 +28,7 @@
             android:text="User Name"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:textColor="#111"/>
+            android:textColor="@android:color/white"/>
 
         <TextView
             android:id="@+id/tvEmail"
@@ -35,7 +36,7 @@
             android:layout_height="wrap_content"
             android:text="email@example.com"
             android:textSize="14sp"
-            android:textColor="#666"/>
+            android:textColor="#E0E0E0"/>
     </LinearLayout>
 
     <TextView
@@ -45,7 +46,8 @@
         android:text="Waiting"
         android:textSize="12sp"
         android:textStyle="bold"
-        android:textColor="#6A1B9A"
-        android:padding="8dp"
-        android:background="@drawable/bg_status_badge"/>
+        android:textColor="#BBDEFB"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="4dp"
+        android:background="@drawable/bg_glass_button"/>
 </LinearLayout>

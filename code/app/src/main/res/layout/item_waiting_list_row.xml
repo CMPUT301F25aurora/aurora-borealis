@@ -4,7 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingVertical="8dp"
-    android:paddingHorizontal="4dp">
+    android:paddingHorizontal="4dp"
+    android:gravity="center_vertical">
 
     <TextView
         android:id="@+id/waitingName"
@@ -12,12 +13,16 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="entrant-id"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textColor="@android:color/white"/>
 
     <Button
         android:id="@+id/btnRemoveEntrant"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="Remove"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:background="@drawable/bg_gradient_decline"
+        android:textColor="@android:color/white"
+        android:paddingHorizontal="16dp" />
 </LinearLayout>

@@ -394,6 +394,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setView(view)
                 .create();
 
+        // --- THE FIX STARTS HERE ---
+        // This removes the default white square background from the dialog window
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
+        }
+
+
         btnGotIt.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
