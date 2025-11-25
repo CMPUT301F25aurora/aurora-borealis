@@ -298,7 +298,6 @@ public class OrganizerActivity extends AppCompatActivity {
 
         for (String email : allEntrants) {
 
-            // Skip winners
             if (winners.contains(email)) continue;
 
             NotificationModel notif = new NotificationModel(
@@ -310,12 +309,15 @@ public class OrganizerActivity extends AppCompatActivity {
                     System.currentTimeMillis()
             );
 
-            db.collection("notifications").add(notif);
+            // 🔥 Respect notification preference
+            FirestoreNotificationHelper.sendIfAllowed(db, email, notif);
         }
     }
 
+
     private void sendWinnerNotifications(String eventId, List<String> winners) {
         for (String email : winners) {
+
             NotificationModel notif = new NotificationModel(
                     "winner_selected",
                     "You've Been Selected!",
@@ -325,9 +327,11 @@ public class OrganizerActivity extends AppCompatActivity {
                     System.currentTimeMillis()
             );
 
-            db.collection("notifications").add(notif);
+            // 🔥 Respect notification preference
+            FirestoreNotificationHelper.sendIfAllowed(db, email, notif);
         }
     }
+
 
     private void showWinnersDialog(List<String> winners) {
         StringBuilder sb = new StringBuilder();

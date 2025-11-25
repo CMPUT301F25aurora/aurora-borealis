@@ -141,6 +141,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void loadProfile() {
         userRef.get().addOnSuccessListener(doc -> {
+
             String n = doc.getString("name");
             String e = doc.getString("email");
             String p = doc.getString("phone");
@@ -156,8 +157,18 @@ public class ProfileActivity extends AppCompatActivity {
             joinedCount.setText(String.valueOf(joined == null ? 0 : joined));
             winsCount.setText(String.valueOf(wins == null ? 0 : wins));
             setAvatarInitials(fullName.getText().toString());
+
+            // Load notification settings from Firestore → sync into SharedPreferences
+            Boolean notifs = doc.getBoolean("entrant_notifications_enabled");
+            if (notifs != null) {
+                getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                        .edit()
+                        .putBoolean("entrant_notifications_enabled", notifs)
+                        .apply();
+            }
         });
     }
+
 
     private void saveProfile() {
         String n = fullName.getText().toString().trim();
@@ -215,6 +226,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     // Simple notification enable/disable stored in SharedPreferences
     private void showNotifSettingsDialog() {
+
+        // Load current value from SharedPreferences
         boolean enabled = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getBoolean("entrant_notifications_enabled", true);
 
@@ -224,11 +237,20 @@ public class ProfileActivity extends AppCompatActivity {
                         ? "Notifications are currently ENABLED. Do you want to disable them?"
                         : "Notifications are currently DISABLED. Do you want to enable them?")
                 .setPositiveButton(enabled ? "Disable" : "Enable", (dialog, which) -> {
+
                     boolean newValue = !enabled;
+
+                    // Save locally
                     getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                             .edit()
                             .putBoolean("entrant_notifications_enabled", newValue)
                             .apply();
+
+                    // Save to Firestore (persist across logout/login)
+                    if (userRef != null) {
+                        userRef.update("entrant_notifications_enabled", newValue);
+                    }
+
                     Toast.makeText(this,
                             newValue ? "Notifications enabled" : "Notifications disabled",
                             Toast.LENGTH_SHORT).show();
@@ -236,6 +258,7 @@ public class ProfileActivity extends AppCompatActivity {
                 .setNegativeButton("Cancel", null)
                 .show();
     }
+
 
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)
