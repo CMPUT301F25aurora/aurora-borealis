@@ -70,10 +70,10 @@
                 android:layout_marginTop="4dp" />
 
             <TextView
-                android:id="@+id/txtSubtitle"
+                android:id="@+id/txtLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Subtitle"
+                android:text="Location"
                 android:textColor="#E0E0E0"
                 android:textSize="14sp"
                 android:layout_marginTop="2dp" />
@@ -86,13 +86,7 @@
                 android:textColor="#E0E0E0"
                 android:layout_marginTop="6dp" />
 
-            <TextView
-                android:id="@+id/txtLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Location"
-                android:textColor="#E0E0E0"
-                android:layout_marginTop="2dp" />
+
 
             <TextView
                 android:id="@+id/txtRegWindow"

@@ -72,8 +72,8 @@ import java.util.List;
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;
-    private TextView txtJoinedBadge, txtTitle, txtSubtitle, txtTime,
-            txtLocation, txtAbout, txtStats, txtRegWindow;
+    private TextView txtJoinedBadge, txtTitle,  txtTime,
+            txtLocation, txtAbout, txtStats, txtRegWindow;//txtSubtitle
     private Button btnJoinLeave;
     private Button btnCriteria;
     private Button btnShowQr;
@@ -97,7 +97,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         imgBanner = findViewById(R.id.imgBanner);
         txtJoinedBadge = findViewById(R.id.txtJoinedBadge);
         txtTitle = findViewById(R.id.txtTitle);
-        txtSubtitle = findViewById(R.id.txtSubtitle);
+        //txtSubtitle = findViewById(R.id.txtSubtitle);
         txtTime = findViewById(R.id.txtTime);
         txtLocation = findViewById(R.id.txtLocation);
         txtAbout = findViewById(R.id.txtAbout);
@@ -245,7 +245,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         currentDeepLink = doc.getString("deepLink");
 
         txtTitle.setText(title == null ? "Event" : title);
-        txtSubtitle.setText(location == null ? "" : location);
+        //txtSubtitle.setText(location == null ? "" : location);
         txtTime.setText(date == null ? "" : date);
         txtLocation.setText(location == null ? "" : location);
         txtAbout.setText(description == null ? "" : description);
