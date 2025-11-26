@@ -126,21 +126,8 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
-        Button btnExport = null;
-        btnExport.setOnClickListener(v -> exportFinalCsv());
         Button btnExportCsv = findViewById(R.id.btnExportCsv);
         btnExportCsv.setOnClickListener(v -> exportFinalListAsCsv());
-        btnExport = findViewById(R.id.btnExportCsv);
-
-        btnExport.setOnClickListener(v -> {
-            db.collection("events")
-                    .document(eventId)
-                    .get()
-                    .addOnSuccessListener(doc -> {
-                        List<String> finalEntrants = (List<String>) doc.get("finalEntrants");
-                        exportCsv(eventId, finalEntrants);
-                    });
-        });
 
     }
 
