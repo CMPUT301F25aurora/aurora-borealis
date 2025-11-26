@@ -49,6 +49,9 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
         db.collection("events")
                 .get()
                 .addOnSuccessListener(snap -> {
+
+                    historyContainer.removeAllViews();
+
                     if (snap.isEmpty()) {
                         addCard("No events found", "", "");
                         return;
@@ -57,19 +60,51 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
                     boolean found = false;
 
                     for (QueryDocumentSnapshot doc : snap) {
-                        List<String> waiting = (List<String>) doc.get("waitingList");
 
-                        if (waiting != null && waiting.contains(userEmail)) {
-                            found = true;
+                        // Safely read all lists
+                        List<?> waiting = (List<?>) doc.get("waitingList");
+                        List<?> selected = (List<?>) doc.get("selectedEntrants");
+                        List<?> cancelled = (List<?>) doc.get("cancelledEntrants");
+                        List<?> finalEntrants = (List<?>) doc.get("finalEntrants");
+                        List<?> losers = (List<?>) doc.get("losersEntrants"); // ⭐ NEW
 
-                            String title = doc.getString("title");
-                            String date = doc.getString("date");
-                            List<String> selected = (List<String>) doc.get("selectedList");
+                        // Determine membership
+                        boolean inWaiting = listContainsUser(waiting, userEmail);
+                        boolean inSelected = listContainsUser(selected, userEmail);
+                        boolean inCancelled = listContainsUser(cancelled, userEmail);
+                        boolean inFinal = listContainsUser(finalEntrants, userEmail);
+                        boolean inLosers = listContainsUser(losers, userEmail);
 
-                            boolean isWinner = selected != null && selected.contains(userEmail);
-                            String status = isWinner ? "Selected ✅" : "Not Selected ❌";
-                            addCard(title, date, status);
+                        // If the user never interacted with this event, skip
+                        if (!inWaiting && !inSelected && !inCancelled && !inFinal && !inLosers)
+                            continue;
+
+                        found = true;
+
+                        String title = doc.getString("title");
+                        if (title == null) title = "Untitled Event";
+
+                        String date = doc.getString("date");
+                        if (date == null) date = "";
+
+                        // Determine status
+                        String status;
+
+                        if (inLosers) {
+                            status = "Not Selected This Round";
+                        } else if (inFinal) {
+                            status = "Accepted!";
+                        } else if (inSelected) {
+                            status = "Selected, Awaiting Response";
+                        } else if (inCancelled) {
+                            status = "Declined";
+                        } else if (inWaiting) {
+                            status = "In Waiting List";
+                        } else {
+                            status = "";
                         }
+
+                        addCard(title, date, status);
                     }
 
                     if (!found) {
@@ -77,7 +112,17 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error loading history", Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Error loading history: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show());
+    }
+
+    private boolean listContainsUser(List<?> list, String email) {
+        if (list == null) return false;
+        for (Object o : list) {
+            if (o != null && o.toString().equalsIgnoreCase(email))
+                return true;
+        }
+        return false;
     }
 
     private void addCard(String title, String date, String status) {
