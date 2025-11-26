@@ -18,6 +18,7 @@ import com.example.aurora.notifications.FirestoreNotificationHelper;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import android.os.Environment;
@@ -127,6 +128,8 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         loadEventAndLists();
         Button btnExport = findViewById(R.id.btnExportCsv);
         btnExport.setOnClickListener(v -> exportFinalCsv());
+        Button btnExportCsv = findViewById(R.id.btnExportCsv);
+        btnExportCsv.setOnClickListener(v -> exportFinalListAsCsv());
 
     }
 
@@ -743,6 +746,67 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Cancel", null);
         builder.show();
+    }
+
+    private void exportFinalListAsCsv() {
+        db.collection("events").document(eventId).get()
+                .addOnSuccessListener(doc -> {
+                    if (!doc.exists()) {
+                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    List<String> finalEntrants = (List<String>) doc.get("selectedEntrants");
+                    if (finalEntrants == null || finalEntrants.isEmpty()) {
+                        Toast.makeText(this, "No selected entrants", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    fetchEntrantDetails(finalEntrants);
+                });
+    }
+
+    private void fetchEntrantDetails(List<String> emails) {
+        StringBuilder csv = new StringBuilder("Name,Email,Phone\n");
+
+        final int total = emails.size();
+        final int[] count = {0};
+
+        for (String email : emails) {
+            db.collection("users").document(email).get()
+                    .addOnSuccessListener(userDoc -> {
+                        String name = userDoc.getString("name");
+                        String phone = userDoc.getString("phone");
+
+                        if (name == null) name = "";
+                        if (phone == null) phone = "";
+
+                        csv.append(name).append(",")
+                                .append(email).append(",")
+                                .append(phone).append("\n");
+
+                        count[0]++;
+                        if (count[0] == total) {
+                            saveCsv(csv.toString());
+                        }
+                    });
+        }
+    }
+
+    private void saveCsv(String csvData) {
+        try {
+            File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+            File file = new File(downloads, "AuroraEvent_" + eventId + ".csv");
+
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(csvData.getBytes());
+            fos.close();
+
+            Toast.makeText(this, "CSV exported to Downloads", Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to save CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
 
