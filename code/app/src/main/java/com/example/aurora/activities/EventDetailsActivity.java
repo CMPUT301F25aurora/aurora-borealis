@@ -277,7 +277,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     }
 
-
     // Join / leave waiting list  (stores EMAIL or fallback key and lat/lng)
     private void toggleJoin() {
         if (eventId == null) return;

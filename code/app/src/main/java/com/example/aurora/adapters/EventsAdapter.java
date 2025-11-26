@@ -72,6 +72,65 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         this.userKey = email;
     }
+    private void updateJoinButton(Button btn, String status) {
+
+        switch (status) {
+            case "waiting":
+                btn.setText("Waiting List Joined");
+                btn.setEnabled(false);
+                break;
+
+            case "selected":
+                btn.setText("Selected – Pending");
+                btn.setEnabled(false);
+                break;
+
+            case "cancelled":
+                btn.setText("Declined Invitation");
+                btn.setEnabled(false);
+                break;
+
+            case "final":
+                btn.setText("Selected!");
+                btn.setEnabled(false);
+                break;
+
+            default:
+                btn.setText("Join List");
+                btn.setEnabled(true);
+                break;
+        }
+    }
+
+    // ============================
+// USER STATUS CHECK HELPER
+// ============================
+    private String getUserStatus(Event e) {
+
+        String email = userKey;
+
+        if (e.getFinalEntrants() != null &&
+                e.getFinalEntrants().contains(email)) {
+            return "final";
+        }
+
+        if (e.getSelectedEntrants() != null &&
+                e.getSelectedEntrants().contains(email)) {
+            return "selected";
+        }
+
+        if (e.getCancelledEntrants() != null &&
+                e.getCancelledEntrants().contains(email)) {
+            return "cancelled";
+        }
+
+        if (e.getWaitingList() != null &&
+                e.getWaitingList().contains(email)) {
+            return "waiting";
+        }
+
+        return "none";
+    }
 
     @NonNull
     @Override
@@ -91,9 +150,52 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         holder.eventTitle.setText(title);
         holder.eventDate.setText(date);
         holder.eventLocation.setText(location);
+        db.collection("events")
+                .document(e.getEventId())
+                .addSnapshotListener((doc, error) -> {
 
-        if (e.getWaitingList().contains(userKey)) {
-            holder.btnJoin.setText("Waiting List Joined");
+                    if (doc == null || !doc.exists()) return;
+
+                    // Update lists live
+                    e.setWaitingList((List<String>) doc.get("waitingList"));
+                    e.setSelectedEntrants((List<String>) doc.get("selectedEntrants"));
+                    e.setCancelledEntrants((List<String>) doc.get("cancelledEntrants"));
+                    e.setFinalEntrants((List<String>) doc.get("finalEntrants"));
+
+                    // Recalculate status
+                    String status = getUserStatus(e);
+
+                    updateJoinButton(holder.btnJoin, status);
+                });
+        String status = getUserStatus(e);
+
+        switch (status) {
+
+            case "waiting":
+                holder.btnJoin.setText("Waiting List Joined");
+                holder.btnJoin.setEnabled(false);
+                break;
+
+            case "selected":
+                holder.btnJoin.setText("Selected – Pending");
+                holder.btnJoin.setEnabled(false);
+                break;
+
+            case "cancelled":
+                holder.btnJoin.setText("Declined Invitation");
+                holder.btnJoin.setEnabled(false);
+                break;
+
+            case "final":
+                holder.btnJoin.setText("Selected!");
+                holder.btnJoin.setEnabled(false);
+                break;
+
+            default:
+                // User NOT in any list → allow joining
+                holder.btnJoin.setText("Join List");
+                holder.btnJoin.setEnabled(true);
+                break;
         }
 
         String posterUrl = e.getPosterUrl();

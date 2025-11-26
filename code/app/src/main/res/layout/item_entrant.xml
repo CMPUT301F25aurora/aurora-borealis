@@ -54,23 +54,16 @@
             </LinearLayout>
         </LinearLayout>
 
-        <!-- STATUS PILL -->
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Waiting"
-            android:textSize="12sp"
-            android:padding="6dp"
-            android:background="@drawable/bg_status_badge"
-            android:textColor="#FE7F2D"
-            android:layout_marginEnd="12dp"/>
+        <!-- Status badge -->
+
 
         <!-- DELETE BUTTON -->
         <ImageButton
             android:id="@+id/btnDeleteEntrant"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
             android:background="@android:color/transparent"
             app:srcCompat="@android:drawable/ic_delete"
             app:tint="@android:color/holo_red_light"
