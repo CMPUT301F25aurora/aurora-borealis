@@ -17,3 +17,5 @@
 ## Project Description 
 
 AuroraChance is a mobile application designed to streamline event registration and participant selection through a transparent, lottery-based system. Built for both organizers and entrants, it simplifies event management, random draws, and participant tracking within an intuitive Android interface.
+
+## Key-Features
