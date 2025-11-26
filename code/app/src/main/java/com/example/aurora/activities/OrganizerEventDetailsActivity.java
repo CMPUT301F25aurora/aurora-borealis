@@ -190,6 +190,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         tv.setPadding(8, 4, 8, 4);
         return tv;
     }
+
     private void notifyWaitingList() {
 
         db.collection("events").document(eventId).get()
@@ -210,7 +211,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                                 db,
                                 userIdOrEmail,
                                 eventName,
-                                eventId
+                                eventId,
+                                myEmail     // <-- ADD THIS
                         );
                     }
 
@@ -221,4 +223,5 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed to notify waiting list.", Toast.LENGTH_SHORT).show()
                 );
     }
+
 }

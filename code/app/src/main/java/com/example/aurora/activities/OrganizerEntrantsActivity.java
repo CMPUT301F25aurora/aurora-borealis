@@ -42,7 +42,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-
 /**
  * OrganizerEntrantsActivity
  * Lottery-style management screen for a single event.
@@ -100,13 +99,15 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     // Current tab
     private enum Tab { WAITING, SELECTED, CANCELLED, FINAL }
     private Tab currentTab = Tab.WAITING;
-
+    private String organizerEmail;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_entrants);
 
         db = FirebaseFirestore.getInstance();
+        organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_email", null);
 
         eventId = getIntent().getStringExtra("eventId");
         if (eventId == null || eventId.isEmpty()) {
@@ -225,7 +226,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                     for (String email : waitingEmails) {
                         FirestoreNotificationHelper.sendCustomNotification(
-                                db, email, eventName, eventId, msg
+                                db, email, eventName, eventId, msg, organizerEmail
                         );
                     }
 
@@ -244,7 +245,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                     for (EntrantsAdapter.EntrantItem e : selected) {
                         FirestoreNotificationHelper.sendCustomNotification(
-                                db, e.getEmail(), eventName, eventId, msg
+                                db, e.getEmail(), eventName, eventId, msg, organizerEmail
                         );
                     }
 
@@ -270,7 +271,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                     for (String email : selectedEmails) {
                         FirestoreNotificationHelper.sendCustomNotification(
-                                db, email, eventName, eventId, msg
+                                db, email, eventName, eventId, msg, organizerEmail
                         );
                     }
 
@@ -291,7 +292,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                     for (EntrantsAdapter.EntrantItem e : selected) {
                         FirestoreNotificationHelper.sendCustomNotification(
-                                db, e.getEmail(), eventName, eventId, msg
+                                db, e.getEmail(), eventName, eventId, msg, organizerEmail
                         );
                     }
 
@@ -316,7 +317,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                     for (String email : cancelledEmails) {
                         FirestoreNotificationHelper.sendCustomNotification(
-                                db, email, eventName, eventId, msg
+                                db, email, eventName, eventId, msg, organizerEmail
                         );
                     }
 
@@ -337,7 +338,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                     for (EntrantsAdapter.EntrantItem e : selected) {
                         FirestoreNotificationHelper.sendCustomNotification(
-                                db, e.getEmail(), eventName, eventId, msg
+                                db, e.getEmail(), eventName, eventId, msg, organizerEmail
                         );
                     }
 
