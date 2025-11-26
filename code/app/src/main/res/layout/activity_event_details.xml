@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -7,6 +8,7 @@
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
+    <!-- HEADER -->
     <LinearLayout
         android:id="@+id/headerContainer"
         android:layout_width="match_parent"
@@ -24,8 +26,8 @@
             android:layout_height="32dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="#fe7f2d"
-            android:contentDescription="@string/back" />
+            android:contentDescription="@string/back"
+            app:tint="@android:color/white" />
 
         <TextView
             android:layout_width="0dp"
@@ -39,12 +41,13 @@
 
         <View android:layout_width="32dp" android:layout_height="32dp"/>
 
-    </LinearLayout>
+    <!-- FIX: ScrollView OPEN and NOT closed until the end -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <!-- ROOT CHILD OF SCROLLVIEW (MUST BE EXACTLY ONE) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -133,27 +136,38 @@
                 android:lineSpacingMultiplier="1.2"
                 android:layout_marginTop="8dp" />
 
+            <!-- SIGN UP BUTTON -->
+            <Button
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"
+                android:textAllCaps="false"
+                android:backgroundTint="#7E57C2"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="32dp"
-                android:layout_marginBottom="24dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/btnJoinLeave"
-                    android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:text="Join Waiting List"
+                    android:id="@+id/btnCriteria"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Criteria"
                     android:textAllCaps="false"
-                    android:textSize="16sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:backgroundTint="#fe7f2d"
-                    android:textColor="#233d4d" />
+                    android:background="@drawable/bg_glass_button"
+                    android:textColor="@android:color/white" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <Button
+                    android:id="@+id/btnShowQr"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp">
@@ -187,6 +201,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-        </LinearLayout>
-    </ScrollView>
+        </LinearLayout><!-- END ROOT -->
+    </ScrollView><!-- FIX: ScrollView closes here -->
+
 </LinearLayout>

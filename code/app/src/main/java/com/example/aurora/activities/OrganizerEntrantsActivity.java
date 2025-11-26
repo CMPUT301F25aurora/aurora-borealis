@@ -126,8 +126,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
-        Button btnExport = findViewById(R.id.btnExportCsv);
-        btnExport.setOnClickListener(v -> exportFinalCsv());
         Button btnExportCsv = findViewById(R.id.btnExportCsv);
         btnExportCsv.setOnClickListener(v -> exportFinalListAsCsv());
 
@@ -574,8 +572,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         updateNotifyButtonMode(); // always recalc label based on selection
     }
 
-
-
     private void resetTabStyles() {
         int normalColor = getResources().getColor(android.R.color.darker_gray);
         int normalBg = getResources().getColor(android.R.color.transparent);
@@ -684,43 +680,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 );
     }
 
-    private void exportFinalCsv() {
-
-        db.collection("events").document(eventId).get()
-                .addOnSuccessListener(doc -> {
-                    if (!doc.exists()) return;
-
-                    List<String> finalList = (List<String>) doc.get("finalEntrants");
-                    if (finalList == null || finalList.isEmpty()) {
-                        Toast.makeText(this, "No final entrants to export", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    try {
-                        File dir = new File(Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS
-                        ), "AuroraExports");
-
-                        if (!dir.exists()) dir.mkdirs();
-
-                        File file = new File(dir, "final_list_" + eventId + ".csv");
-                        FileWriter writer = new FileWriter(file);
-
-                        writer.append("Email\n");
-                        for (String email : finalList) {
-                            writer.append(email).append("\n");
-                        }
-
-                        writer.flush();
-                        writer.close();
-
-                        Toast.makeText(this, "CSV saved: Downloads/AuroraExports/", Toast.LENGTH_LONG).show();
-
-                    } catch (IOException e) {
-                        Toast.makeText(this, "Error writing CSV", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
     private interface CustomMessageCallback {
         void onMessage(String msg);
     }
@@ -756,9 +715,9 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                         return;
                     }
 
-                    List<String> finalEntrants = (List<String>) doc.get("selectedEntrants");
+                    List<String> finalEntrants = (List<String>) doc.get("finalEntrants");
                     if (finalEntrants == null || finalEntrants.isEmpty()) {
-                        Toast.makeText(this, "No selected entrants", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "No final entrants to export", Toast.LENGTH_SHORT).show();
                         return;
                     }
 
@@ -773,10 +732,19 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         final int[] count = {0};
 
         for (String email : emails) {
-            db.collection("users").document(email).get()
-                    .addOnSuccessListener(userDoc -> {
-                        String name = userDoc.getString("name");
-                        String phone = userDoc.getString("phone");
+            db.collection("users")
+                    .whereEqualTo("email", email)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener(snap -> {
+                        String name = "";
+                        String phone = "";
+
+                        if (!snap.isEmpty()) {
+                            DocumentSnapshot user = snap.getDocuments().get(0);
+                            name = user.getString("name");
+                            phone = user.getString("phone");
+                        }
 
                         if (name == null) name = "";
                         if (phone == null) phone = "";
@@ -787,17 +755,16 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
                         count[0]++;
                         if (count[0] == total) {
-                            saveCsv(csv.toString());
+                            saveCsvToFile(csv.toString());
                         }
                     });
         }
     }
 
-    private void saveCsv(String csvData) {
+    private void saveCsvToFile(String csvData) {
         try {
             File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-
-            File file = new File(downloads, "AuroraEvent_" + eventId + ".csv");
+            File file = new File(downloads, "Event_" + eventId + "_FinalEntrants.csv");
 
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(csvData.getBytes());
@@ -808,7 +775,5 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to save CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-
 
 }
