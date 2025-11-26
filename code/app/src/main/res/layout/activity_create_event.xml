@@ -1,467 +1,193 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_gradient_deep_space"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="false">
-
+    android:fillViewport="true"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-
-        android:padding="24dp">
+        android:paddingBottom="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="8dp">
+            android:paddingHorizontal="20dp"
+            android:paddingTop="24dp"
+            android:paddingBottom="16dp">
 
             <ImageButton
                 android:id="@+id/btnBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_input_sharp"
                 android:src="@drawable/ic_arrow_back_24"
                 android:tint="@android:color/white"
                 android:contentDescription="Back"
-                android:padding="12dp" />
+                android:padding="8dp" />
 
             <TextView
                 android:id="@+id/createEventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create New Event"
-                android:textSize="26sp"
+                android:text="Create Event"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:shadowColor="#A0000000"
-                android:shadowDx="0"
-                android:shadowDy="3"
-                android:shadowRadius="8"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="16dp" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fill in the details to create your event"
-            android:textSize="14sp"
-            android:textColor="#E0E0E0"
-            android:layout_marginBottom="24dp"
-            android:alpha="0.9" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
+            android:paddingHorizontal="20dp"
+            android:layout_marginBottom="24dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp">
+
+                <ImageView
+                    android:id="@+id/imgPosterPreview"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:background="@drawable/bg_input_sharp"
+                    android:contentDescription="Event poster preview"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:id="@+id/posterPlaceholderContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/bg_input_sharp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/imageicon"
+                        android:tint="#80FFFFFF"
+                        android:layout_marginBottom="12dp"/>
+
+                    <Button
+                        android:id="@+id/btnChoosePoster"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:text="Upload Cover Image"
+                        android:textSize="13sp"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/bg_aurora_button_sharp"
+                        android:paddingHorizontal="20dp"/>
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_glass_card_sharp"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Basic information"
+                android:text="Event Details"
                 android:textStyle="bold"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="16dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
+                android:layout_marginBottom="16dp" />
 
             <EditText
                 android:id="@+id/editTitle"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Event title"
-                android:textColorHint="#AAAAAA"
+                android:layout_height="wrap_content"
+                android:hint="Event Name"
+                android:textColorHint="#90A4AE"
                 android:textColor="@android:color/white"
-                android:background="@drawable/bg_transparent_input"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:inputType="text" />
+                android:background="@drawable/bg_input_sharp"
+                android:padding="14dp"
+                android:textSize="15sp"
+                android:inputType="textCapWords"
+                android:layout_marginBottom="12dp" />
+
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/bg_input_sharp"
+                android:padding="12dp"
+                android:spinnerMode="dropdown"
+                android:layout_marginBottom="12dp"/>
 
             <EditText
                 android:id="@+id/editDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Description"
-                android:textColorHint="#AAAAAA"
+                android:textColorHint="#90A4AE"
                 android:textColor="@android:color/white"
-                android:background="@drawable/bg_transparent_input"
-                android:padding="16dp"
+                android:background="@drawable/bg_input_sharp"
+                android:padding="14dp"
+                android:textSize="15sp"
                 android:minLines="3"
                 android:gravity="top"
-                android:layout_marginBottom="12dp"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine|textCapSentences" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_glass_card_sharp"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp" />
 
             <AutoCompleteTextView
                 android:id="@+id/editLocation"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Location"
-                android:textColorHint="#AAAAAA"
+                android:layout_height="wrap_content"
+                android:hint="Venue or Address"
+                android:textColorHint="#90A4AE"
                 android:textColor="@android:color/white"
-                android:background="@drawable/bg_transparent_input"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:inputType="text" />
+                android:background="@drawable/bg_input_sharp"
+                android:padding="14dp"
+                android:textSize="15sp"
+                android:inputType="textCapWords"
+                android:layout_marginBottom="12dp" />
 
             <Button
                 android:id="@+id/btnPickEventLocation"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:text="Pick Event Location on Map"
+                android:layout_height="44dp"
+                android:text="Select on Map"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:background="@drawable/bg_glass_button"
+                android:background="@drawable/bg_aurora_button_sharp"
                 android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Category"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
-
-            <Spinner
-                android:id="@+id/spinnerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:background="@drawable/bg_transparent_input"
-                android:padding="12dp"
-                android:spinnerMode="dropdown" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Event dates"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="16dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start date and time"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <Button
-                    android:id="@+id/btnPickStartDate"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Date"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnPickStartTime"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Time"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtStartDateTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No date/time selected"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:padding="16dp"
-                android:background="@drawable/bg_transparent_input"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="End date and time (optional)"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <Button
-                    android:id="@+id/btnPickEndDate"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Date"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnPickEndTime"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Time"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtEndDateTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No date/time selected"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:padding="16dp"
-                android:background="@drawable/bg_transparent_input" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Registration period"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="16dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Registration opens"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <Button
-                    android:id="@+id/btnPickRegStartDate"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Date"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnPickRegStartTime"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Time"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtRegStartDateTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No date/time selected"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:padding="16dp"
-                android:background="@drawable/bg_transparent_input"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Registration closes"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginBottom="8dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
-
-                <Button
-                    android:id="@+id/btnPickRegEndDate"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Date"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF"
-                    android:layout_marginEnd="8dp" />
-
-                <Button
-                    android:id="@+id/btnPickRegEndTime"
-                    android:layout_width="0dp"
-                    android:layout_height="56dp"
-                    android:layout_weight="1"
-                    android:text="Pick Time"
-                    android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_transparent_input"
-                    android:backgroundTint="#40FFFFFF" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txtRegEndDateTime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No date/time selected"
-                android:textColor="#CCCCCC"
-                android:textSize="14sp"
-                android:padding="16dp"
-                android:background="@drawable/bg_transparent_input" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Capacity and lottery options"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="4dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(optional)"
-                android:textColor="#CCCCCC"
-                android:textSize="12sp"
-                android:layout_marginBottom="16dp" />
-
-            <EditText
-                android:id="@+id/editMaxSpots"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Maximum entrants on waiting list"
-                android:textColorHint="#AAAAAA"
-                android:textColor="@android:color/white"
-                android:background="@drawable/bg_transparent_input"
-                android:padding="16dp"
-                android:layout_marginBottom="12dp"
-                android:inputType="number" />
-
-            <EditText
-                android:id="@+id/editLotterySampleSize"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:hint="Number of entrants to invite"
-                android:textColorHint="#AAAAAA"
-                android:textColor="@android:color/white"
-                android:background="@drawable/bg_transparent_input"
-                android:padding="16dp"
-                android:inputType="number" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Location requirement"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@android:color/white"
-                android:layout_marginBottom="12dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -479,9 +205,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Require entrants to share approximate location when joining"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/white"
+                    android:text="Strict Geolocation Required"
+                    android:textSize="13sp"
+                    android:textColor="#E0E0E0"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
 
@@ -491,66 +217,304 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_glass_card_sharp"
             android:padding="20dp"
             android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Event poster"
+                android:text="Schedule"
                 android:textStyle="bold"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="12dp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4" />
-
-            <Button
-                android:id="@+id/btnChoosePoster"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Choose poster image"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:background="@drawable/bg_transparent_input"
-                android:backgroundTint="#40FFFFFF" />
-
-            <ImageView
-                android:id="@+id/imgPosterPreview"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="12dp"
-                android:scaleType="centerCrop"
-                android:background="@drawable/bg_transparent_input"
-                android:visibility="gone"
-                android:contentDescription="Event poster preview" />
+                android:layout_marginBottom="16dp" />
 
             <TextView
+                android:text="Starts"
+                android:textColor="#B0BEC5"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="After you create this event, a unique QR code will be generated"
-                android:textSize="12sp"
-                android:textColor="#CCCCCC"
-                android:layout_marginTop="12dp" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
 
+                <Button
+                    android:id="@+id/btnPickStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1.5"
+                    android:text="Select Date"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_input_sharp"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickStartTime"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="Time"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_input_sharp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txtStartDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp"
+                android:textColor="#64FFDA"
+                android:layout_marginBottom="16dp"
+                android:gravity="end"/>
+
+            <TextView
+                android:text="Ends (Optional)"
+                android:textColor="#B0BEC5"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <Button
+                    android:id="@+id/btnPickEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1.5"
+                    android:text="Select Date"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_input_sharp"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickEndTime"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="Time"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/bg_input_sharp" />
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txtEndDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp"
+                android:textColor="#64FFDA"
+                android:gravity="end"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="20dp"
+            android:background="@drawable/bg_glass_card_sharp"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration Window"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Opens"
+                    android:textColor="#B0BEC5"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+
+                <Button
+                    android:id="@+id/btnPickRegStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="Date"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_input_sharp"
+                    android:textColor="@android:color/white"
+                    android:layout_marginEnd="4dp"/>
+
+                <Button
+                    android:id="@+id/btnPickRegStartTime"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="Time"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_input_sharp"
+                    android:textColor="@android:color/white"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txtRegStartDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="11sp"
+                android:textColor="#FFAB40"
+                android:gravity="end"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:text="Closes"
+                    android:textColor="#B0BEC5"
+                    android:textSize="13sp"
+                    android:textStyle="bold"/>
+
+                <Button
+                    android:id="@+id/btnPickRegEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="Date"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_input_sharp"
+                    android:textColor="@android:color/white"
+                    android:layout_marginEnd="4dp"/>
+
+                <Button
+                    android:id="@+id/btnPickRegEndTime"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="Time"
+                    android:textSize="12sp"
+                    android:background="@drawable/bg_input_sharp"
+                    android:textColor="@android:color/white"/>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/txtRegEndDateTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="11sp"
+                android:textColor="#FFAB40"
+                android:gravity="end"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_glass_card_sharp"
+                android:padding="16dp"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Waitlist Cap"
+                    android:textColor="#B0BEC5"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editMaxSpots"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_input_sharp"
+                    android:padding="12dp"
+                    android:hint="∞"
+                    android:gravity="center"
+                    android:textColorHint="#80FFFFFF"
+                    android:textColor="@android:color/white"
+                    android:inputType="number" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_glass_card_sharp"
+                android:padding="16dp"
+                android:layout_marginStart="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Winner Count"
+                    android:textColor="#B0BEC5"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editLotterySampleSize"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_input_sharp"
+                    android:padding="12dp"
+                    android:hint="0"
+                    android:gravity="center"
+                    android:textColorHint="#80FFFFFF"
+                    android:textColor="@android:color/white"
+                    android:inputType="number" />
+            </LinearLayout>
         </LinearLayout>
 
         <Button
             android:id="@+id/btnCreateEvent"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="20dp"
             android:text="Create Event"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:background="@drawable/bg_glass_button"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="24dp" />
+            android:background="@drawable/bg_aurora_button_sharp"
+            android:elevation="4dp" />
 
     </LinearLayout>
-
 </ScrollView>

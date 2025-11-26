@@ -392,7 +392,8 @@ public class CreateEventActivity extends AppCompatActivity {
                 "Sports",
                 "Education",
                 "Arts",
-                "Technology"
+                "Technology",
+                "Community"
         };
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
