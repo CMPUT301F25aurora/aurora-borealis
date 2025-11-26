@@ -5,29 +5,26 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginBottom="10dp"
-    app:cardCornerRadius="18dp"
+    app:cardCornerRadius="16dp"
     app:cardUseCompatPadding="true"
-    app:cardElevation="6dp"
-    android:backgroundTint="@android:color/transparent">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#2f4858"
+    app:strokeColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_card_vibrant" android:padding="12dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/notifTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Notification Title"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:textColor="@android:color/white"
-            android:shadowColor="#80000000"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="4" />
+            android:fontFamily="sans-serif-medium"
+            android:textSize="17sp"
+            android:textColor="#fe7f2d" />
 
         <TextView
             android:id="@+id/notifMessage"
@@ -43,8 +40,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2 hours ago"
-            android:layout_marginTop="4dp"
-            android:textColor="#B0BEC5"
+            android:layout_marginTop="8dp"
+            android:textColor="#90A4AE"
             android:textSize="12sp" />
 
         <LinearLayout
@@ -52,42 +49,45 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="end"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="16dp">
 
             <Button
                 android:id="@+id/btnAccept"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="Accept"
-                android:textColor="@android:color/white"
+                android:textColor="#233d4d"
+                android:textStyle="bold"
                 android:textAllCaps="false"
                 android:textSize="14sp"
                 android:paddingHorizontal="18dp"
-                android:background="@drawable/bg_glass_button"
-                android:elevation="3dp" />
+                android:backgroundTint="#fe7f2d"
+                android:elevation="0dp" />
 
             <Button
                 android:id="@+id/btnDecline"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:text="Decline"
-                android:textColor="#E53935"
+                android:textColor="#EF5350"
                 android:textAllCaps="false"
                 android:textSize="14sp"
                 android:paddingHorizontal="18dp"
                 android:layout_marginStart="12dp"
-                android:background="@drawable/bg_glass_button"
-                android:elevation="3dp" />
+                android:backgroundTint="#233d4d"
+                android:elevation="0dp" />
 
         </LinearLayout>
 
-        <!-- ADDED: Dismiss button -->
         <Button
             android:id="@+id/btnDismiss"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dismiss"
-            android:layout_marginStart="12dp"
+            android:textColor="#B0BEC5"
+            android:textAllCaps="false"
+            android:background="@android:color/transparent"
+            android:layout_gravity="end"
             android:visibility="gone" />
 
     </LinearLayout>

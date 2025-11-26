@@ -5,39 +5,38 @@
     android:layout_height="wrap_content"
     app:cardCornerRadius="16dp"
     app:cardElevation="8dp"
-    app:cardBackgroundColor="@android:color/transparent">
+    app:cardBackgroundColor="#233d4d">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_card_vibrant"
-        android:padding="20dp">
+        android:padding="24dp">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Filter by Availability"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
+            android:textSize="22sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#fe7f2d"
             android:paddingBottom="4dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Select days and times you are available."
-            android:textColor="#E0E0E0"
+            android:textColor="#B0BEC5"
             android:textSize="14sp"
-            android:paddingBottom="16dp" />
+            android:paddingBottom="24dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Available Days"
-            android:textColor="#BBDEFB"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
-            android:paddingBottom="8dp" />
+            android:paddingBottom="12dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,49 +47,49 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <CheckBox android:id="@+id/cbMon" android:text="Mon" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
-                <CheckBox android:id="@+id/cbTue" android:text="Tue" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
-                <CheckBox android:id="@+id/cbWed" android:text="Wed" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
+                <CheckBox android:id="@+id/cbMon" android:text="Mon" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
+                <CheckBox android:id="@+id/cbTue" android:text="Tue" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
+                <CheckBox android:id="@+id/cbWed" android:text="Wed" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <CheckBox android:id="@+id/cbThu" android:text="Thu" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
-                <CheckBox android:id="@+id/cbFri" android:text="Fri" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
-                <CheckBox android:id="@+id/cbSat" android:text="Sat" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
+                <CheckBox android:id="@+id/cbThu" android:text="Thu" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
+                <CheckBox android:id="@+id/cbFri" android:text="Fri" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
+                <CheckBox android:id="@+id/cbSat" android:text="Sat" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_weight="1" android:layout_width="0dp" android:layout_height="wrap_content"/>
             </LinearLayout>
 
-            <CheckBox android:id="@+id/cbSun" android:text="Sun" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <CheckBox android:id="@+id/cbSun" android:text="Sun" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Available Time Slots"
-            android:textColor="#BBDEFB"
+            android:textColor="#FFFFFF"
             android:textStyle="bold"
-            android:paddingTop="16dp"
-            android:paddingBottom="8dp" />
+            android:paddingTop="20dp"
+            android:paddingBottom="12dp" />
 
-        <CheckBox android:id="@+id/cbMorning" android:text="Morning (6AM - 12PM)" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <CheckBox android:id="@+id/cbAfternoon" android:text="Afternoon (12PM - 6PM)" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-        <CheckBox android:id="@+id/cbEvening" android:text="Evening (6PM - 12AM)" android:textColor="@android:color/white" android:buttonTint="#64FFDA" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cbMorning" android:text="Morning (6AM - 12PM)" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cbAfternoon" android:text="Afternoon (12PM - 6PM)" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cbEvening" android:text="Evening (6PM - 12AM)" android:textColor="#E0E0E0" android:buttonTint="#fe7f2d" android:layout_width="match_parent" android:layout_height="wrap_content"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="end"
-            android:paddingTop="20dp">
+            android:paddingTop="24dp">
 
             <Button
                 android:id="@+id/btnClearFilters"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Clear"
-                android:textColor="@android:color/white"
+                android:textColor="#fe7f2d"
                 android:background="@android:color/transparent"
                 android:textAllCaps="false"/>
 
@@ -99,8 +98,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Apply Filters"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white"
+                android:backgroundTint="#fe7f2d"
+                android:textColor="#233d4d"
+                android:textStyle="bold"
                 android:textAllCaps="false"
                 android:paddingHorizontal="20dp"
                 android:layout_marginStart="12dp"/>

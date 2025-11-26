@@ -3,8 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="12dp"
-    android:background="@drawable/bg_card_vibrant"
+    android:padding="16dp"
+    android:background="@drawable/bg_input_sharp"
+    android:backgroundTint="#2f4858"
     android:gravity="center_vertical"
     android:layout_marginBottom="8dp">
 
@@ -12,7 +13,7 @@
         android:id="@+id/checkSelect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@android:color/white"/>
+        android:buttonTint="#fe7f2d"/>
 
     <LinearLayout
         android:orientation="vertical"
@@ -26,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="User Name"
-            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
             android:textSize="16sp"
             android:textColor="@android:color/white"/>
 
@@ -35,8 +36,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="email@example.com"
-            android:textSize="14sp"
-            android:textColor="#E0E0E0"/>
+            android:textSize="13sp"
+            android:textColor="#B0BEC5"/>
     </LinearLayout>
 
     <TextView
@@ -44,10 +45,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Waiting"
-        android:textSize="12sp"
-        android:textStyle="bold"
-        android:textColor="#BBDEFB"
-        android:paddingHorizontal="8dp"
-        android:paddingVertical="4dp"
-        android:background="@drawable/bg_glass_button"/>
+        android:textSize="11sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="#fe7f2d"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:background="@drawable/bg_input_sharp"
+        android:backgroundTint="#233d4d"/>
 </LinearLayout>

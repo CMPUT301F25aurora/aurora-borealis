@@ -1,62 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/bg_gradient"
+    android:background="#233d4d"
     android:padding="24dp">
 
-    <!-- Logo -->
     <ImageView
         android:id="@+id/logo"
         android:layout_width="96dp"
         android:layout_height="96dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/aurora_logo"
+        android:src="@drawable/ourlogo"
         android:contentDescription="Aurora Chance Logo"
         android:layout_gravity="center" />
 
-    <!-- App Name -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="AURORA CHANCE"
-        android:textColor="@android:color/white"
-        android:textStyle="bold"
-        android:textSize="22sp"
+        android:textColor="#fe7f2d"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="24sp"
         android:layout_gravity="center"
         android:letterSpacing="0.05"
         android:layout_marginBottom="24dp" />
 
-    <!-- White Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_card"
-        android:padding="20dp"
-        android:elevation="6dp"
+        android:background="@drawable/bg_input_sharp"
+        android:backgroundTint="#2f4858"
+        android:padding="24dp"
+        android:elevation="8dp"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="12dp">
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Account"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#111"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#FFFFFF"
             android:layout_gravity="center"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="20dp" />
 
         <EditText
             android:id="@+id/Name"
             android:hint="Full Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_input"
-            android:padding="12dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d"
+            android:textColor="@android:color/white"
+            android:textColorHint="#90A4AE"
+            android:padding="16dp"
             android:layout_marginBottom="12dp" />
 
         <EditText
@@ -65,8 +67,11 @@
             android:inputType="textEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_input"
-            android:padding="12dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d"
+            android:textColor="@android:color/white"
+            android:textColorHint="#90A4AE"
+            android:padding="16dp"
             android:layout_marginBottom="12dp" />
 
         <EditText
@@ -75,14 +80,17 @@
             android:inputType="phone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_input"
-            android:padding="12dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d"
+            android:textColor="@android:color/white"
+            android:textColorHint="#90A4AE"
+            android:padding="16dp"
             android:layout_marginBottom="12dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="20dp">
 
             <EditText
                 android:id="@+id/Password"
@@ -90,8 +98,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
-                android:background="@drawable/bg_input"
-                android:padding="12dp"
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#233d4d"
+                android:textColor="@android:color/white"
+                android:textColorHint="#90A4AE"
+                android:padding="16dp"
                 android:paddingRight="48dp" />
 
             <ImageView
@@ -100,25 +111,26 @@
                 android:layout_height="24dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="11dp"
-                android:padding="4dp"
-                android:src="@drawable/ic_eye_closed" />
+                android:layout_marginRight="12dp"
+                android:padding="2dp"
+                android:src="@drawable/ic_eye_closed"
+                app:tint="#fe7f2d"/>
         </RelativeLayout>
 
-        <!-- Role Selection -->
         <RadioGroup
             android:id="@+id/Role"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="24dp">
 
             <RadioButton
                 android:id="@+id/Entrant"
                 android:text="Entrant"
                 android:checked="true"
-                android:textColor="#111"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#fe7f2d"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp" />
@@ -126,7 +138,8 @@
             <RadioButton
                 android:id="@+id/Organizer"
                 android:text="Organizer"
-                android:textColor="#111"
+                android:textColor="#FFFFFF"
+                android:buttonTint="#fe7f2d"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </RadioGroup>
@@ -134,31 +147,37 @@
         <Button
             android:id="@+id/SignUpButton"
             android:text="Sign Up"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:backgroundTint="#24C36E"
-            android:textColor="@android:color/white"
+            android:backgroundTint="#fe7f2d"
+            android:textColor="#233d4d"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" />
+            android:layout_height="56dp"
+            android:textAllCaps="false"
+            android:layout_marginBottom="8dp" />
     </LinearLayout>
 
-    <!-- Back to Login -->
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Already have an account?"
-        android:textColor="@android:color/white"
-        android:textSize="13sp"
-        android:layout_gravity="center" />
+        android:orientation="horizontal"
+        android:gravity="center">
 
-    <TextView
-        android:id="@+id/backToLoginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Login here"
-        android:textStyle="bold"
-        android:textColor="#24C36E"
-        android:textSize="13sp"
-        android:layout_gravity="center" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account? "
+            android:textColor="#B0BEC5"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/backToLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login here"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#fe7f2d"
+            android:textSize="14sp" />
+    </LinearLayout>
 
 </LinearLayout>

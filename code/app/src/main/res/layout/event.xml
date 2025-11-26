@@ -7,24 +7,25 @@
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
     android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="18dp"
+    app:cardCornerRadius="16dp"
     app:cardUseCompatPadding="false"
-    app:cardElevation="8dp"
-    android:backgroundTint="@android:color/transparent">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#2f4858"
+    app:strokeColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="12dp"
-        android:background="@drawable/bg_card_vibrant">
+        android:padding="12dp">
 
         <ImageView
             android:id="@+id/eventPoster"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:background="@drawable/bg_transparent_input"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d"
             android:contentDescription="Event Poster"
             android:layout_gravity="center_vertical" />
 
@@ -42,9 +43,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Title Goes Here"
-                android:textStyle="bold"
-                android:textSize="17sp"
-                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="18sp"
+                android:textColor="#fe7f2d"
                 android:maxLines="2"
                 android:ellipsize="end" />
 
@@ -52,14 +53,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="4dp">
+                android:layout_marginTop="6dp">
 
                 <TextView
                     android:id="@+id/eventDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📅 15 Nov, 2025"
-                    android:textColor="#CCCCCC"
+                    android:textColor="#B0BEC5"
                     android:textSize="12sp" />
 
                 <Space
@@ -71,7 +72,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📍 City Hall"
-                    android:textColor="#CCCCCC"
+                    android:textColor="#B0BEC5"
                     android:textSize="12sp" />
             </LinearLayout>
 
