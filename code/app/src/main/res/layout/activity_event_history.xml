@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
@@ -23,7 +23,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingTop="@dimen/status_bar_height"
+                android:paddingTop="24dp"
+                android:paddingBottom="12dp"
                 android:paddingStart="12dp"
                 android:paddingEnd="12dp">
 
@@ -33,19 +34,20 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
-                    android:padding="4dp"
+                    android:padding="8dp"
                     android:text="←"
-                    android:textColor="#FFFFFF"
-                    android:textSize="28sp" />
+                    android:textColor="#fe7f2d"
+                    android:textSize="28sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginStart="8dp"
                     android:text="Event History"
-                    android:textColor="#FFFFFF"
-                    android:textSize="20sp"
-                    android:textStyle="bold"/>
+                    android:textColor="#fe7f2d"
+                    android:textSize="24sp"
+                    android:fontFamily="sans-serif-medium"/>
             </LinearLayout>
 
             <LinearLayout
@@ -54,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:background="@drawable/bg_card_vibrant"
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
                 android:layout_margin="12dp"
                 android:clipToPadding="false"
                 android:clipToOutline="false" />

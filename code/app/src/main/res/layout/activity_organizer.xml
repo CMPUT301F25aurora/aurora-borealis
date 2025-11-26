@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
@@ -14,20 +14,20 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingTop="@dimen/status_bar_height"
+        android:paddingTop="24dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingBottom="12dp">
 
-
-    <ImageButton
+        <ImageButton
             android:id="@+id/btnBackOrganizer"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/back"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white" />
+            android:tint="#fe7f2d"
+            android:padding="8dp"/>
 
         <TextView
             android:id="@+id/dashboardTitle"
@@ -35,23 +35,21 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:shadowColor="#80000000"
-            android:shadowDx="0"
-            android:shadowDy="3"
-            android:shadowRadius="6"
             android:text="Organizer Dashboard"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textColor="#fe7f2d"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/btnLogoutOrganizer"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="@drawable/bg_glass_button"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
             android:text="Logout"
+            android:textSize="12sp"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textColor="#fe7f2d"
             android:paddingHorizontal="16dp" />
     </LinearLayout>
 
@@ -72,18 +70,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_vibrant"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp">
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Event tools"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="8dp" />
+                    android:text="Event Tools"
+                    android:textColor="#fe7f2d"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="12dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -93,25 +92,26 @@
                     <Button
                         android:id="@+id/myEventsButton"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:text="My Events"
-                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
                         android:textAllCaps="false"
-                        android:background="@drawable/bg_gradient_button"
-                        android:textColor="@android:color/white"
+                        android:background="@drawable/bg_input_sharp"
+                        android:backgroundTint="#233d4d"
+                        android:textColor="#FFFFFF"
                         android:layout_marginEnd="8dp" />
 
                     <Button
                         android:id="@+id/createEventButton"
                         android:layout_width="0dp"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:layout_weight="1"
                         android:text="Create Event"
-                        android:textStyle="bold"
+                        android:fontFamily="sans-serif-medium"
                         android:textAllCaps="false"
-                        android:background="@drawable/bg_glass_button"
-                        android:textColor="@android:color/white" />
+                        android:backgroundTint="#fe7f2d"
+                        android:textColor="#233d4d" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -119,28 +119,26 @@
                 android:id="@+id/yourEventsLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your events"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="5"
+                android:text="Your Events"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d"
+                android:textSize="20sp"
                 android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/bg_card_vibrant"
-                android:padding="12dp">
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:padding="4dp">
 
                 <LinearLayout
                     android:id="@+id/eventListContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" />
+                    android:orientation="vertical"
+                    android:padding="8dp"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -151,8 +149,9 @@
         android:layout_height="64dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="#80000000"
-        android:paddingHorizontal="32dp">
+        android:background="#2f4858"
+        android:paddingHorizontal="32dp"
+        android:elevation="8dp">
 
         <TextView
             android:id="@+id/bottomHome"
@@ -162,7 +161,7 @@
             android:gravity="center"
             android:text="🏠"
             android:textSize="24sp"
-            android:textColor="@android:color/white" />
+            android:textColor="#fe7f2d" />
 
         <TextView
             android:id="@+id/bottomProfile"
@@ -172,7 +171,7 @@
             android:gravity="center"
             android:text="👤"
             android:textSize="24sp"
-            android:textColor="@android:color/white" />
+            android:textColor="#fe7f2d" />
 
         <TextView
             android:id="@+id/bottomAlerts"
@@ -182,7 +181,7 @@
             android:gravity="center"
             android:text="🔔"
             android:textSize="24sp"
-            android:textColor="@android:color/white" />
+            android:textColor="#fe7f2d" />
     </LinearLayout>
 
 </LinearLayout>

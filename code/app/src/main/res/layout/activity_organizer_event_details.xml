@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_deep_space">
+    android:background="#233d4d">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:paddingTop="24dp">
 
             <ImageButton
                 android:id="@+id/btnBackEventDetails"
@@ -24,27 +25,24 @@
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back_24"
                 android:contentDescription="@string/back"
-                android:tint="@android:color/white" />
+                android:tint="#fe7f2d" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="12dp"
                 android:text="Event Details"
                 android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="3"
-                android:shadowRadius="6" />
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
             android:padding="16dp"
             android:layout_marginTop="20dp">
 
@@ -53,16 +51,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Title"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d" />
 
             <TextView
                 android:id="@+id/detailDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
-                android:textColor="#E0E0E0"
+                android:textColor="#B0BEC5"
                 android:layout_marginTop="4dp" />
 
             <TextView
@@ -70,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location"
-                android:textColor="#E0E0E0"
+                android:textColor="#B0BEC5"
                 android:layout_marginTop="4dp" />
 
             <TextView
@@ -78,7 +76,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Category"
-                android:textColor="#E0E0E0"
+                android:textColor="#B0BEC5"
                 android:layout_marginTop="4dp" />
 
             <TextView
@@ -86,37 +84,38 @@
                 android:layout_height="wrap_content"
                 android:text="Capacity"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="10dp" />
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="12dp" />
 
             <TextView
                 android:id="@+id/detailCapacity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textColor="#E0E0E0" />
+                android:textColor="#B0BEC5" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Registration window"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="10dp" />
+                android:textColor="#FFFFFF"
+                android:layout_marginTop="12dp" />
 
             <TextView
                 android:id="@+id/detailRegWindow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Not set"
-                android:textColor="#E0E0E0" />
+                android:textColor="#B0BEC5" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/bg_card_vibrant"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
             android:padding="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp">
@@ -125,9 +124,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Waiting List"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
+                android:textSize="18sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d" />
 
             <LinearLayout
                 android:id="@+id/waitingListContainer"
@@ -135,14 +134,17 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="8dp" />
+
             <Button
                 android:id="@+id/btnNotifyWaiting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
                 android:text="Notify Waiting List"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="@color/purple_500"
-                android:textColor="@android:color/white"/>
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#fe7f2d"
+                android:textColor="#233d4d"
+                android:textStyle="bold"
+                android:textAllCaps="false"/>
 
         </LinearLayout>
 

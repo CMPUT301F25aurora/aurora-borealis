@@ -16,87 +16,97 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="@android:color/transparent"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardElevation="8dp"
-        android:background="@drawable/bg_card_vibrant"> <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:background="@drawable/bg_card_vibrant"> <TextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Lottery Selection Criteria"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="@android:color/white"/> <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        app:cardCornerRadius="12dp"
-        android:backgroundTint="@android:color/transparent"
-        app:cardBackgroundColor="@android:color/transparent"
-        android:background="@drawable/bg_glass_card"
-        app:cardElevation="0dp"> <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="14dp"
-        android:text="How It Works\nSelection is random with fair weighting. Users who haven’t won recently and those with accessibility or schedule limitations may be given priority."
-        android:textColor="#E0E0E0" android:textSize="14sp"/>
-    </com.google.android.material.card.MaterialCardView>
+        app:cardBackgroundColor="#233d4d"
+        app:strokeColor="#2f4858"
+        app:strokeWidth="1dp"
+        app:cardElevation="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="12dp"
-            android:dividerHeight="8dp">
+            android:padding="24dp">
 
             <TextView
+                android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="• Fair &amp; Random — all eligible entrants have an equal base chance."
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:layout_marginBottom="6dp"/>
+                android:text="Lottery Selection Criteria"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:textColor="#fe7f2d"/>
 
-            <TextView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="• Priority Consideration — slightly higher chance if you haven’t won recent lotteries."
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:layout_marginBottom="6dp"/>
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="8dp"
+                app:cardBackgroundColor="#2f4858"
+                app:strokeColor="@android:color/transparent"
+                app:cardElevation="0dp">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="• Accessibility Support — additional consideration for documented needs."
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:layout_marginBottom="6dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="How It Works\nSelection is random with fair weighting. Users who haven’t won recently and those with accessibility or schedule limitations may be given priority."
+                    android:textColor="#B0BEC5"
+                    android:lineSpacingMultiplier="1.2"
+                    android:textSize="14sp"/>
+            </com.google.android.material.card.MaterialCardView>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="• Transparent Process — selections are logged and auditable."
-                android:textColor="@android:color/white"
-                android:textSize="14sp"/>
+                android:orientation="vertical"
+                android:layout_marginTop="16dp"
+                android:dividerHeight="8dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Fair &amp; Random — all eligible entrants have an equal base chance."
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Priority Consideration — slightly higher chance if you haven’t won recent lotteries."
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Accessibility Support — additional consideration for documented needs."
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Transparent Process — selections are logged and auditable."
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGotIt"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:text="Got It"
+                app:cornerRadius="8dp"
+                android:backgroundTint="#fe7f2d"
+                android:textColor="#233d4d"
+                android:textStyle="bold"
+                android:elevation="0dp"
+                android:textAllCaps="false"/>
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnGotIt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Got It"
-            app:cornerRadius="12dp"
-            android:background="@drawable/bg_glass_card"
-            android:textColor="@android:color/white"
-            android:textAllCaps="false"/>
-    </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

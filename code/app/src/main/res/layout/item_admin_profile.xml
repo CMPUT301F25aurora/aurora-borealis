@@ -2,35 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_card_vibrant"
+    android:background="@drawable/bg_input_sharp"
+    android:backgroundTint="#2f4858"
     android:orientation="vertical"
     android:padding="16dp"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical">
+
         <TextView
             android:id="@+id/adminProfileName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white" />
+            android:textSize="18sp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#fe7f2d" />
+
         <TextView
             android:id="@+id/adminProfileRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Entrant"
             android:textSize="12sp"
-            android:textColor="#E0E0E0"
-            android:background="@drawable/bg_glass_button"
+            android:textColor="#B0BEC5"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d"
             android:paddingHorizontal="8dp"
-            android:paddingVertical="2dp" />
+            android:paddingVertical="4dp" />
     </LinearLayout>
 
     <TextView
@@ -40,13 +45,13 @@
         android:layout_marginTop="4dp"
         android:text="email"
         android:textColor="#B0BEC5"
-        android:textSize="13sp" />
+        android:textSize="14sp" />
 
     <Button
         android:id="@+id/adminProfileRemoveButton"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:text="Remove Profile"
         android:textAllCaps="false"
         android:backgroundTint="#D32F2F"

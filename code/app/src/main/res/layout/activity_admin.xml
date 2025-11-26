@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
@@ -29,37 +29,38 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="@dimen/status_bar_height">
-
+                android:paddingTop="24dp">
 
                 <TextView
-                        android:id="@+id/adminTitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Admin Panel"
-                        android:textSize="26sp"
-                        android:textStyle="bold"
-                        android:textColor="@android:color/white" />
+                    android:id="@+id/adminTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Admin Panel"
+                    android:textSize="28sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="#fe7f2d" />
 
                 <TextView
                     android:id="@+id/btnBackAdmin"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="← Go Back"
-                    android:textColor="#BBDEFB"
-                    android:textSize="16sp"
+                    android:textColor="#B0BEC5"
+                    android:textSize="14sp"
                     android:padding="4dp"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="4dp"
+                    android:clickable="true"
+                    android:focusable="true"/>
 
                 <TextView
                     android:id="@+id/adminSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:text="System management"
-                    android:textColor="#E0E0E0"
+                    android:layout_marginBottom="24dp"
+                    android:text="System management dashboard"
+                    android:textColor="#B0BEC5"
                     android:textSize="13sp" />
-                </LinearLayout>
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -71,12 +72,28 @@
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_card_vibrant"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:orientation="vertical"
                     android:gravity="center_vertical"
-                    android:padding="12dp">
-                    <TextView android:text="Events" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/textEventCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="Events"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#fe7f2d"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/textEventCount"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -84,12 +101,28 @@
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_card_vibrant"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:orientation="vertical"
                     android:gravity="center_vertical"
-                    android:padding="12dp">
-                    <TextView android:text="Users" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/textUserCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="Users"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#fe7f2d"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/textUserCount"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -104,12 +137,28 @@
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
-                    android:background="@drawable/bg_card_vibrant"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:orientation="vertical"
                     android:gravity="center_vertical"
-                    android:padding="12dp">
-                    <TextView android:text="Images" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/textImageCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="Images"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#fe7f2d"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/textImageCount"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -117,40 +166,81 @@
                     android:layout_height="100dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_card_vibrant"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:orientation="vertical"
                     android:gravity="center_vertical"
-                    android:padding="12dp">
-                    <TextView android:text="Logs" android:textSize="13sp" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:id="@+id/textLogCount" android:text="0" android:textSize="22sp" android:textStyle="bold" android:textColor="@android:color/white" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    android:padding="16dp">
+
+                    <TextView
+                        android:text="Logs"
+                        android:textSize="14sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:textColor="#fe7f2d"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/textLogCount"
+                        android:text="0"
+                        android:textSize="28sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <View android:layout_width="match_parent" android:layout_height="16dp" />
+            <View android:layout_width="match_parent" android:layout_height="24dp" />
 
             <LinearLayout
                 android:id="@+id/adminTabBar"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="60dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:padding="4dp"
-                android:background="@drawable/bg_glass_card">
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858">
 
-                <LinearLayout android:id="@+id/tabEvents" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
-                    <TextView android:text="📅" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:id="@+id/tabEvents"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground">
+                    <TextView android:text="📅" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/tabProfiles" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
-                    <TextView android:text="👥" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:id="@+id/tabProfiles"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground">
+                    <TextView android:text="👥" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/tabImages" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
-                    <TextView android:text="🖼️" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:id="@+id/tabImages"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground">
+                    <TextView android:text="🖼️" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
 
-                <LinearLayout android:id="@+id/tabLogs" android:layout_width="0dp" android:layout_weight="1" android:layout_height="match_parent" android:gravity="center" android:background="?attr/selectableItemBackground">
-                    <TextView android:text="📄" android:textSize="22sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:id="@+id/tabLogs"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground">
+                    <TextView android:text="📄" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -158,17 +248,17 @@
                 android:id="@+id/textSectionTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:text="Browse Events"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
+                android:textSize="20sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d" />
 
             <LinearLayout
                 android:id="@+id/adminListContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:orientation="vertical" />
 
             <View android:layout_width="match_parent" android:layout_height="80dp" />
@@ -177,14 +267,16 @@
 
     <Button
         android:id="@+id/buttonSearch"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:text="🔍"
-        android:textSize="22sp"
-        android:background="@drawable/bg_welcome_button"
-        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:background="@drawable/bg_aurora_button_sharp"
+        android:backgroundTint="#fe7f2d"
+        android:textColor="#233d4d"
+        android:elevation="6dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        android:layout_margin="24dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

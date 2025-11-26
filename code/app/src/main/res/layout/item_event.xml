@@ -3,23 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="12dp"
-    app:cardCornerRadius="24dp"
-    app:cardUseCompatPadding="true"
-    app:cardElevation="10dp"
-    android:backgroundTint="@android:color/transparent">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="10dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="#2f4858"
+    app:strokeColor="@android:color/transparent">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_card_vibrant"> <ImageView
-        android:id="@+id/eventImage"
-        android:layout_width="match_parent"
-        android:layout_height="180dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/bg_transparent_input"
-        android:contentDescription="Event Poster" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/eventImage"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:background="#233d4d"
+            android:contentDescription="Event Poster" />
 
         <LinearLayout
             android:orientation="vertical"
@@ -31,30 +33,33 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:shadowColor="#80000000"
-                android:shadowDx="0"
-                android:shadowDy="2"
-                android:shadowRadius="4"
+                android:textSize="22sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d"
                 android:text="Sample Event Title" />
 
-            <TextView
-                android:id="@+id/eventDate"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#E0E0E0"
+                android:orientation="horizontal"
                 android:layout_marginTop="8dp"
-                android:text="Date Information" />
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/eventDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="#FFFFFF"
+                    android:text="Date Information" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/eventLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="#E0E0E0"
+                android:textSize="13sp"
+                android:textColor="#B0BEC5"
                 android:layout_marginTop="4dp"
                 android:text="Location Details" />
 
@@ -63,28 +68,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="end"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="20dp">
 
                 <Button
                     android:id="@+id/btnViewDetails"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
-                    android:background="@drawable/bg_glass_button"
-                    android:text="View Details"
+                    android:backgroundTint="#233d4d"
+                    android:text="Details"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:paddingHorizontal="24dp"
-                    android:layout_marginEnd="12dp" />
+                    android:textColor="#fe7f2d"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp" />
 
                 <Button
                     android:id="@+id/btnJoin"
                     android:layout_width="wrap_content"
                     android:layout_height="48dp"
-                    android:background="@drawable/bg_glass_button"
-                    android:text="Join Waiting List"
+                    android:backgroundTint="#fe7f2d"
+                    android:text="Join List"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:paddingHorizontal="24dp" />
+                    android:textColor="#233d4d"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
