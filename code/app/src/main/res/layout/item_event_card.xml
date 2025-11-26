@@ -3,141 +3,119 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="10dp"
-    android:layout_marginBottom="12dp"
-    app:cardCornerRadius="16dp"
-    app:cardUseCompatPadding="true"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginBottom="14dp"
+    app:cardCornerRadius="18dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="#2f4858"
-    app:strokeColor="@android:color/transparent">
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="#2f4858">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="18dp">
 
-        <LinearLayout
+        <!-- TITLE ONLY -->
+        <TextView
+            android:id="@+id/eventTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="Event Title"
+            android:textColor="#fe7f2d"
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+        <!-- DATE -->
+        <TextView
+            android:id="@+id/eventDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="Date"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
-                <TextView
-                    android:id="@+id/eventTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Event Title"
-                    android:textColor="#fe7f2d"
-                    android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/eventDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Date"
-                    android:textColor="#FFFFFF"
-                    android:textSize="13sp" />
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/eventStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Active"
-                android:textColor="#233d4d"
-                android:textSize="11sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
-                android:background="@drawable/bg_input_sharp"
-                android:backgroundTint="#fe7f2d"/>
-        </LinearLayout>
-
+        <!-- MAX SPOTS -->
         <TextView
             android:id="@+id/eventStats"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="10dp"
             android:text="Max spots: 0"
             android:textColor="#B0BEC5"
             android:textSize="13sp" />
 
+        <!-- DIVIDER -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#233d4d"
-            android:layout_marginVertical="12dp"/>
+            android:layout_marginVertical="14dp"
+            android:background="#233d4d" />
 
+        <!-- BUTTON ROW -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="3">
 
             <Button
                 android:id="@+id/btnLottery"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="46dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#233d4d"
-                android:elevation="0dp"
                 android:text="Lottery"
                 android:textAllCaps="false"
                 android:textColor="#fe7f2d"
-                android:textSize="12sp"
-                android:layout_marginEnd="4dp"/>
+                android:textSize="11sp"
+                android:layout_marginEnd="6dp" />
 
             <Button
                 android:id="@+id/btnShowQR"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="46dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#233d4d"
-                android:elevation="0dp"
                 android:text="QR Code"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp"
-                android:layout_marginHorizontal="4dp"/>
+                android:textSize="11sp"
+                android:layout_marginEnd="6dp" />
 
             <Button
                 android:id="@+id/btnMap"
                 android:layout_width="0dp"
-                android:layout_height="40dp"
+                android:layout_height="46dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#233d4d"
-                android:elevation="0dp"
                 android:text="Map"
                 android:textAllCaps="false"
                 android:textColor="#FFFFFF"
-                android:textSize="12sp"
-                android:layout_marginStart="4dp"/>
-
+                android:textSize="11sp" />
         </LinearLayout>
 
+        <!-- MANAGE BUTTON -->
         <Button
             android:id="@+id/btnManage"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="8dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="14dp"
             android:backgroundTint="#fe7f2d"
-            android:elevation="2dp"
             android:text="Manage Event Details"
+            android:textColor="#233d4d"
             android:textAllCaps="false"
             android:textStyle="bold"
-            android:textColor="#233d4d"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
+
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
