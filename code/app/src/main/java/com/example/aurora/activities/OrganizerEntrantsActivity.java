@@ -634,7 +634,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                         }
 
                         EntrantsAdapter.EntrantItem item =
-                                new EntrantsAdapter.EntrantItem(name, email);
+                                new EntrantsAdapter.EntrantItem(name, email, statusLabel);
 
                         entrantsAdapter.addItem(item);
                     })
