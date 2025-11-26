@@ -3,24 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:layout_marginBottom="8dp"
-    android:background="@drawable/bg_input_sharp"
-    android:backgroundTint="#2f4858"
-    android:gravity="center_vertical">
+    android:layout_margin="8dp"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="16dp">
 
-    <!-- Main container -->
     <RelativeLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:padding="16dp">
 
         <!-- Checkbox -->
         <CheckBox
             android:id="@+id/checkSelect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentStart="true"
+            android:buttonTint="#fe7f2d" />
 
         <!-- Name -->
         <TextView
@@ -30,10 +28,9 @@
             android:layout_toEndOf="@id/checkSelect"
             android:layout_marginStart="12dp"
             android:text="User Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:textColor="#000000"
-            android:fontFamily="sans-serif-medium" />
+            android:textStyle="bold"
+            android:textSize="16sp" />
 
         <!-- Email -->
         <TextView
@@ -43,24 +40,40 @@
             android:layout_below="@id/tvName"
             android:layout_toEndOf="@id/checkSelect"
             android:layout_marginStart="12dp"
+            android:layout_marginTop="4dp"
             android:text="email@example.com"
-            android:textSize="13sp"
-            android:textColor="#B0BEC5" />
+            android:textColor="#90A4AE"
+            android:textSize="13sp" />
+
+        <!-- Status badge -->
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tvName"
+            android:layout_alignParentEnd="true"
+            android:text="Waiting"
+            android:textSize="12sp"
+            android:textColor="#fe7f2d"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="6dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d" />
+
+        <!-- DELETE button -->
+        <ImageButton
+            android:id="@+id/btnDeleteEntrant"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_below="@id/tvStatus"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="Delete"
+            app:srcCompat="@drawable/ic_delete_red_24"
+            app:tint="#FF3B30"
+            android:visibility="gone" />
 
     </RelativeLayout>
-
-    <!-- Right-side status chip -->
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Waiting"
-        android:textSize="11sp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="#fe7f2d"
-        android:paddingHorizontal="12dp"
-        android:paddingVertical="6dp"
-        android:background="@drawable/bg_input_sharp"
-        android:backgroundTint="#233d4d" />
 
 </androidx.cardview.widget.CardView>
