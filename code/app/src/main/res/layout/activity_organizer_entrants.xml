@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/organizerEntrantsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,7 +29,7 @@
             android:background="@android:color/transparent"
             android:contentDescription="Back"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white" />
+            app:tint="@android:color/white" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -55,8 +56,6 @@
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
-    <!-- END HEADER -->
-
 
     <ImageView
         android:id="@+id/imgEventPoster"
@@ -255,24 +254,10 @@
 
         <Button
             android:id="@+id/btnExportCsv"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_glass_button"
-            android:text="Export"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnExportCsv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Export CSV"
             android:layout_marginTop="12dp"
-            android:backgroundTint="#7E57C2"
-            android:textColor="@android:color/white" />
+            android:text="Export Final Entrants CSV"/>
 
     </LinearLayout>
 
