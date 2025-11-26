@@ -254,10 +254,16 @@
 
         <Button
             android:id="@+id/btnExportCsv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Export Final Entrants CSV"/>
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_glass_button"
+            android:text="Export"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+
 
     </LinearLayout>
 
