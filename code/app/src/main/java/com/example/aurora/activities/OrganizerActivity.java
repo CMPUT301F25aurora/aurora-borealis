@@ -153,14 +153,19 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView title = eventView.findViewById(R.id.eventTitle);
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
-        TextView status = eventView.findViewById(R.id.eventStatus);
+
 
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
         Button btnManage = eventView.findViewById(R.id.btnManage);
         Button btnLottery = eventView.findViewById(R.id.btnLottery);
         Button btnMap = eventView.findViewById(R.id.btnMap);
 
-
+        List<String> selected = (List<String>) doc.get("selectedEntrants");
+        if (selected != null && !selected.isEmpty()) {
+            btnLottery.setText("Re-roll");
+        } else {
+            btnLottery.setText("Lottery");
+        }
         String eventId = doc.getId();
 
         String titleText = doc.getString("title");
@@ -174,10 +179,7 @@ public class OrganizerActivity extends AppCompatActivity {
         Long maxSpots = doc.getLong("maxSpots");
         if (maxSpots == null) maxSpots = 0L;
 
-        String location = doc.getString("location");
-        if (location == null) location = "";
-        String category = doc.getString("category");
-        if (category == null) category = "";
+
 
         String deepLink = doc.getString("deepLink");
 
@@ -186,20 +188,8 @@ public class OrganizerActivity extends AppCompatActivity {
         stats.setText("Max spots: " + maxSpots);
 
         // CATEGORY EMOJI + FORMATTING
-        String emoji = "📍";
-        String c = category.toLowerCase();
 
-        switch (c) {
-            case "arts": emoji = "🎨"; break;
-            case "sports": emoji = "⚽"; break;
-            case "music": emoji = "🎵"; break;
-            case "technology": emoji = "💻"; break;
-            case "education": emoji = "📚"; break;
-        }
 
-        String statusText = emoji + " " + capitalize(category);
-        if (!location.isEmpty()) statusText += " • " + location;
-        status.setText(statusText);
 
         btnMap.setOnClickListener(v -> {
             Intent i = new Intent(OrganizerActivity.this, EventMapActivity.class);
@@ -299,9 +289,11 @@ public class OrganizerActivity extends AppCompatActivity {
                                     // losers stay in waitingList
                             )
                             .addOnSuccessListener(x -> {
+
                                 sendWinnerNotifications(eventId, winners);
                                 sendNotSelectedNotifications(eventId, emailsOnly, winners);
                                 showWinnersDialog(winners);
+                                loadEventsFromFirebase();
                             });
 
                 });
