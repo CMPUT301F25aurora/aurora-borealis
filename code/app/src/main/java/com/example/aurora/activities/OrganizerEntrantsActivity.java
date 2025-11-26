@@ -126,10 +126,21 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         setupPosterPicker();
         btnUpdatePoster.setOnClickListener(v -> openPosterPicker());
         loadEventAndLists();
-        Button btnExport = findViewById(R.id.btnExportCsv);
+        Button btnExport = null;
         btnExport.setOnClickListener(v -> exportFinalCsv());
         Button btnExportCsv = findViewById(R.id.btnExportCsv);
         btnExportCsv.setOnClickListener(v -> exportFinalListAsCsv());
+        btnExport = findViewById(R.id.btnExportCsv);
+
+        btnExport.setOnClickListener(v -> {
+            db.collection("events")
+                    .document(eventId)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        List<String> finalEntrants = (List<String>) doc.get("finalEntrants");
+                        exportCsv(eventId, finalEntrants);
+                    });
+        });
 
     }
 
@@ -574,8 +585,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         updateNotifyButtonMode(); // always recalc label based on selection
     }
 
-
-
     private void resetTabStyles() {
         int normalColor = getResources().getColor(android.R.color.darker_gray);
         int normalBg = getResources().getColor(android.R.color.transparent);
@@ -809,6 +818,53 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         }
     }
 
+    private void exportCsv(String eventId, List<String> finalList) {
+        if (finalList == null || finalList.isEmpty()) {
+            Toast.makeText(this, "No final entrants to export.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name,Email,Phone\n");
 
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        for (String email : finalList) {
+            db.collection("users")
+                    .document(email)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        String name = doc.getString("name");
+                        String phone = doc.getString("phone");
+
+                        if (name == null) name = "";
+                        if (phone == null) phone = "";
+
+                        sb.append(name).append(",")
+                                .append(email).append(",")
+                                .append(phone).append("\n");
+
+                        // When last doc processed → save CSV
+                        if (sb.toString().split("\n").length - 1 == finalList.size()) {
+                            saveCsvToFile(sb.toString(), eventId);
+                        }
+                    });
+        }
+    }
+
+    private void saveCsvToFile(String csv, String eventId) {
+        try {
+            File file = new File(getExternalFilesDir(null),
+                    "event_" + eventId + "_final_entrants.csv");
+
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(csv.getBytes());
+            fos.close();
+
+            Toast.makeText(this, "CSV exported:\n" + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to save CSV", Toast.LENGTH_SHORT).show();
+        }
+    }
 }
