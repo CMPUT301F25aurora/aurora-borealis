@@ -385,9 +385,9 @@ public class CreateEventActivity extends AppCompatActivity {
      * These correspond to the organizer user stories for event tagging.
      */
     private void setupCategorySpinner() {
-        // Categories from user stories: Music, Sports, Education, Arts, Technology
+        // Categories from user stories
         String[] categories = {
-                "Select a category",
+                "Select a category", // This will be your hint
                 "Music",
                 "Sports",
                 "Education",
@@ -396,12 +396,16 @@ public class CreateEventActivity extends AppCompatActivity {
                 "Community"
         };
 
+        // Use 'R.layout.item_spinner' (the file we created) instead of 'android.R.layout.simple_spinner_item'
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
-                android.R.layout.simple_spinner_item,
+                R.layout.item_spinner,
                 categories
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // This sets how the list looks when you click it open
+        adapter.setDropDownViewResource(R.layout.item_spinner);
+
         spinnerCategory.setAdapter(adapter);
     }
 

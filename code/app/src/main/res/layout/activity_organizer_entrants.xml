@@ -3,12 +3,11 @@
     android:id="@+id/organizerEntrantsRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:clipToPadding="false"
-
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="16dp">
 
     <LinearLayout
         android:id="@+id/headerContainer"
@@ -16,9 +15,7 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="16dp"
-        android:paddingTop="@dimen/status_bar_height"
-        android:paddingEnd="16dp"
+        android:paddingTop="24dp"
         android:paddingBottom="8dp">
 
         <ImageButton
@@ -28,56 +25,56 @@
             android:background="@android:color/transparent"
             android:contentDescription="Back"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white" />
+            android:tint="#fe7f2d" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingStart="8dp">
+            android:paddingStart="12dp">
 
             <TextView
                 android:id="@+id/tvEventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Lottery Management"
-                android:textColor="@android:color/white"
+                android:textColor="#fe7f2d"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:fontFamily="sans-serif-medium" />
 
             <TextView
                 android:id="@+id/tvEventSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Subtitle"
-                android:textColor="#E0E0E0"
+                android:textColor="#B0BEC5"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
-    <!-- END HEADER -->
-
 
     <ImageView
         android:id="@+id/imgEventPoster"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="160dp"
         android:layout_marginTop="12dp"
-        android:background="@drawable/bg_transparent_input"
+        android:background="#2f4858"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_background" />
 
     <Button
         android:id="@+id/btnUpdatePoster"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
-        android:background="@drawable/bg_glass_button"
+        android:background="@drawable/bg_input_sharp"
+        android:backgroundTint="#2f4858"
         android:paddingHorizontal="24dp"
         android:text="Update Poster"
         android:textAllCaps="false"
-        android:textColor="@android:color/white" />
+        android:textColor="#fe7f2d"
+        android:textSize="12sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -90,8 +87,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="16dp">
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:padding="12dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -103,15 +101,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#80CFFF"
-                    android:textSize="20sp"
+                    android:textColor="#29B6F6"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Waiting List"
-                    android:textColor="@android:color/white" />
+                    android:text="Waiting"
+                    android:textColor="#B0BEC5"
+                    android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -120,8 +119,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="16dp">
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:padding="12dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -133,15 +133,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#00E676"
-                    android:textSize="20sp"
+                    android:textColor="#66BB6A"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Selected"
-                    android:textColor="@android:color/white" />
+                    android:textColor="#B0BEC5"
+                    android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -157,8 +158,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="16dp">
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:padding="12dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -170,15 +172,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#FF5252"
-                    android:textSize="20sp"
+                    android:textColor="#EF5350"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cancelled"
-                    android:textColor="@android:color/white" />
+                    android:textColor="#B0BEC5"
+                    android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -187,8 +190,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_card_vibrant"
-            android:padding="16dp">
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:padding="12dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -200,15 +204,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0"
-                    android:textColor="#80CFFF"
-                    android:textSize="20sp"
+                    android:textColor="#fe7f2d"
+                    android:textSize="24sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Spots"
-                    android:textColor="@android:color/white" />
+                    android:textColor="#B0BEC5"
+                    android:textSize="12sp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
@@ -218,10 +223,11 @@
         android:layout_width="match_parent"
         android:layout_height="52dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_glass_button"
+        android:backgroundTint="#fe7f2d"
         android:text="Draw Lottery"
         android:textAllCaps="false"
-        android:textColor="@android:color/white"
+        android:textColor="#233d4d"
+        android:textStyle="bold"
         android:textSize="16sp" />
 
     <LinearLayout
@@ -233,54 +239,48 @@
         <Button
             android:id="@+id/btnNotify"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="40dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_glass_button"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
             android:text="Notify"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textColor="#fe7f2d"
             android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnReplace"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_glass_button"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
             android:text="Replace"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textColor="#fe7f2d"
             android:textSize="12sp" />
 
         <Button
             android:id="@+id/btnExportCsv"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="40dp"
             android:layout_marginStart="4dp"
             android:layout_weight="1"
-            android:background="@drawable/bg_glass_button"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
             android:text="Export"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textColor="#fe7f2d"
             android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/btnExportCsv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Export CSV"
-            android:layout_marginTop="12dp"
-            android:backgroundTint="#7E57C2"
-            android:textColor="@android:color/white" />
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/bg_card_vibrant"
+        android:background="@drawable/bg_input_sharp"
+        android:backgroundTint="#2f4858"
         android:orientation="horizontal"
         android:padding="4dp">
 
@@ -292,7 +292,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Waiting"
-            android:textColor="@android:color/white"
+            android:textColor="#fe7f2d"
             android:textStyle="bold" />
 
         <TextView
@@ -303,7 +303,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Selected"
-            android:textColor="@android:color/white" />
+            android:textColor="#FFFFFF" />
 
         <TextView
             android:id="@+id/tabCancelled"
@@ -313,7 +313,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Cancelled"
-            android:textColor="@android:color/white" />
+            android:textColor="#FFFFFF" />
 
         <TextView
             android:id="@+id/tabFinal"
@@ -323,13 +323,13 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Final"
-            android:textColor="@android:color/white" />
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerEntrants"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:layout_weight="1" />
 </LinearLayout>

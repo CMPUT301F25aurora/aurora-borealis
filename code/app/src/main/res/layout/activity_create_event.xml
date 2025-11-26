@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fillViewport="true"
     android:scrollbars="none">
 
@@ -20,15 +20,15 @@
             android:gravity="center_vertical"
             android:paddingHorizontal="20dp"
             android:paddingTop="24dp"
-            android:paddingBottom="16dp">
+            android:paddingBottom="20dp">
 
             <ImageButton
                 android:id="@+id/btnBack"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:background="@drawable/bg_input_sharp"
+                android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back_24"
-                android:tint="@android:color/white"
+                app:tint="#fe7f2d"
                 android:contentDescription="Back"
                 android:padding="8dp" />
 
@@ -37,9 +37,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create Event"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d"
                 android:layout_marginStart="16dp" />
         </LinearLayout>
 
@@ -47,19 +47,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingHorizontal="20dp"
-            android:layout_marginBottom="24dp">
+            android:layout_marginHorizontal="20dp"
+            android:padding="8dp">
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="200dp"
+                android:layout_marginBottom="32dp">
 
                 <ImageView
                     android:id="@+id/imgPosterPreview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/bg_input_sharp"
+                    android:background="#2f4858"
                     android:contentDescription="Event poster preview"
                     android:visibility="gone"/>
 
@@ -69,13 +70,13 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="@drawable/bg_input_sharp">
+                    android:background="#2f4858">
 
                     <ImageView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@drawable/imageicon"
-                        android:tint="#80FFFFFF"
+                        app:tint="#fe7f2d"
                         android:layout_marginBottom="12dp"/>
 
                     <Button
@@ -85,29 +86,20 @@
                         android:text="Upload Cover Image"
                         android:textSize="13sp"
                         android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        android:background="@drawable/bg_aurora_button_sharp"
+                        android:textColor="#233d4d"
+                        android:textStyle="bold"
+                        android:backgroundTint="#fe7f2d"
                         android:paddingHorizontal="20dp"/>
                 </LinearLayout>
             </FrameLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="20dp"
-            android:background="@drawable/bg_glass_card_sharp"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Details"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:textColor="#fe7f2d"
                 android:layout_marginBottom="16dp" />
 
             <EditText
@@ -118,17 +110,21 @@
                 android:textColorHint="#90A4AE"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_input_sharp"
-                android:padding="14dp"
-                android:textSize="15sp"
+                android:backgroundTint="#2f4858"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif"
                 android:inputType="textCapWords"
                 android:layout_marginBottom="12dp" />
 
             <Spinner
                 android:id="@+id/spinnerCategory"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="52dp"
                 android:background="@drawable/bg_input_sharp"
-                android:padding="12dp"
+                android:backgroundTint="#2f4858"
+                android:paddingStart="0dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
                 android:spinnerMode="dropdown"
                 android:layout_marginBottom="12dp"/>
 
@@ -140,30 +136,20 @@
                 android:textColorHint="#90A4AE"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_input_sharp"
-                android:padding="14dp"
-                android:textSize="15sp"
+                android:backgroundTint="#2f4858"
+                android:padding="16dp"
                 android:minLines="3"
                 android:gravity="top"
-                android:inputType="textMultiLine|textCapSentences" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="20dp"
-            android:background="@drawable/bg_glass_card_sharp"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
+                android:inputType="textMultiLine|textCapSentences"
+                android:layout_marginBottom="32dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:textColor="#fe7f2d"
                 android:layout_marginBottom="16dp" />
 
             <AutoCompleteTextView
@@ -174,32 +160,35 @@
                 android:textColorHint="#90A4AE"
                 android:textColor="@android:color/white"
                 android:background="@drawable/bg_input_sharp"
-                android:padding="14dp"
-                android:textSize="15sp"
+                android:backgroundTint="#2f4858"
+                android:padding="16dp"
                 android:inputType="textCapWords"
                 android:layout_marginBottom="12dp" />
 
             <Button
                 android:id="@+id/btnPickEventLocation"
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
+                android:layout_height="48dp"
                 android:text="Select on Map"
                 android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:background="@drawable/bg_aurora_button_sharp"
-                android:layout_marginBottom="16dp" />
+                android:textColor="#233d4d"
+                android:textStyle="bold"
+                android:backgroundTint="#fe7f2d"
+                android:layout_marginBottom="12dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:padding="4dp"
+                android:layout_marginBottom="32dp">
 
                 <CheckBox
                     android:id="@+id/checkGeoRequired"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@android:color/white" />
+                    android:buttonTint="#fe7f2d" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -207,28 +196,17 @@
                     android:layout_weight="1"
                     android:text="Strict Geolocation Required"
                     android:textSize="13sp"
-                    android:textColor="#E0E0E0"
+                    android:textColor="#B0BEC5"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="20dp"
-            android:background="@drawable/bg_glass_card_sharp"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Schedule"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:textColor="#fe7f2d"
                 android:layout_marginBottom="16dp" />
 
             <TextView
@@ -249,23 +227,25 @@
                 <Button
                     android:id="@+id/btnPickStartDate"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1.5"
                     android:text="Select Date"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:layout_marginEnd="8dp" />
 
                 <Button
                     android:id="@+id/btnPickStartTime"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
                     android:text="Time"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_input_sharp" />
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858" />
             </LinearLayout>
             <TextView
                 android:id="@+id/txtStartDateTime"
@@ -273,7 +253,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="12sp"
-                android:textColor="#64FFDA"
+                android:textColor="#fe7f2d"
                 android:layout_marginBottom="16dp"
                 android:gravity="end"/>
 
@@ -295,23 +275,25 @@
                 <Button
                     android:id="@+id/btnPickEndDate"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1.5"
                     android:text="Select Date"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:layout_marginEnd="8dp" />
 
                 <Button
                     android:id="@+id/btnPickEndTime"
                     android:layout_width="0dp"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:layout_weight="1"
                     android:text="Time"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:background="@drawable/bg_input_sharp" />
+                    android:textColor="#FFFFFF"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858" />
             </LinearLayout>
             <TextView
                 android:id="@+id/txtEndDateTime"
@@ -319,27 +301,17 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="12sp"
-                android:textColor="#64FFDA"
+                android:textColor="#fe7f2d"
+                android:layout_marginBottom="32dp"
                 android:gravity="end"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="20dp"
-            android:background="@drawable/bg_glass_card_sharp"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Registration Window"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:textColor="#fe7f2d"
                 android:layout_marginBottom="16dp" />
 
             <LinearLayout
@@ -365,6 +337,7 @@
                     android:text="Date"
                     android:textSize="12sp"
                     android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:textColor="@android:color/white"
                     android:layout_marginEnd="4dp"/>
 
@@ -376,6 +349,7 @@
                     android:text="Time"
                     android:textSize="12sp"
                     android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:textColor="@android:color/white"/>
             </LinearLayout>
             <TextView
@@ -384,7 +358,7 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="11sp"
-                android:textColor="#FFAB40"
+                android:textColor="#fe7f2d"
                 android:gravity="end"
                 android:layout_marginBottom="12dp"/>
 
@@ -411,6 +385,7 @@
                     android:text="Date"
                     android:textSize="12sp"
                     android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:textColor="@android:color/white"
                     android:layout_marginEnd="4dp"/>
 
@@ -422,6 +397,7 @@
                     android:text="Time"
                     android:textSize="12sp"
                     android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
                     android:textColor="@android:color/white"/>
             </LinearLayout>
             <TextView
@@ -430,91 +406,97 @@
                 android:layout_height="wrap_content"
                 android:text=""
                 android:textSize="11sp"
-                android:textColor="#FFAB40"
-                android:gravity="end"/>
+                android:textColor="#fe7f2d"
+                android:gravity="end"
+                android:layout_marginBottom="32dp"/>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Capacity &amp; Lottery"
+                android:fontFamily="sans-serif-medium"
+                android:textSize="20sp"
+                android:textColor="#fe7f2d"
+                android:layout_marginBottom="16dp" />
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:background="@drawable/bg_glass_card_sharp"
-                android:padding="16dp"
-                android:layout_marginEnd="8dp">
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Waitlist Cap"
-                    android:textColor="#B0BEC5"
-                    android:textSize="12sp"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="12dp">
 
-                <EditText
-                    android:id="@+id/editMaxSpots"
-                    android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Waitlist Cap"
+                        android:textColor="#B0BEC5"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <EditText
+                        android:id="@+id/editMaxSpots"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input_sharp"
+                        android:backgroundTint="#2f4858"
+                        android:padding="12dp"
+                        android:hint="∞"
+                        android:gravity="center"
+                        android:textColorHint="#80FFFFFF"
+                        android:textColor="@android:color/white"
+                        android:inputType="number" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_sharp"
-                    android:padding="12dp"
-                    android:hint="∞"
-                    android:gravity="center"
-                    android:textColorHint="#80FFFFFF"
-                    android:textColor="@android:color/white"
-                    android:inputType="number" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Winner Count"
+                        android:textColor="#B0BEC5"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <EditText
+                        android:id="@+id/editLotterySampleSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_input_sharp"
+                        android:backgroundTint="#2f4858"
+                        android:padding="12dp"
+                        android:hint="0"
+                        android:gravity="center"
+                        android:textColorHint="#80FFFFFF"
+                        android:textColor="@android:color/white"
+                        android:inputType="number" />
+                </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:background="@drawable/bg_glass_card_sharp"
-                android:padding="16dp"
-                android:layout_marginStart="8dp">
+            <Button
+                android:id="@+id/btnCreateEvent"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Create Event"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:textColor="#233d4d"
+                android:backgroundTint="#fe7f2d"
+                android:elevation="0dp"
+                android:layout_marginTop="16dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Winner Count"
-                    android:textColor="#B0BEC5"
-                    android:textSize="12sp"
-                    android:layout_marginBottom="8dp"/>
-
-                <EditText
-                    android:id="@+id/editLotterySampleSize"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_input_sharp"
-                    android:padding="12dp"
-                    android:hint="0"
-                    android:gravity="center"
-                    android:textColorHint="#80FFFFFF"
-                    android:textColor="@android:color/white"
-                    android:inputType="number" />
-            </LinearLayout>
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnCreateEvent"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="20dp"
-            android:text="Create Event"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:background="@drawable/bg_aurora_button_sharp"
-            android:elevation="4dp" />
-
     </LinearLayout>
 </ScrollView>

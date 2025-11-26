@@ -5,16 +5,17 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="8dp"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="18dp"
+    app:cardCornerRadius="16dp"
     app:cardUseCompatPadding="true"
-    app:cardElevation="6dp"
-    android:backgroundTint="@android:color/transparent">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="#2f4858"
+    app:strokeColor="@android:color/transparent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/bg_card_vibrant" android:padding="16dp">
+        android:padding="16dp">
 
         <TextView
             android:id="@+id/historyTitle"
@@ -22,12 +23,8 @@
             android:layout_height="wrap_content"
             android:text="Event Title"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            android:shadowColor="#80000000"
-            android:shadowDx="0"
-            android:shadowDy="2"
-            android:shadowRadius="4" />
+            android:fontFamily="sans-serif-medium"
+            android:textColor="#fe7f2d" />
 
         <TextView
             android:id="@+id/historyDate"
@@ -35,17 +32,22 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Date"
-            android:textColor="#E0E0E0"
+            android:textColor="#FFFFFF"
             android:textSize="14sp" />
 
         <TextView
             android:id="@+id/historyStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:text="Joined / Won / Cancelled"
-            android:textSize="14sp"
-            android:textColor="#BB86FC" />
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#B0BEC5"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#233d4d"/>
 
     </LinearLayout>
 

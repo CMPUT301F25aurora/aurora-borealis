@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
@@ -12,8 +12,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/status_bar_height"
-        android:padding="12dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="12dp"
+        android:paddingHorizontal="12dp"
         android:gravity="center_vertical">
 
         <TextView
@@ -22,28 +23,32 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Discover Events"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:textColor="#fe7f2d"
+            android:textSize="26sp"
+            android:fontFamily="sans-serif-medium" />
 
         <Button
             android:id="@+id/btnFilter"
-            android:layout_width="98dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginEnd="8dp"
             android:text="Filter"
             android:textAllCaps="false"
-            android:background="@drawable/bg_glass_button"
-            android:textColor="@android:color/white" />
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:textColor="#fe7f2d"
+            android:textSize="12sp"/>
 
         <Button
             android:id="@+id/logoutButton"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="40dp"
             android:text="Logout"
             android:textAllCaps="false"
-            android:background="@drawable/bg_glass_button"
-            android:textColor="@android:color/white" />
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:textColor="#fe7f2d"
+            android:textSize="12sp" />
     </LinearLayout>
 
     <EditText
@@ -51,21 +56,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="8dp"
-        android:hint="Search events"
-        android:textColorHint="#C0C0C0"
+        android:layout_marginBottom="12dp"
+        android:hint="Search events..."
+        android:textColorHint="#90A4AE"
         android:textColor="@android:color/white"
-        android:padding="12dp"
-        android:background="@drawable/bg_transparent_input"
+        android:padding="16dp"
+        android:background="@drawable/bg_input_sharp"
+        android:backgroundTint="#2f4858"
         android:drawableStart="@android:drawable/ic_menu_search"
-        android:drawablePadding="8dp"
+        android:drawableTint="#fe7f2d"
+        android:drawablePadding="12dp"
         android:inputType="text" />
 
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingHorizontal="8dp"
-        android:scrollbars="none">
+        android:scrollbars="none"
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -75,75 +83,81 @@
             <Button
                 android:id="@+id/btnAll"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="All"
                 android:textAllCaps="false"
                 android:layout_margin="4dp"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white" />
-
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#fe7f2d"
+                android:textColor="#233d4d"
+                android:textStyle="bold"/>
             <Button
                 android:id="@+id/btnMusic"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="Music"
                 android:textAllCaps="false"
                 android:layout_margin="4dp"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white" />
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btnSports"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="Sports"
                 android:textAllCaps="false"
                 android:layout_margin="4dp"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white" />
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btnEducation"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="Education"
                 android:textAllCaps="false"
                 android:layout_margin="4dp"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white" />
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btnArts"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="Arts"
                 android:textAllCaps="false"
                 android:layout_margin="4dp"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white" />
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/btnTechnology"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:text="Tech"
                 android:textAllCaps="false"
                 android:layout_margin="4dp"
-                android:background="@drawable/bg_glass_button"
-                android:textColor="@android:color/white" />
+                android:background="@drawable/bg_input_sharp"
+                android:backgroundTint="#2f4858"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
     </HorizontalScrollView>
 
     <Button
         android:id="@+id/btnScanQr"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="56dp"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="8dp"
         android:text="📷 Scan Event QR"
         android:textAllCaps="false"
-        android:background="@drawable/bg_card_vibrant"
-        android:textColor="@android:color/white"
+        android:backgroundTint="#fe7f2d"
+        android:textColor="#233d4d"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -160,8 +174,9 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
-        android:background="#80000000"
-        android:gravity="center">
+        android:background="#2f4858"
+        android:gravity="center"
+        android:elevation="8dp">
 
         <Button
             android:id="@+id/navEvents"
@@ -169,9 +184,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Events"
+            android:fontFamily="sans-serif-medium"
             android:textAllCaps="false"
             android:background="@android:color/transparent"
-            android:textColor="@android:color/white" />
+            android:textColor="#fe7f2d" />
 
         <Button
             android:id="@+id/navProfile"
@@ -179,9 +195,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Profile"
+            android:fontFamily="sans-serif-medium"
             android:textAllCaps="false"
             android:background="@android:color/transparent"
-            android:textColor="@android:color/white" />
+            android:textColor="#fe7f2d" />
 
         <Button
             android:id="@+id/navAlerts"
@@ -189,9 +206,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:text="Alerts"
+            android:fontFamily="sans-serif-medium"
             android:textAllCaps="false"
             android:background="@android:color/transparent"
-            android:textColor="@android:color/white" />
+            android:textColor="#fe7f2d" />
     </LinearLayout>
 
 </LinearLayout>

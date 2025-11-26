@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
@@ -12,9 +12,10 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/status_bar_height"
+        android:paddingTop="24dp"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp">
+        android:paddingEnd="16dp"
+        android:paddingBottom="12dp">
 
         <ImageButton
             android:id="@+id/backButtonAlerts"
@@ -22,7 +23,7 @@
             android:layout_height="32dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white"
+            android:tint="#fe7f2d"
             android:contentDescription="@string/back" />
 
         <TextView
@@ -30,9 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Alerts"
-            android:textColor="@android:color/white"
+            android:textColor="#fe7f2d"
             android:textSize="22sp"
-            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
             android:layout_marginStart="12dp" />
     </LinearLayout>
 
@@ -54,9 +55,9 @@
                 android:layout_height="wrap_content"
                 android:text="You don’t have any alerts right now."
                 android:textSize="16sp"
-                android:textColor="#E0E0E0"
+                android:textColor="#B0BEC5"
                 android:gravity="center"
-                android:padding="24dp"
+                android:padding="40dp"
                 android:visibility="visible" />
 
             <LinearLayout

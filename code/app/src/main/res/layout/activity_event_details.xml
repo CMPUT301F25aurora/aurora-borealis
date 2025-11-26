@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_gradient_deep_space"
+    android:background="#233d4d"
     android:fitsSystemWindows="true"
     android:clipToPadding="false">
 
@@ -13,9 +13,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingTop="@dimen/status_bar_height"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
         <ImageButton
             android:id="@+id/btnBackEvent"
@@ -23,7 +24,7 @@
             android:layout_height="32dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_arrow_back_24"
-            android:tint="@android:color/white"
+            android:tint="#fe7f2d"
             android:contentDescription="@string/back" />
 
         <TextView
@@ -32,29 +33,29 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Event Details"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textColor="#fe7f2d"
+            android:fontFamily="sans-serif-medium"
+            android:textSize="20sp" />
+
+        <View android:layout_width="32dp" android:layout_height="32dp"/>
 
     </LinearLayout>
-    <!-- END HEADER -->
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp">
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="16dp"
             android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/imgBanner"
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@drawable/bg_transparent_input"
+                android:layout_height="200dp"
+                android:background="#2f4858"
                 android:scaleType="centerCrop" />
 
             <TextView
@@ -63,117 +64,129 @@
                 android:layout_height="wrap_content"
                 android:text="JOINED"
                 android:textColor="#00E676"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp" />
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.1"
+                android:layout_marginTop="16dp" />
 
             <TextView
                 android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Event Title"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="4dp" />
+                android:textSize="26sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#fe7f2d"
+                android:layout_marginTop="8dp" />
 
             <TextView
                 android:id="@+id/txtLocation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Location"
-                android:textColor="#E0E0E0"
-                android:textSize="14sp"
-                android:layout_marginTop="2dp" />
+                android:textColor="#B0BEC5"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/txtTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Date"
-                android:textColor="#E0E0E0"
-                android:layout_marginTop="6dp" />
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp" />
 
             <TextView
                 android:id="@+id/txtRegWindow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Registration window"
-                android:textColor="#E0E0E0"
-                android:layout_marginTop="6dp" />
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/txtStats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Spots / Joined"
-                android:textColor="#E0E0E0"
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
                 android:layout_marginTop="4dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="About this event"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:layout_marginTop="12dp" />
+                android:fontFamily="sans-serif-medium"
+                android:textSize="18sp"
+                android:textColor="#fe7f2d"
+                android:layout_marginTop="24dp" />
 
             <TextView
                 android:id="@+id/txtAbout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Description"
-                android:textColor="#CCCCCC"
-                android:layout_marginTop="4dp" />
+                android:text="Description text goes here..."
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.2"
+                android:layout_marginTop="8dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="24dp"
                 android:gravity="center">
 
                 <Button
                     android:id="@+id/btnJoinLeave"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:text="Join Waiting List"
                     android:textAllCaps="false"
-                    android:background="@drawable/bg_glass_button"
-                    android:textColor="@android:color/white" />
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:backgroundTint="#fe7f2d"
+                    android:textColor="#233d4d" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/btnCriteria"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Criteria"
-                    android:textAllCaps="false"
-                    android:background="@drawable/bg_glass_button"
-                    android:textColor="@android:color/white" />
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
 
-                <Button
-                    android:id="@+id/btnShowQr"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Show QR"
-                    android:textAllCaps="false"
-                    android:background="@drawable/bg_glass_button"
-                    android:textColor="@android:color/white" />
+                    <Button
+                        android:id="@+id/btnCriteria"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="Criteria"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:backgroundTint="#2f4858"
+                        android:textColor="#fe7f2d"
+                        android:layout_marginEnd="6dp"/>
 
+                    <Button
+                        android:id="@+id/btnShowQr"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="Show QR"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif-medium"
+                        android:backgroundTint="#2f4858"
+                        android:textColor="#fe7f2d"
+                        android:layout_marginStart="6dp"/>
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
-
 </LinearLayout>
