@@ -78,10 +78,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ImageView imgBanner;
     private TextView txtJoinedBadge, txtTitle,  txtTime,
             txtLocation, txtAbout, txtStats, txtRegWindow;//txtSubtitle
-    private Button btnJoinLeave;
     private Button btnCriteria;
     private Button btnShowQr;
     private ImageButton btnBackEvent;
+    private Button btnSignUp;
+
 
     private FirebaseFirestore db;
     private String eventId;
@@ -107,13 +108,15 @@ public class EventDetailsActivity extends AppCompatActivity {
         txtAbout = findViewById(R.id.txtAbout);
         txtStats = findViewById(R.id.txtStats);
         txtRegWindow = findViewById(R.id.txtRegWindow);
-        btnJoinLeave = findViewById(R.id.btnJoinLeave);
         btnCriteria = findViewById(R.id.btnCriteria);
         btnShowQr = findViewById(R.id.btnShowQr);
         btnBackEvent = findViewById(R.id.btnBackEvent);
 
         // Back arrow
         btnBackEvent.setOnClickListener(v -> onBackPressed());
+        btnSignUp = findViewById(R.id.btnSignUp);
+        btnSignUp.setOnClickListener(v -> signUpForEvent(eventId));
+
 
         // Get event ID from intent extra or deep link
         eventId = getIntent().getStringExtra("eventId");
@@ -244,6 +247,25 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         List<String> waiting = (List<String>) doc.get("waitingList");
         int joinedCount = waiting == null ? 0 : waiting.size();
+        List<String> selected = (List<String>) doc.get("selectedEntrants");
+        boolean isSelected = selected != null && selected.contains(userId);
+
+        List<String> finalEntrants = (List<String>) doc.get("finalEntrants");
+        boolean isFinal = finalEntrants != null && finalEntrants.contains(userId);
+
+// If already final → hide button
+        if (isFinal) {
+            btnSignUp.setVisibility(View.GONE);
+        }
+// If selected → show Sign Up button
+        else if (isSelected) {
+            btnSignUp.setVisibility(View.VISIBLE);
+        }
+// If NOT selected → hide button
+        else {
+            btnSignUp.setVisibility(View.GONE);
+        }
+
         isJoined = waiting != null && waiting.contains(userId);
 
         currentDeepLink = doc.getString("deepLink");
@@ -263,19 +285,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             txtRegWindow.setText("");
         }
 
-        updateJoinedUi();
-
-        btnJoinLeave.setOnClickListener(v -> toggleJoin());
-    }
-
-    private void updateJoinedUi() {
-        if (isJoined) {
-            txtJoinedBadge.setText("✅ You are on the waiting list");
-            btnJoinLeave.setText("Leave Waiting List");
-        } else {
-            txtJoinedBadge.setText("");
-            btnJoinLeave.setText("Join Waiting List");
-        }
     }
 
 
@@ -311,7 +320,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 .addOnSuccessListener(v -> {
                                     removeUserLocation(finalEventId, finalUserId);
                                     isJoined = false;
-                                    updateJoinedUi();
                                     Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
                                 });
                         return;
@@ -366,7 +374,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                                             .update("waitingList", FieldValue.arrayUnion(finalUserId))
                                             .addOnSuccessListener(v -> {
                                                 isJoined = true;
-                                                updateJoinedUi();
                                                 Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
                                             });
                                 });
@@ -438,4 +445,22 @@ public class EventDetailsActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to generate QR code", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void signUpForEvent(String eventId) {
+
+        db.collection("events").document(eventId)
+                .update(
+                        "finalEntrants", FieldValue.arrayUnion(userId),
+                        "selectedEntrants", FieldValue.arrayRemove(userId),
+                        "waitingList", FieldValue.arrayRemove(userId)
+                )
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "You are signed up!", Toast.LENGTH_SHORT).show();
+                    btnSignUp.setVisibility(View.GONE);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to sign up", Toast.LENGTH_SHORT).show();
+                });
+    }
+
 }
