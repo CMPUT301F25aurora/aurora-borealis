@@ -283,19 +283,27 @@ public class OrganizerActivity extends AppCompatActivity {
 
                     List<String> winners = emailsOnly.subList(0, n);
 
+                    // determine losers (entrants not selected)
+                    List<String> losers = new ArrayList<>();
+                    for (String email : emailsOnly) {
+                        if (!winners.contains(email)) {
+                            losers.add(email);   // they LOST the lottery
+                        }
+                    }
+
                     db.collection("events").document(eventId)
                             .update(
                                     "selectedEntrants", winners,
-                                    "waitingList", FieldValue.arrayRemove(winners.toArray())   // ⭐ REMOVE FROM WAITING
+                                    "losersEntrants", FieldValue.arrayUnion(losers.toArray()),
+                                    "waitingList", FieldValue.arrayRemove(winners.toArray())   // ONLY remove winners
+                                    // losers stay in waitingList
                             )
-
                             .addOnSuccessListener(x -> {
                                 sendWinnerNotifications(eventId, winners);
                                 sendNotSelectedNotifications(eventId, emailsOnly, winners);
                                 showWinnersDialog(winners);
-
-
                             });
+
                 });
     }
     private void sendNotSelectedNotifications(String eventId, List<String> allEntrants, List<String> winners) {
