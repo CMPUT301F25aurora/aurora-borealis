@@ -230,20 +230,10 @@ public class EventDetailsActivity extends AppCompatActivity {
             imgBanner.setImageResource(R.drawable.ic_launcher_background);
         }
 
-        Long capacity = null;
-        Long maxSpots = doc.getLong("maxSpots");
-        if (maxSpots != null) capacity = maxSpots;
-
+        Long capacity = doc.getLong("maxSpots");
         if (capacity == null) {
-            String capStr = doc.getString("capacity");
-            if (capStr != null && !capStr.isEmpty()) {
-                try {
-                    capacity = Long.parseLong(capStr);
-                } catch (NumberFormatException ignored) {
-                }
-            }
+            capacity = 0L;
         }
-        if (capacity == null) capacity = 0L;
 
         List<String> waiting = (List<String>) doc.get("waitingList");
         int joinedCount = waiting == null ? 0 : waiting.size();
