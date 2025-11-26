@@ -16,6 +16,7 @@ import com.example.aurora.R;
 import com.example.aurora.adapters.EntrantsAdapter;
 import com.example.aurora.notifications.FirestoreNotificationHelper;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.FileOutputStream;
@@ -165,6 +166,18 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         recyclerEntrants.setLayoutManager(new LinearLayoutManager(this));
         recyclerEntrants.setAdapter(entrantsAdapter);
         entrantsAdapter.setSelectionListener(() -> updateNotifyButtonMode());
+        entrantsAdapter.setDeleteListener(email -> {
+            db.collection("events")
+                    .document(eventId)
+                    .update("selectedEntrants", FieldValue.arrayRemove(email))
+                    .addOnSuccessListener(v -> {
+                        entrantsAdapter.removeByEmail(email);
+                        selectedEmails.remove(email);
+                        tvSelectedCount.setText(String.valueOf(selectedEmails.size()));
+                        Toast.makeText(this, "Entrant removed", Toast.LENGTH_SHORT).show();
+                    });
+        });
+
     }
     private void setupNotifyButtonLogic() {
 
@@ -621,7 +634,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                         }
 
                         EntrantsAdapter.EntrantItem item =
-                                new EntrantsAdapter.EntrantItem(name, email, statusLabel);
+                                new EntrantsAdapter.EntrantItem(name, email);
 
                         entrantsAdapter.addItem(item);
                     })
@@ -776,4 +789,24 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         }
     }
 
+    private void removeEntrantFromSelected(String email) {
+
+        if (!selectedEmails.contains(email)) {
+            Toast.makeText(this, "Entrant not in selected list", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        selectedEmails.remove(email);
+
+        db.collection("events")
+                .document(eventId)
+                .update("selectedEntrants", selectedEmails)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Entrant removed", Toast.LENGTH_SHORT).show();
+                    setActiveTab(Tab.SELECTED);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 }

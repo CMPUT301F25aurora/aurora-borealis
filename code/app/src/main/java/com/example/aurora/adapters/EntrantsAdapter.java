@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.aurora.R;
@@ -16,37 +16,43 @@ import com.example.aurora.R;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * RecyclerView adapter for entrant cards on the organizer lottery screen.
- */
 public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.EntrantViewHolder> {
 
-    // ⭐ ADDED: Listener interface
+    // Listener for checkbox changes
     public interface OnSelectionChanged {
         void onChanged();
     }
 
-    // ⭐ ADDED: Listener field
+    // Listener for DELETE button
+    public interface OnDeleteClickListener {
+        void onDelete(String email);
+    }
+
     private OnSelectionChanged selectionListener;
+    private OnDeleteClickListener deleteListener;
 
     public void setSelectionListener(OnSelectionChanged listener) {
         this.selectionListener = listener;
     }
+
+    public void setDeleteListener(OnDeleteClickListener listener) {
+        this.deleteListener = listener;
+    }
+
+    // Model
     public static class EntrantItem {
         private final String name;
         private final String email;
-        private final String status;
         private boolean checked;
-        public EntrantItem(String name, String email, String status) {
+
+        public EntrantItem(String name, String email) {
             this.name = name;
             this.email = email;
-            this.status = status;
             this.checked = false;
         }
 
         public String getName() { return name; }
         public String getEmail() { return email; }
-        public String getStatus() { return status; }
         public boolean isChecked() { return checked; }
         public void setChecked(boolean checked) { this.checked = checked; }
     }
@@ -58,6 +64,7 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         this.context = context;
         this.items = initial != null ? initial : new ArrayList<>();
     }
+
     @NonNull
     @Override
     public EntrantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -66,31 +73,25 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         return new EntrantViewHolder(v);
     }
 
-    @NonNull
     @Override
     public void onBindViewHolder(@NonNull EntrantViewHolder holder, int position) {
         EntrantItem item = items.get(position);
 
         holder.tvName.setText(item.getName());
         holder.tvEmail.setText(item.getEmail());
-        holder.tvStatus.setText(item.getStatus());
 
+        // Checkbox
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(item.isChecked());
-
-        // Only notify on actual checkbox toggle
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        holder.checkBox.setOnCheckedChangeListener((button, isChecked) -> {
             item.setChecked(isChecked);
-
-            if (selectionListener != null) {
-                selectionListener.onChanged();   // correct
-            }
+            if (selectionListener != null) selectionListener.onChanged();
         });
 
-        // Simple status pill styling
-        int badgeColor = ContextCompat.getColor(context, R.color.purple_500);
-        holder.tvStatus.setBackgroundResource(R.drawable.bg_status_badge);
-        holder.tvStatus.setTextColor(badgeColor);
+        // Delete button
+        holder.btnDelete.setOnClickListener(v -> {
+            if (deleteListener != null) deleteListener.onDelete(item.getEmail());
+        });
     }
 
     @Override
@@ -98,12 +99,20 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         return items.size();
     }
 
+    public void removeByEmail(String email) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getEmail().equals(email)) {
+                items.remove(i);
+                notifyItemRemoved(i);
+                break;
+            }
+        }
+    }
+
     public void clearItems() {
         items.clear();
         notifyDataSetChanged();
-        if (selectionListener != null) {
-            selectionListener.onChanged();     // <--- HIGHLIGHTED FIX
-        }
+        if (selectionListener != null) selectionListener.onChanged();
     }
 
     public void addItem(EntrantItem item) {
@@ -112,30 +121,22 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
     }
 
     public List<EntrantItem> getSelectedEntrants() {
-        List<EntrantItem> selected = new ArrayList<>();
-        for (EntrantItem item : items) {
-            if (item.isChecked()) {
-                selected.add(item);
-            }
-        }
-        return selected;
+        List<EntrantItem> out = new ArrayList<>();
+        for (EntrantItem i : items) if (i.isChecked()) out.add(i);
+        return out;
     }
 
     static class EntrantViewHolder extends RecyclerView.ViewHolder {
-
         CheckBox checkBox;
-        TextView tvName;
-        TextView tvEmail;
-        TextView tvStatus;
+        TextView tvName, tvEmail;
+        ImageButton btnDelete;
 
         EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
             checkBox = itemView.findViewById(R.id.checkSelect);
             tvName = itemView.findViewById(R.id.tvName);
             tvEmail = itemView.findViewById(R.id.tvEmail);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-
-
+            btnDelete = itemView.findViewById(R.id.btnDeleteEntrant);
         }
     }
 }
