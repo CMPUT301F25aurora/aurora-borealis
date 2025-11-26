@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#233d4d"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="false">
+    android:fitsSystemWindows="true">
 
     <!-- HEADER -->
     <LinearLayout
@@ -26,8 +25,7 @@
             android:layout_height="32dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_arrow_back_24"
-            android:contentDescription="@string/back"
-            app:tint="@android:color/white" />
+            app:tint="@android:color/white"/>
 
         <TextView
             android:layout_width="0dp"
@@ -36,148 +34,147 @@
             android:gravity="center"
             android:text="Event Details"
             android:textColor="#fe7f2d"
-            android:fontFamily="sans-serif-medium"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:fontFamily="sans-serif-medium"/>
 
-        <View android:layout_width="32dp" android:layout_height="32dp"/>
+        <View
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
+    </LinearLayout>
+    <!-- END HEADER -->
 
-    <!-- FIX: ScrollView OPEN and NOT closed until the end -->
-        <ScrollView
+    <!-- SCROLLABLE CONTENT -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- ROOT CHILD OF SCROLLVIEW (MUST BE EXACTLY ONE) -->
+            <ImageView
+                android:id="@+id/imgBanner"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:background="#2f4858"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:id="@+id/txtJoinedBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JOINED"
+                android:textColor="#00E676"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="16dp"/>
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Event Title"
+                android:textSize="26sp"
+                android:textColor="#fe7f2d"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="8dp"/>
+
+            <TextView
+                android:id="@+id/txtLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textColor="#B0BEC5"
+                android:textSize="16sp"
+                android:layout_marginTop="4dp"/>
+
+            <TextView
+                android:id="@+id/txtTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date"
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"/>
+
+            <TextView
+                android:id="@+id/txtRegWindow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration"
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/txtStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Spots / Joined"
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"/>
+
+            <!-- ABOUT HEADER -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="About this event"
+                android:textSize="18sp"
+                android:textColor="#fe7f2d"
+                android:fontFamily="sans-serif-medium"
+                android:layout_marginTop="24dp"/>
+
+            <TextView
+                android:id="@+id/txtAbout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="#B0BEC5"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.2"/>
+
+            <!-- SIGN UP BUTTON -->
+            <Button
+                android:id="@+id/btnSignUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sign Up"
+                android:backgroundTint="#7E57C2"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"/>
+
+            <!-- CRITERIA + QR BUTTONS -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:gravity="center">
 
-                <ImageView
-                    android:id="@+id/imgBanner"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:background="#2f4858"
-                    android:scaleType="centerCrop" />
-
-                <TextView
-                    android:id="@+id/txtJoinedBadge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="JOINED"
-                    android:textColor="#00E676"
-                    android:fontFamily="sans-serif-medium"
-                    android:letterSpacing="0.1"
-                    android:layout_marginTop="16dp" />
-
-                <TextView
-                    android:id="@+id/txtTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Event Title"
-                    android:textSize="26sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="#fe7f2d"
-                    android:layout_marginTop="8dp" />
-
-                <TextView
-                    android:id="@+id/txtLocation"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Location"
-                    android:textColor="#B0BEC5"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp" />
-
-                <TextView
-                    android:id="@+id/txtTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Date"
-                    android:textColor="#B0BEC5"
-                    android:textSize="14sp"
-                    android:layout_marginTop="12dp" />
-
-                <TextView
-                    android:id="@+id/txtRegWindow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Registration window"
-                    android:textColor="#B0BEC5"
-                    android:textSize="14sp"
-                    android:layout_marginTop="4dp" />
-
-                <TextView
-                    android:id="@+id/txtStats"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Spots / Joined"
-                    android:textColor="#B0BEC5"
-                    android:textSize="14sp"
-                    android:layout_marginTop="4dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="About this event"
-                    android:fontFamily="sans-serif-medium"
-                    android:textSize="18sp"
-                    android:textColor="#fe7f2d"
-                    android:layout_marginTop="24dp" />
-
-                <TextView
-                    android:id="@+id/txtAbout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Description text goes here..."
-                    android:textColor="#B0BEC5"
-                    android:textSize="14sp"
-                    android:lineSpacingMultiplier="1.2"
-                    android:layout_marginTop="8dp" />
-
-                <!-- SIGN UP BUTTON -->
                 <Button
-                    android:id="@+id/btnSignUp"
-                    android:layout_width="match_parent"
+                    android:id="@+id/btnCriteria"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Sign Up"
-                    android:textAllCaps="false"
-                    android:backgroundTint="#7E57C2"
+                    android:layout_weight="1"
+                    android:text="Criteria"
+                    android:background="@drawable/bg_glass_button"
+                    android:textColor="@android:color/white"/>
+
+                <Button
+                    android:id="@+id/btnShowQr"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="QR Code"
+                    android:background="@drawable/bg_glass_button"
                     android:textColor="@android:color/white"
-                    android:layout_marginTop="12dp"
-                    android:visibility="gone" />
+                    android:layout_marginStart="12dp"/>
+            </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center">
+        </LinearLayout>
+    </ScrollView>
 
-                    <Button
-                        android:id="@+id/btnCriteria"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Criteria"
-                        android:textAllCaps="false"
-                        android:background="@drawable/bg_glass_button"
-                        android:textColor="@android:color/white" />
-
-                    <Button
-                        android:id="@+id/btnShowQr"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="12dp"/>
-
-
-
-                </LinearLayout>
-            </LinearLayout><!-- END ROOT -->
-        </ScrollView><!-- FIX: ScrollView closes here -->
-    </LinearLayout>
 </LinearLayout>
-
-
