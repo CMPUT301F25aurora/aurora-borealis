@@ -772,7 +772,8 @@ public class CreateEventActivity extends AppCompatActivity {
      * Clears the back stack to prevent users from returning to CreateEventActivity.
      */
     private void goBackToOrganizerHome() {
-        Intent intent = new Intent(CreateEventActivity.this, OrganizerActivity.class);
+        Intent intent = new Intent(CreateEventActivity.this, UnifiedNavigationActivity.class);
+        intent.putExtra("forceOrganizerTab", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();

@@ -114,6 +114,21 @@
                 android:text="Profile Information"
                 android:textStyle="bold"
                 android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/modeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Organizer mode"
+                android:textColor="#BBDEFB"
+                android:layout_marginEnd="8dp"/>
+
+            <Switch
+                android:id="@+id/modeSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
             <TextView
                 android:id="@+id/editToggle"
                 android:layout_width="wrap_content"
@@ -121,6 +136,16 @@
                 android:text="Edit"
                 android:textColor="#BBDEFB" />
         </LinearLayout>
+        <Button
+            android:id="@+id/btnGoOrganizer"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:text="Go to Organizer Dashboard"
+            android:visibility="gone"
+            android:background="@drawable/bg_glass_button"
+            android:textColor="@android:color/white"/>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,6 +153,7 @@
             android:orientation="vertical"
             android:padding="12dp"
             android:background="@drawable/bg_glass_card">
+
             <TextView android:text="Full Name" android:textColor="#E0E0E0" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
             <EditText android:id="@+id/inputFullName" android:layout_width="match_parent" android:layout_height="48dp" android:background="@drawable/bg_transparent_input" android:padding="12dp" android:enabled="false" android:textColor="@android:color/white" android:hint="Name"/>
 

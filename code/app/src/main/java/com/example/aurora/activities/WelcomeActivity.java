@@ -83,7 +83,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
             // route to correct dashboard if no pending event
             Intent next;
-            if (role.equalsIgnoreCase("organizer")) next = new Intent(this, OrganizerActivity.class);
+            if (role.equalsIgnoreCase("organizer")) next = new Intent(this, UnifiedNavigationActivity.class);
             else if (role.equalsIgnoreCase("admin")) next = new Intent(this, AdminActivity.class);
             else next = new Intent(this, EventsActivity.class);
 

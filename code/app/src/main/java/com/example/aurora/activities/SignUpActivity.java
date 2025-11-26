@@ -134,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity {
         String email = signupEmail.getText().toString().trim();
         String phone = signupPhone.getText().toString().trim();
         String password = signupPassword.getText().toString().trim();
-        int selectedId = radioGroupRole.getCheckedRadioButtonId();
+        //int selectedId = radioGroupRole.getCheckedRadioButtonId();
 
         if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
             toast("Please fill in all fields");
@@ -146,7 +146,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        String role = (selectedId == R.id.Organizer) ? "organizer" : "entrant";
+        String role = "entrant";
         createAuthAccount(name, email, phone, password, role);
     }
 
@@ -241,6 +241,9 @@ public class SignUpActivity extends AppCompatActivity {
         user.put("phone", phone);
         user.put("role", role);
         user.put("password", password);
+        user.put("isOrganizerApproved", true);
+        user.put("mode", "entrant");
+
 
         db.collection("users").document(uid)
                 .set(user)
@@ -319,9 +322,7 @@ public class SignUpActivity extends AppCompatActivity {
      */
     private void navigateAfterSignup(String role, String name, String email, String phone) {
 
-        Intent intent = role.equals("organizer")
-                ? new Intent(this, OrganizerActivity.class)
-                : new Intent(this, EventsActivity.class);
+        Intent intent = new Intent(this, EventsActivity.class);
 
         intent.putExtra("userName", name);
         intent.putExtra("userEmail", email);

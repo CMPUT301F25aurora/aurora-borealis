@@ -55,6 +55,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private DocumentReference userRef;
+    private android.widget.Switch modeSwitch;
+    private boolean isOrganizerApproved = true;
+    private String currentMode = "entrant";
 
     private ImageView avatar;
     private ImageView backButton;
@@ -76,6 +79,7 @@ public class ProfileActivity extends AppCompatActivity {
         joinedCount = findViewById(R.id.joinedCount);
         winsCount = findViewById(R.id.winsCount);
         editToggle = findViewById(R.id.editToggle);
+        modeSwitch = findViewById(R.id.modeSwitch);
         fullName = findViewById(R.id.inputFullName);
         email = findViewById(R.id.inputEmail);
         phone = findViewById(R.id.inputPhone);
@@ -130,7 +134,9 @@ public class ProfileActivity extends AppCompatActivity {
                 // Create minimal profile doc
                 Map<String, Object> init = new HashMap<>();
                 init.put("email", em);
-                init.put("role", "Entrant");
+                init.put("role", "entrant");
+                init.put("mode", "entrant");
+                init.put("isOrganizerApproved", false);
                 init.put("joinedCount", 0);
                 init.put("winsCount", 0);
                 userRef = db.collection("users").document();
@@ -149,12 +155,15 @@ public class ProfileActivity extends AppCompatActivity {
             String role = doc.getString("role");
             Long joined = doc.getLong("joinedCount");
             Long wins = doc.getLong("winsCount");
+            currentMode = doc.getString("mode");
+            Boolean approved = doc.getBoolean("isOrganizerApproved");
+            if (currentMode == null) currentMode = "entrant";
+            isOrganizerApproved = (approved != null && approved);
 
             fullName.setText(n == null ? "" : n);
             email.setText(e == null ? "" : e);
             phone.setText(p == null ? "" : p);
             headerName.setText(TextUtils.isEmpty(n) ? "Entrant" : n);
-            roleBadge.setText(TextUtils.isEmpty(role) ? "Entrant" : role);
             joinedCount.setText(String.valueOf(joined == null ? 0 : joined));
             winsCount.setText(String.valueOf(wins == null ? 0 : wins));
             setAvatarInitials(fullName.getText().toString());
@@ -167,6 +176,20 @@ public class ProfileActivity extends AppCompatActivity {
                         .putBoolean("entrant_notifications_enabled", notifs)
                         .apply();
             }
+
+
+            // Show badge based on mode
+            if ("organizer".equalsIgnoreCase(currentMode)) {
+                roleBadge.setText("Organizer");
+            } else {
+                roleBadge.setText("Entrant");
+            }
+
+            // Toggle
+            modeSwitch.setOnCheckedChangeListener(null); // avoid recursion
+            modeSwitch.setChecked("organizer".equalsIgnoreCase(currentMode));
+            modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onModeToggled(isChecked));
+
         });
     }
 
@@ -180,7 +203,6 @@ public class ProfileActivity extends AppCompatActivity {
         upd.put("name", n);
         upd.put("email", e);
         upd.put("phone", p);
-        upd.put("role", "Entrant");
 
         userRef.set(upd, SetOptions.merge())
                 .addOnSuccessListener(v -> {
@@ -358,4 +380,55 @@ public class ProfileActivity extends AppCompatActivity {
                                 "Error cleaning up entrant data: " + e.getMessage(),
                                 Toast.LENGTH_LONG).show());
     }
+
+    private void onModeToggled(boolean wantOrganizer) {
+
+        modeSwitch.setEnabled(false); // 👈 IMPORTANT
+
+        if (wantOrganizer) {
+
+            if (!isOrganizerApproved) {
+                Toast.makeText(this,
+                        "Your organizer access has been revoked. Please contact an admin.",
+                        Toast.LENGTH_LONG).show();
+
+                modeSwitch.setOnCheckedChangeListener(null);
+                modeSwitch.setChecked(false);
+                modeSwitch.setEnabled(true); // re-enable
+                modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onModeToggled(isChecked));
+                return;
+            }
+
+            currentMode = "organizer";
+            roleBadge.setText("Organizer");
+
+            if (userRef != null) {
+                userRef.update("mode", "organizer")
+                        .addOnSuccessListener(v -> modeSwitch.setEnabled(true))
+                        .addOnFailureListener(v -> modeSwitch.setEnabled(true));
+            }
+
+            getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putString("user_mode", "organizer")
+                    .apply();
+
+        } else {
+
+            currentMode = "entrant";
+            roleBadge.setText("Entrant");
+
+            if (userRef != null) {
+                userRef.update("mode", "entrant")
+                        .addOnSuccessListener(v -> modeSwitch.setEnabled(true))
+                        .addOnFailureListener(v -> modeSwitch.setEnabled(true));
+            }
+
+            getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putString("user_mode", "entrant")
+                    .apply();
+        }
+    }
+
 }

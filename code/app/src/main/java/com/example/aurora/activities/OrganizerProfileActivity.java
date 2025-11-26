@@ -73,7 +73,7 @@ public class OrganizerProfileActivity extends AppCompatActivity {
 
         // Back Button
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OrganizerProfileActivity.this, OrganizerActivity.class);
+            Intent intent = new Intent(OrganizerProfileActivity.this, UnifiedNavigationActivity.class);
             startActivity(intent);
             finish();
         });

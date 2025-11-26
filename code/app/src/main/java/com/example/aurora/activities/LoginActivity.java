@@ -92,9 +92,10 @@ public class LoginActivity extends AppCompatActivity {
             if (role.equalsIgnoreCase("admin")) {
                 intent = new Intent(this, AdminActivity.class);
             } else if (role.equalsIgnoreCase("organizer")) {
-                intent = new Intent(this, OrganizerActivity.class);
+                intent = new Intent(this, UnifiedNavigationActivity.class);
+
             } else {
-                intent = new Intent(this, EventsActivity.class);
+                intent = new Intent(this, UnifiedNavigationActivity.class);
             }
 
             intent.putExtra("userName", name);
@@ -275,6 +276,21 @@ public class LoginActivity extends AppCompatActivity {
         String email = doc.getString("email");
         String phone = doc.getString("phone");
         String role  = doc.getString("role");
+        String mode = doc.getString("mode");
+        Boolean approved = doc.getBoolean("isOrganizerApproved");
+
+        if (mode == null) mode = "entrant";
+        if (approved == null) approved = true;
+
+        if ("organizer".equalsIgnoreCase(role) && doc.getString("mode") == null) {
+            mode = "organizer";
+            approved = true;
+            doc.getReference().update(
+                    "mode", "organizer",
+                    "isOrganizerApproved", true
+            );
+        }
+
 
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         sp.edit()
@@ -282,6 +298,8 @@ public class LoginActivity extends AppCompatActivity {
                 .putString("user_name",  name  == null ? "" : name)
                 .putString("user_role",  role  == null ? "" : role)
                 .putString("user_doc_id", doc.getId())
+                .putString("user_mode", mode)
+                .putBoolean("user_is_organizer_approved", approved)
                 .apply();
 
         Toast.makeText(this, "Welcome " + (name == null ? "" : name), Toast.LENGTH_SHORT).show();
@@ -303,13 +321,21 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         Intent intent;
+
         if (role != null && role.equalsIgnoreCase("admin")) {
             intent = new Intent(this, AdminActivity.class);
-        } else if (role != null && role.equalsIgnoreCase("organizer")) {
-            intent = new Intent(this, OrganizerActivity.class);
         } else {
-            intent = new Intent(this, EventsActivity.class);
+
+            if ("organizer".equalsIgnoreCase(mode) && approved) {
+                intent = new Intent(this, UnifiedNavigationActivity.class);
+
+            } else {
+
+                intent = new Intent(this, UnifiedNavigationActivity.class);
+                // or new Intent(this, EntrantNavigationActivity.class);
+            }
         }
+
 
         intent.putExtra("userName",  name);
         intent.putExtra("userEmail", email);

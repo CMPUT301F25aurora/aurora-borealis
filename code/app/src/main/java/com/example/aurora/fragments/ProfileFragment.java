@@ -1,17 +1,9 @@
 /*
  * References for this fragment:
  *
- * 1) source: Android Developers — "Fragments"
- *    https://developer.android.com/guide/fragments
- *    Used for basic fragment lifecycle and inflating the profile layout inside a fragment.
- *
- * 2) source: Firebase docs — "Get data with Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/query-data/get-data
- *    Used for loading the user profile document while inside a Fragment.
- *
- * 3) author: Stack Overflow user — "How to correctly implement onCreateView in a Fragment"
- *    https://stackoverflow.com/questions/6484708/android-fragments-and-oncreateview
- *    Used for the pattern of inflating a view and wiring up UI controls in onCreateView.
+ * 1) Android Developers — "Fragments"
+ * 2) Firebase docs — "Get data with Cloud Firestore"
+ * 3) Stack Overflow — onCreateView patterns
  */
 
 package com.example.aurora.fragments;
@@ -27,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,6 +29,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.aurora.R;
 import com.example.aurora.activities.LoginActivity;
+import com.example.aurora.activities.UnifiedNavigationActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -44,18 +38,6 @@ import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
-/**
- * ProfileFragment.java
- *
- * Fragment that displays and manages the entrant’s profile in the Aurora app.
- * - Loads user data (name, email, phone, role, stats) from Firestore.
- * - Allows editing and saving profile details with validation.
- * - Lets users toggle notification settings on or off.
- * - Supports deleting the account and returning to the login screen.
- * - Automatically creates a new profile if one does not exist.
- */
-
-
 
 public class ProfileFragment extends Fragment {
 
@@ -66,6 +48,10 @@ public class ProfileFragment extends Fragment {
     private TextView roleBadge, headerName, joinedCount, winsCount, editToggle;
     private EditText fullName, email, phone;
     private Button btnSave, btnEventHistory, btnNotifSettings, btnDelete;
+    private Switch modeSwitch;
+
+    private String currentMode = "entrant";
+    private boolean isOrganizerApproved = true;
 
     @Nullable
     @Override
@@ -94,6 +80,7 @@ public class ProfileFragment extends Fragment {
         btnEventHistory = v.findViewById(R.id.btnEventHistory);
         btnNotifSettings = v.findViewById(R.id.btnNotifSettings);
         btnDelete = v.findViewById(R.id.btnDeleteAccount);
+        modeSwitch = v.findViewById(R.id.modeSwitch);
 
         setEditing(false);
         resolveAndLoad();
@@ -101,91 +88,80 @@ public class ProfileFragment extends Fragment {
         editToggle.setOnClickListener(x -> setEditing(true));
         btnSave.setOnClickListener(x -> saveProfile());
         btnEventHistory.setOnClickListener(x ->
-                Toast.makeText(getContext(), "Event History coming soon", Toast.LENGTH_SHORT).show());
+                Toast.makeText(getContext(), "Event history coming soon", Toast.LENGTH_SHORT).show());
 
         btnNotifSettings.setOnClickListener(x -> toggleNotifications());
 
-        // Inside onViewCreated:
         ImageButton btnEditPhoto = v.findViewById(R.id.btnEditPhoto);
-        btnEditPhoto.setOnClickListener(x -> {
-            Toast.makeText(getContext(), "Profile photo upload coming soon!", Toast.LENGTH_SHORT).show();
-            // Logic to open image picker would go here
-        });
+        btnEditPhoto.setOnClickListener(x ->
+                Toast.makeText(getContext(), "Profile photo upload coming soon!", Toast.LENGTH_SHORT).show());
 
-        btnDelete.setOnClickListener(x -> {
-            if (userRef == null) {
-                Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            userRef.delete()
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(getContext(), "Account deleted successfully", Toast.LENGTH_SHORT).show();
-
-                        Intent intent = new Intent(requireContext(), LoginActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
-        });
+        btnDelete.setOnClickListener(x -> deleteAccount());
     }
 
+    // ---------------------------------------------------------
+    // LOAD PROFILE
+    // ---------------------------------------------------------
     private void resolveAndLoad() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-        String email;
+        String em;
         if (currentUser != null) {
-            email = currentUser.getEmail();
+            em = currentUser.getEmail();
         } else {
-            email = requireActivity()
+            em = requireActivity()
                     .getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE)
                     .getString("user_email", null);
         }
 
-        if (email == null || email.isEmpty()) {
+        if (em == null) {
             Toast.makeText(getContext(), "No user email found", Toast.LENGTH_SHORT).show();
             return;
         }
 
         db.collection("users")
-                .whereEqualTo("email", email)
+                .whereEqualTo("email", em)
                 .limit(1)
                 .get()
-                .addOnSuccessListener(result -> {
-                    if (!result.isEmpty()) {
-                        userRef = result.getDocuments().get(0).getReference();
+                .addOnSuccessListener(snap -> {
+                    if (!snap.isEmpty()) {
+                        userRef = snap.getDocuments().get(0).getReference();
                         loadProfile();
                     } else {
-                        Map<String, Object> newUser = new HashMap<>();
-                        newUser.put("email", email);
-                        newUser.put("role", "Entrant");
-                        newUser.put("joinedCount", 0);
-                        newUser.put("winsCount", 0);
-                        newUser.put("notificationsEnabled", true);
-
-                        db.collection("users")
-                                .add(newUser)
-                                .addOnSuccessListener(ref -> {
-                                    userRef = ref;
-                                    loadProfile();
-                                })
-                                .addOnFailureListener(e ->
-                                        Toast.makeText(getContext(), "Error creating profile", Toast.LENGTH_SHORT).show());
+                        createProfile(em);
                     }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Error loading user", Toast.LENGTH_SHORT).show());
+                });
+    }
+
+    private void createProfile(String email) {
+        Map<String, Object> init = new HashMap<>();
+        init.put("email", email);
+        init.put("role", "entrant");
+        init.put("mode", "entrant");
+        init.put("joinedCount", 0);
+        init.put("winsCount", 0);
+        init.put("notificationsEnabled", true);
+        init.put("isOrganizerApproved", false);
+
+        db.collection("users")
+                .add(init)
+                .addOnSuccessListener(ref -> {
+                    userRef = ref;
+                    loadProfile();
+                });
     }
 
     private void loadProfile() {
-        if (userRef == null) return;
-
         userRef.get().addOnSuccessListener(doc -> {
+
             String n = doc.getString("name");
             String e = doc.getString("email");
             String p = doc.getString("phone");
-            String role = doc.getString("role");
+            currentMode = doc.getString("mode");
+            Boolean approved = doc.getBoolean("isOrganizerApproved");
+
+            isOrganizerApproved = approved != null && approved;
+
             Long j = doc.getLong("joinedCount");
             Long w = doc.getLong("winsCount");
 
@@ -193,65 +169,132 @@ public class ProfileFragment extends Fragment {
             email.setText(e == null ? "" : e);
             phone.setText(p == null ? "" : p);
             headerName.setText(TextUtils.isEmpty(n) ? "Entrant" : n);
-            roleBadge.setText(TextUtils.isEmpty(role) ? "Entrant" : role);
             joinedCount.setText(String.valueOf(j == null ? 0 : j));
             winsCount.setText(String.valueOf(w == null ? 0 : w));
 
-            Boolean notificationsEnabled = doc.getBoolean("notificationsEnabled");
-            if (notificationsEnabled == null || notificationsEnabled) {
-                btnNotifSettings.setText("Notifications Enabled");
-            } else {
-                btnNotifSettings.setText("Notifications Disabled");
-            }
+            roleBadge.setText(currentMode.equals("organizer") ? "Organizer" : "Entrant");
+
+            // Sync switch
+            modeSwitch.setOnCheckedChangeListener(null);
+            modeSwitch.setChecked(currentMode.equals("organizer"));
+            modeSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> onModeToggled(isChecked));
+
+            Boolean notifs = doc.getBoolean("notificationsEnabled");
+            btnNotifSettings.setText((notifs == null || notifs) ? "Notifications Enabled" : "Notifications Disabled");
+
         });
     }
 
+    // ---------------------------------------------------------
+    // SAVE
+    // ---------------------------------------------------------
     private void saveProfile() {
         if (userRef == null) return;
 
-        String n = fullName.getText().toString().trim();
-        String e = email.getText().toString().trim();
-        String p = phone.getText().toString().trim();
-
         Map<String, Object> upd = new HashMap<>();
-        upd.put("name", n);
-        upd.put("email", e);
-        upd.put("phone", p);
-        upd.put("role", "Entrant");
+        upd.put("name", fullName.getText().toString());
+        upd.put("email", email.getText().toString());
+        upd.put("phone", phone.getText().toString());
 
         userRef.set(upd, SetOptions.merge())
-                .addOnSuccessListener(v -> {
-                    headerName.setText(TextUtils.isEmpty(n) ? "Entrant" : n);
+                .addOnSuccessListener(x -> {
+                    headerName.setText(fullName.getText().toString());
                     setEditing(false);
-                    Toast.makeText(getContext(), "Profile saved", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e1 ->
-                        Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(getContext(), "Profile updated", Toast.LENGTH_SHORT).show();
+                });
     }
 
-    private void toggleNotifications() {
-        if (userRef == null) {
-            Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
-            return;
+    // ---------------------------------------------------------
+    // ORGANIZER MODE TOGGLE
+    // ---------------------------------------------------------
+    private void onModeToggled(boolean wantOrganizer) {
+
+        if (wantOrganizer) {
+            if (!isOrganizerApproved) {
+                Toast.makeText(getContext(),
+                        "Your organizer access has been revoked.",
+                        Toast.LENGTH_LONG).show();
+                modeSwitch.setChecked(false);
+                return;
+            }
+
+            saveAsOrganizer();
+            launchOrganizerDashboard();
+
+        } else {   // switch back to entrant
+            saveAsEntrant();
+            Toast.makeText(getContext(), "Switched to entrant mode", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void saveAsOrganizer() {
+        if (userRef == null) return;
+
+        userRef.update("mode", "organizer");
+
+        requireActivity().getSharedPreferences("aurora_prefs", 0)
+                .edit()
+                .putString("user_mode", "organizer")
+                .apply();
+
+        roleBadge.setText("Organizer");
+    }
+
+    private void saveAsEntrant() {
+        if (userRef == null) return;
+
+        userRef.update("mode", "entrant");
+
+        requireActivity().getSharedPreferences("aurora_prefs", 0)
+                .edit()
+                .putString("user_mode", "entrant")
+                .apply();
+
+        roleBadge.setText("Entrant");
+    }
+
+    private void launchOrganizerDashboard() {
+        Intent i = new Intent(requireContext(), UnifiedNavigationActivity.class);
+        i.putExtra("openOrganizerTab", true);
+        startActivity(i);
+        requireActivity().finish();
+    }
+
+    // ---------------------------------------------------------
+    // NOTIFICATIONS
+    // ---------------------------------------------------------
+    private void toggleNotifications() {
+        if (userRef == null) return;
 
         userRef.get().addOnSuccessListener(doc -> {
-            Boolean current = doc.getBoolean("notificationsEnabled");
-            boolean newValue = current == null || !current; // toggle
+            boolean curr = doc.getBoolean("notificationsEnabled") == null
+                    || doc.getBoolean("notificationsEnabled");
 
-            Map<String, Object> update = new HashMap<>();
-            update.put("notificationsEnabled", newValue);
+            boolean newValue = !curr;
 
-            userRef.update(update)
-                    .addOnSuccessListener(unused -> {
-                        String label = newValue ? "Notifications Enabled" : "Notifications Disabled";
-                        btnNotifSettings.setText(label);
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(getContext(), "Failed to update setting", Toast.LENGTH_SHORT).show());
+            userRef.update("notificationsEnabled", newValue);
+
+            btnNotifSettings.setText(newValue ? "Notifications Enabled" : "Notifications Disabled");
         });
     }
 
+    // ---------------------------------------------------------
+    // DELETE ACCOUNT
+    // ---------------------------------------------------------
+    private void deleteAccount() {
+        if (userRef == null) return;
+
+        userRef.delete()
+                .addOnSuccessListener(x -> {
+                    Toast.makeText(getContext(), "Account deleted", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(requireContext(), LoginActivity.class));
+                    requireActivity().finish();
+                });
+    }
+
+    // ---------------------------------------------------------
+    // EDITING UI
+    // ---------------------------------------------------------
     private void setEditing(boolean editing) {
         fullName.setEnabled(editing);
         email.setEnabled(editing);
