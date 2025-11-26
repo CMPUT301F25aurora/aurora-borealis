@@ -210,7 +210,8 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                                 db,
                                 userIdOrEmail,
                                 eventName,
-                                eventId
+                                eventId,
+                                myEmail
                         );
                     }
 

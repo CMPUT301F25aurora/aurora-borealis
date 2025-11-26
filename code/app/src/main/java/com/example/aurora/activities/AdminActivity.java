@@ -225,7 +225,7 @@ public class AdminActivity extends AppCompatActivity {
                 .addOnSuccessListener(snap ->
                         countImages.setText(String.valueOf(snap.size())));
 
-        db.collection("logs").get()
+        db.collection("notificationLogs").get()
                 .addOnSuccessListener(snap ->
                         countLogs.setText(String.valueOf(snap.size())));
     }
@@ -472,20 +472,28 @@ public class AdminActivity extends AppCompatActivity {
 
     // LOGS TAB
     private void loadLogs() {
+        listContainer.removeAllViews(); // IMPORTANT!
 
-
-
-        db.collection("logs")
+        db.collection("notificationLogs")
                 .orderBy("timestamp", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    countLogs.setText(String.valueOf(snapshot.size()));
-                    logDocs = new ArrayList<>(snapshot.getDocuments());
+
+                    logDocs = new ArrayList<>(snapshot.getDocuments()); // SAVE LOGS FOR SEARCH
+
+                    if (logDocs.isEmpty()) {
+                        TextView tv = new TextView(this);
+                        tv.setText("No notification logs yet.");
+                        tv.setPadding(16, 16, 16, 16);
+                        listContainer.addView(tv);
+                        return;
+                    }
+
                     renderLogList(logDocs);
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error loading logs: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Failed to load logs: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 
     private void renderLogList(List<DocumentSnapshot> docs) {
@@ -505,6 +513,7 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private void addLogCard(DocumentSnapshot doc) {
+
         View card = getLayoutInflater()
                 .inflate(R.layout.item_admin_log, listContainer, false);
 
@@ -512,49 +521,43 @@ public class AdminActivity extends AppCompatActivity {
         TextView subtitleView = card.findViewById(R.id.adminLogSubtitle);
         TextView timeView     = card.findViewById(R.id.adminLogTime);
 
-        String type    = nz(doc.getString("type"));
-        String title   = nz(doc.getString("title"));
+        String eventName = nz(doc.getString("eventName"));
+        String type = nz(doc.getString("notificationType"));
+        String sentBy = nz(doc.getString("sentByOrganizerEmail"));
+        String toUser = nz(doc.getString("toUserEmail"));
         String message = nz(doc.getString("message"));
-        Timestamp ts   = doc.getTimestamp("timestamp");
 
-        if (title.isEmpty()) {
-            switch (type) {
-                case "event_created":
-                    title = "Event created";
-                    break;
-                case "event_removed":
-                    title = "Event removed";
-                    break;
-                case "profile_removed":
-                    title = "Profile removed";
-                    break;
-                case "user_registered":
-                    title = "User registered";
-                    break;
-                case "notification_sent":
-                    title = "Notification sent";
-                    break;
-                default:
-                    title = "Log";
-                    break;
-            }
+        // Title
+        titleView.setText(eventName + " (" + type + ")");
+
+        // Subtitle
+        subtitleView.setText(
+                "From: " + sentBy + "\n" +
+                        "To: " + toUser + "\n" +
+                        message
+        );
+
+        // =============================
+        // ⭐ TIMESTAMP FIX (Long OR Timestamp OR Missing)
+        // =============================
+        Object t = doc.get("timestamp");
+
+        if (t instanceof Long) {
+            timeView.setText(formatRelativeTime(new Date((Long) t)));
         }
-
-        titleView.setText(title);
-        subtitleView.setText(message);
-
-        // Converting Firestore Timestamp to java.util.Date uses Timestamp#toDate():
-        // Firebase Android SDK reference – com.google.firebase.Timestamp
-        // https://firebase.google.com/docs/reference/android/com/google/firebase/Timestamp
-
-        if (ts != null) {
+        else if (t instanceof com.google.firebase.Timestamp) {
+            com.google.firebase.Timestamp ts = (com.google.firebase.Timestamp) t;
             timeView.setText(formatRelativeTime(ts.toDate()));
-        } else {
-            timeView.setText("");
+        }
+        else {
+            timeView.setText("Unknown time");
         }
 
         listContainer.addView(card);
     }
+
+
+
 
     // SEARCH
     private void showSearchDialog() {

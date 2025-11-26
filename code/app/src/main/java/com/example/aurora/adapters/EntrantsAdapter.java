@@ -18,12 +18,10 @@ import java.util.List;
 
 public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.EntrantViewHolder> {
 
-    // Listener for checkbox changes
     public interface OnSelectionChanged {
         void onChanged();
     }
 
-    // Listener for DELETE button
     public interface OnDeleteClickListener {
         void onDelete(String email);
     }
@@ -39,23 +37,26 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         this.deleteListener = listener;
     }
 
-    // Model
     public static class EntrantItem {
         private final String name;
         private final String email;
+        private final String status;
         private boolean checked;
 
-        public EntrantItem(String name, String email) {
+        public EntrantItem(String name, String email, String status) {
             this.name = name;
             this.email = email;
+            this.status = status;
             this.checked = false;
         }
 
         public String getName() { return name; }
         public String getEmail() { return email; }
+        public String getStatus() { return status; }
         public boolean isChecked() { return checked; }
         public void setChecked(boolean checked) { this.checked = checked; }
     }
+
 
     private final Context context;
     private final List<EntrantItem> items;
@@ -68,8 +69,7 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
     @NonNull
     @Override
     public EntrantViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(context)
-                .inflate(R.layout.item_entrant, parent, false);
+        View v = LayoutInflater.from(context).inflate(R.layout.item_entrant, parent, false);
         return new EntrantViewHolder(v);
     }
 
@@ -79,34 +79,30 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
 
         holder.tvName.setText(item.getName());
         holder.tvEmail.setText(item.getEmail());
+        holder.tvStatus.setText(item.getStatus());
 
         // Checkbox
         holder.checkBox.setOnCheckedChangeListener(null);
         holder.checkBox.setChecked(item.isChecked());
-        holder.checkBox.setOnCheckedChangeListener((button, isChecked) -> {
-            item.setChecked(isChecked);
+        holder.checkBox.setOnCheckedChangeListener((btn, checked) -> {
+            item.setChecked(checked);
             if (selectionListener != null) selectionListener.onChanged();
         });
 
-        // Delete button
-        holder.btnDelete.setOnClickListener(v -> {
-            if (deleteListener != null) deleteListener.onDelete(item.getEmail());
-        });
+        // DELETE BUTTON logic
+        if (item.getStatus().equals("Selected")) {
+            holder.btnDelete.setVisibility(View.VISIBLE);
+            holder.btnDelete.setOnClickListener(v -> {
+                if (deleteListener != null) deleteListener.onDelete(item.getEmail());
+            });
+        } else {
+            holder.btnDelete.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public int getItemCount() {
         return items.size();
-    }
-
-    public void removeByEmail(String email) {
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i).getEmail().equals(email)) {
-                items.remove(i);
-                notifyItemRemoved(i);
-                break;
-            }
-        }
     }
 
     public void clearItems() {
@@ -120,22 +116,35 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
         notifyItemInserted(items.size() - 1);
     }
 
+    public void removeByEmail(String email) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getEmail().equals(email)) {
+                items.remove(i);
+                notifyItemRemoved(i);
+                break;
+            }
+        }
+    }
+
     public List<EntrantItem> getSelectedEntrants() {
-        List<EntrantItem> out = new ArrayList<>();
-        for (EntrantItem i : items) if (i.isChecked()) out.add(i);
-        return out;
+        List<EntrantItem> list = new ArrayList<>();
+        for (EntrantItem i : items) if (i.isChecked()) list.add(i);
+        return list;
     }
 
     static class EntrantViewHolder extends RecyclerView.ViewHolder {
+
         CheckBox checkBox;
-        TextView tvName, tvEmail;
+        TextView tvName, tvEmail, tvStatus;
         ImageButton btnDelete;
 
-        EntrantViewHolder(@NonNull View itemView) {
+        public EntrantViewHolder(@NonNull View itemView) {
             super(itemView);
+
             checkBox = itemView.findViewById(R.id.checkSelect);
             tvName = itemView.findViewById(R.id.tvName);
             tvEmail = itemView.findViewById(R.id.tvEmail);
+            tvStatus = itemView.findViewById(R.id.tvStatus);
             btnDelete = itemView.findViewById(R.id.btnDeleteEntrant);
         }
     }
