@@ -313,10 +313,24 @@ public class OrganizerActivity extends AppCompatActivity {
                     System.currentTimeMillis()
             );
 
-            // 🔥 Respect notification preference
+            // Send to notifications
             FirestoreNotificationHelper.sendIfAllowed(db, email, notif);
+
+            // LOG IT (CORRECT SIGNATURE)
+            FirestoreNotificationHelper.logNotification(
+                    db,
+                    organizerEmail,                     // who sent it
+                    eventId,                            // event ID
+                    "Lottery Result",                   // EVENT NAME (STRING)
+                    email,                              // recipient
+                    "Unfortunately, you were not selected for this event.",  // message
+                    "not_selected"                      // type
+            );
         }
     }
+
+
+
 
 
     private void sendWinnerNotifications(String eventId, List<String> winners) {
@@ -331,10 +345,23 @@ public class OrganizerActivity extends AppCompatActivity {
                     System.currentTimeMillis()
             );
 
-            // 🔥 Respect notification preference
+            // Respect notification preference
             FirestoreNotificationHelper.sendIfAllowed(db, email, notif);
+
+            // Correct logging call
+            FirestoreNotificationHelper.logNotification(
+                    db,
+                    organizerEmail,                          // who sent it
+                    eventId,                                 // event id
+                    "Winner Selected",                       // event name
+                    email,                                   // recipient
+                    "You won the lottery! Accept or decline your spot.", // message
+                    "winner_selected"                        // type
+            );
         }
     }
+
+
 
 
     private void showWinnersDialog(List<String> winners) {
