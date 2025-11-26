@@ -56,8 +56,6 @@
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
-    <!-- END HEADER -->
-
 
     <ImageView
         android:id="@+id/imgEventPoster"
