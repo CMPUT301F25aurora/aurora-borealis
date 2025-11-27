@@ -1,19 +1,3 @@
-/*
- * References:
- *
- * 1) Android Developers — "Create dynamic lists with RecyclerView"
- *    https://developer.android.com/develop/ui/views/layout/recyclerview
- *    Used as a reference for implementing RecyclerView.Adapter, ViewHolder, and binding data into item views.
- *
- * 2) author: Stack Overflow user — "Simple Android RecyclerView example"
- *    https://stackoverflow.com/questions/40584424/simple-android-recyclerview-example
- *    Used as a reference for inflating row layouts, holding view references, and handling item click callbacks.
- *
- * 3) Android Developers — "Settings.Secure"
- *    https://developer.android.com/reference/android/provider/Settings.Secure
- *    Used as a reference for using Settings.Secure.ANDROID_ID when joining events with a device-based identifier.
- */
-
 package com.example.aurora.adapters;
 
 import android.content.Context;
@@ -28,20 +12,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.aurora.map.JoinLocation;
-import com.example.aurora.utils.LocationUtils;
+import com.bumptech.glide.Glide;
 import com.example.aurora.R;
 import com.example.aurora.activities.EventDetailsActivity;
+import com.example.aurora.map.JoinLocation;
 import com.example.aurora.models.Event;
+import com.example.aurora.utils.LocationUtils;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.bumptech.glide.Glide;
 
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
@@ -72,161 +57,78 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
 
         this.userKey = email;
     }
-    private void updateJoinButton(Button btn, String status) {
 
-        switch (status) {
-            case "waiting":
-                btn.setText("Waiting List Joined");
-                btn.setEnabled(false);
-                break;
-
-            case "selected":
-                btn.setText("Selected – Pending");
-                btn.setEnabled(false);
-                break;
-
-            case "cancelled":
-                btn.setText("Declined Invitation");
-                btn.setEnabled(false);
-                break;
-
-            case "final":
-                btn.setText("Selected!");
-                btn.setEnabled(false);
-                break;
-
-            default:
-                btn.setText("Join List");
-                btn.setEnabled(true);
-                break;
-        }
-    }
-
-    // ============================
-// USER STATUS CHECK HELPER
-// ============================
+    // ============================================================
+    // USER CURRENT STATUS
+    // ============================================================
     private String getUserStatus(Event e) {
 
-        String email = userKey;
-
-        if (e.getFinalEntrants() != null &&
-                e.getFinalEntrants().contains(email)) {
+        if (e.getFinalEntrants() != null && e.getFinalEntrants().contains(userKey)) {
             return "final";
         }
-
-        if (e.getSelectedEntrants() != null &&
-                e.getSelectedEntrants().contains(email)) {
+        if (e.getSelectedEntrants() != null && e.getSelectedEntrants().contains(userKey)) {
             return "selected";
         }
-
-        if (e.getCancelledEntrants() != null &&
-                e.getCancelledEntrants().contains(email)) {
+        if (e.getCancelledEntrants() != null && e.getCancelledEntrants().contains(userKey)) {
             return "cancelled";
         }
-
-        if (e.getWaitingList() != null &&
-                e.getWaitingList().contains(email)) {
+        if (e.getWaitingList() != null && e.getWaitingList().contains(userKey)) {
             return "waiting";
         }
 
         return "none";
     }
 
-    @NonNull
-    @Override
-    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_event, parent, false);
-        return new EventViewHolder(view);
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
-        Event e = events.get(position);
-
-        String title = e.getTitle() != null ? e.getTitle() : "Untitled Event";
-        String date = e.getDate() != null ? e.getDate() : "";
-        String location = e.getLocation() != null ? e.getLocation() : "";
-
-        holder.eventTitle.setText(title);
-        holder.eventDate.setText(date);
-        holder.eventLocation.setText(location);
-        db.collection("events")
-                .document(e.getEventId())
-                .addSnapshotListener((doc, error) -> {
-
-                    if (doc == null || !doc.exists()) return;
-
-                    // Update lists live
-                    e.setWaitingList((List<String>) doc.get("waitingList"));
-                    e.setSelectedEntrants((List<String>) doc.get("selectedEntrants"));
-                    e.setCancelledEntrants((List<String>) doc.get("cancelledEntrants"));
-                    e.setFinalEntrants((List<String>) doc.get("finalEntrants"));
-
-                    // Recalculate status
-                    String status = getUserStatus(e);
-
-                    updateJoinButton(holder.btnJoin, status);
-                });
-        String status = getUserStatus(e);
+    // ============================================================
+    // UPDATE BUTTON UI
+    // ============================================================
+    private void updateJoinButton(Button btn, String status) {
 
         switch (status) {
 
             case "waiting":
-                holder.btnJoin.setText("Waiting List Joined");
-                holder.btnJoin.setEnabled(false);
+                btn.setText("Leave Waiting List");
+                btn.setEnabled(true);
+                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.red));
+                //btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
             case "selected":
-                holder.btnJoin.setText("Selected – Pending");
-                holder.btnJoin.setEnabled(false);
+                btn.setText("Selected – Pending");
+                btn.setEnabled(false);
+                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.grey));
+                //btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
             case "cancelled":
-                holder.btnJoin.setText("Declined Invitation");
-                holder.btnJoin.setEnabled(false);
+                btn.setText("Declined Invitation");
+                btn.setEnabled(false);
+                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.grey));
+               // btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
             case "final":
-                holder.btnJoin.setText("Selected!");
-                holder.btnJoin.setEnabled(false);
+                btn.setText("Selected!");
+                btn.setEnabled(false);
+                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.green));
+                //btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
-            default:
-                // User NOT in any list → allow joining
-                holder.btnJoin.setText("Join List");
-                holder.btnJoin.setEnabled(true);
+            default: // none
+                btn.setText("Join List");
+                btn.setEnabled(true);
+               // btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.orange));
+               // btn.setTextColor(ContextCompat.getColor(context, R.color.dark_blue));
                 break;
         }
-
-        String posterUrl = e.getPosterUrl();
-        if (posterUrl != null && !posterUrl.isEmpty()) {
-            Glide.with(context)
-                    .load(posterUrl)
-                    .placeholder(R.drawable.ic_launcher_background)
-                    .error(R.drawable.ic_launcher_background)
-                    .into(holder.eventImage);
-        } else {
-            holder.eventImage.setImageResource(R.drawable.ic_launcher_background);
-        }
-
-        holder.btnViewDetails.setOnClickListener(v -> {
-            Intent i = new Intent(context, EventDetailsActivity.class);
-            i.putExtra("eventId", e.getEventId());
-            context.startActivity(i);
-        });
-
-        holder.btnJoin.setOnClickListener(v -> {
-            joinWaitingList(e, holder.btnJoin);
-        });
     }
 
+    // ============================================================
+    // JOIN WAITING LIST
+    // ============================================================
     private void joinWaitingList(Event e, Button button) {
 
         String eventId = e.getEventId();
-        if (eventId == null || eventId.isEmpty()) {
-            Toast.makeText(context, "Missing event ID", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         db.collection("events")
                 .document(eventId)
@@ -236,9 +138,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                     Boolean geoRequired = doc.getBoolean("geoRequired");
                     if (geoRequired == null) geoRequired = false;
 
-                    // ===========================
-                    // LOCATION PERMISSION CHECK
-                    // ===========================
                     if (geoRequired) {
                         if (!LocationUtils.isLocationPermissionGranted(context)) {
                             Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
@@ -246,9 +145,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                             return;
                         }
 
-                        // ===========================
-                        // GPS MUST BE ENABLED
-                        // ===========================
                         if (!LocationUtils.isGpsEnabled(context)) {
                             Toast.makeText(context,
                                     "Please enable GPS to join this event.",
@@ -261,15 +157,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         }
                     }
 
-                    if (!doc.exists()) {
-                        Toast.makeText(context, "Event no longer exists", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    Long maxSpots = doc.getLong("maxSpots");
                     List<String> list = (List<String>) doc.get("waitingList");
                     if (list == null) list = new ArrayList<>();
 
+                    Long maxSpots = doc.getLong("maxSpots");
                     if (maxSpots != null && list.size() >= maxSpots) {
                         Toast.makeText(context, "Waiting list full", Toast.LENGTH_SHORT).show();
                         return;
@@ -280,20 +171,17 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    // ===========================
-                    // FETCH LOCATION (BLOCK IF NAN)
-                    // ===========================
+                    // FETCH USER LOCATION
                     LocationUtils.getUserLocation(context, (lat, lng) -> {
 
-                        // BLOCK if no real location
                         if (Double.isNaN(lat) || Double.isNaN(lng)) {
                             Toast.makeText(context,
-                                    "Unable to get your location. Please ensure GPS is ON.",
+                                    "Unable to fetch your location. Ensure GPS is ON.",
                                     Toast.LENGTH_LONG).show();
                             return;
                         }
 
-                        // SAVE LOCATION THEN JOIN
+                        // SAVE LOCATION + JOIN
                         db.collection("events")
                                 .document(eventId)
                                 .collection("waitingLocations")
@@ -303,13 +191,108 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                                     db.collection("events")
                                             .document(eventId)
                                             .update("waitingList", FieldValue.arrayUnion(userKey))
-                                            .addOnSuccessListener(unused -> {
-                                                button.setText("Waiting List Joined");
+                                            .addOnSuccessListener(x -> {
+
                                                 Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                                updateJoinButton(button, "waiting");
                                             });
                                 });
                     });
                 });
+    }
+
+    // ============================================================
+    // LEAVE WAITING LIST
+    // ============================================================
+    private void leaveWaitingList(Event e, Button button) {
+
+        String eventId = e.getEventId();
+
+        db.collection("events")
+                .document(eventId)
+                .update("waitingList", FieldValue.arrayRemove(userKey))
+                .addOnSuccessListener(unused -> {
+
+                    // REMOVE LOCATION ENTRY
+                    db.collection("events")
+                            .document(eventId)
+                            .collection("waitingLocations")
+                            .whereEqualTo("userKey", userKey)
+                            .get()
+                            .addOnSuccessListener(snap -> {
+
+                                for (var d : snap.getDocuments()) {
+                                    d.getReference().delete();
+                                }
+
+                                Toast.makeText(context, "Left waiting list", Toast.LENGTH_SHORT).show();
+                                updateJoinButton(button, "none");
+                            });
+                });
+    }
+
+    // ============================================================
+    // BIND VIEW HOLDER
+    // ============================================================
+    @NonNull
+    @Override
+    public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_event, parent, false);
+        return new EventViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
+
+        Event e = events.get(position);
+
+        holder.eventTitle.setText(e.getTitle());
+        holder.eventDate.setText(e.getDate());
+        holder.eventLocation.setText(e.getLocation());
+
+        // LOAD POSTER
+        if (e.getPosterUrl() != null && !e.getPosterUrl().isEmpty()) {
+            Glide.with(context)
+                    .load(e.getPosterUrl())
+                    .placeholder(R.drawable.ic_launcher_background)
+                    .into(holder.eventImage);
+        } else {
+            holder.eventImage.setImageResource(R.drawable.ic_launcher_background);
+        }
+
+        // LIVE STATUS UPDATES
+        db.collection("events")
+                .document(e.getEventId())
+                .addSnapshotListener((doc, error) -> {
+
+                    if (doc == null || !doc.exists()) return;
+
+                    e.setWaitingList((List<String>) doc.get("waitingList"));
+                    e.setSelectedEntrants((List<String>) doc.get("selectedEntrants"));
+                    e.setCancelledEntrants((List<String>) doc.get("cancelledEntrants"));
+                    e.setFinalEntrants((List<String>) doc.get("finalEntrants"));
+
+                    updateJoinButton(holder.btnJoin, getUserStatus(e));
+                });
+
+        // BUTTON ACTION
+        holder.btnJoin.setOnClickListener(v -> {
+
+            String status = getUserStatus(e);
+
+            if (status.equals("waiting")) {
+                leaveWaitingList(e, holder.btnJoin);
+            } else if (status.equals("none")) {
+                joinWaitingList(e, holder.btnJoin);
+            }
+        });
+
+        // DETAILS BUTTON
+        holder.btnViewDetails.setOnClickListener(v -> {
+            Intent i = new Intent(context, EventDetailsActivity.class);
+            i.putExtra("eventId", e.getEventId());
+            context.startActivity(i);
+        });
     }
 
     @Override
@@ -317,6 +300,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return events.size();
     }
 
+    // ============================================================
+    // VIEW HOLDER
+    // ============================================================
     public static class EventViewHolder extends RecyclerView.ViewHolder {
 
         ImageView eventImage;

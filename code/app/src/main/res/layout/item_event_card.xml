@@ -84,9 +84,9 @@
                 android:layout_weight="1"
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#233d4d"
-                android:text="QR Code"
+                android:text="QR"
                 android:textAllCaps="false"
-                android:textColor="#FFFFFF"
+                android:textColor="#fe7f2d"
                 android:textSize="11sp"
                 android:layout_marginEnd="6dp" />
 
@@ -99,7 +99,7 @@
                 android:backgroundTint="#233d4d"
                 android:text="Map"
                 android:textAllCaps="false"
-                android:textColor="#FFFFFF"
+                android:textColor="#fe7f2d"
                 android:textSize="11sp" />
         </LinearLayout>
 
