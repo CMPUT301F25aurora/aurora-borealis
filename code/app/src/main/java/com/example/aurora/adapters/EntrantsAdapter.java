@@ -79,7 +79,7 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
 
         holder.tvName.setText(item.getName());
         holder.tvEmail.setText(item.getEmail());
-        holder.tvStatus.setText(item.getStatus());
+
 
         // Checkbox
         holder.checkBox.setOnCheckedChangeListener(null);
@@ -135,7 +135,7 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
     static class EntrantViewHolder extends RecyclerView.ViewHolder {
 
         CheckBox checkBox;
-        TextView tvName, tvEmail, tvStatus;
+        TextView tvName, tvEmail;
         ImageButton btnDelete;
 
         public EntrantViewHolder(@NonNull View itemView) {
@@ -144,7 +144,7 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
             checkBox = itemView.findViewById(R.id.checkSelect);
             tvName = itemView.findViewById(R.id.tvName);
             tvEmail = itemView.findViewById(R.id.tvEmail);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
+
             btnDelete = itemView.findViewById(R.id.btnDeleteEntrant);
         }
     }
