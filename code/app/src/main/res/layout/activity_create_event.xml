@@ -5,7 +5,9 @@
     android:layout_height="match_parent"
     android:background="#233d4d"
     android:fillViewport="true"
-    android:scrollbars="none">
+    android:scrollbars="none"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
