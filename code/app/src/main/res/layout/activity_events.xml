@@ -89,7 +89,7 @@
                 android:layout_margin="4dp"
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#fe7f2d"
-                android:textColor="#233d4d"
+                android:textColor="#FFFFFF"
                 android:textStyle="bold"/>
             <Button
                 android:id="@+id/btnMusic"
@@ -154,7 +154,7 @@
         android:layout_height="56dp"
         android:layout_marginHorizontal="12dp"
         android:layout_marginTop="8dp"
-        android:text="📷 Scan Event QR"
+        android:text="Scan Event QR"
         android:textAllCaps="false"
         android:backgroundTint="#fe7f2d"
         android:textColor="#233d4d"

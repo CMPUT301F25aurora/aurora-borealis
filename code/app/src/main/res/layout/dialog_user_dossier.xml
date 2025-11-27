@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#233d4d"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/dossierHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Details"
+            android:textColor="#fe7f2d"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="12dp"
+            android:background="#2f4858" />
+
+        <TextView
+            android:id="@+id/dossierName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name: Loading..."
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/dossierEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Email: ..."
+            android:textColor="#B0BEC5"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/dossierPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Phone: ..."
+            android:textColor="#B0BEC5"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/dossierNotif"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Notifications: ..."
+            android:textColor="#B0BEC5"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/dossierRole"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Role: ..."
+            android:textColor="#B0BEC5"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/labelSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Lottery Wins / Selected"
+            android:textColor="#66BB6A"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dossierSelectedList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:padding="12dp"
+            android:text="None"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:lineSpacingExtra="4dp"/>
+
+        <TextView
+            android:id="@+id/labelWaiting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Currently Waiting"
+            android:textColor="#29B6F6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/dossierWaitingList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:padding="12dp"
+            android:text="None"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            android:lineSpacingExtra="4dp"/>
+
+        <Button
+            android:id="@+id/btnCloseDossier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#fe7f2d"
+            android:text="Close"
+            android:textColor="#233d4d"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</ScrollView>

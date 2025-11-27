@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#233d4d"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Super Search"
+        android:textColor="#fe7f2d"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Search for a User (Email/Name) or an Event (Title)."
+        android:textColor="#B0BEC5"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/searchInput"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_input_sharp"
+        android:backgroundTint="#2f4858"
+        android:hint="Enter User or Event..."
+        android:textColorHint="#90A4AE"
+        android:inputType="text"
+        android:paddingHorizontal="12dp"
+        android:textColor="#FFFFFF" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnCancelSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="Cancel"
+            android:textColor="#B0BEC5" />
+
+        <Button
+            android:id="@+id/btnConfirmSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="#fe7f2d"
+            android:text="Search"
+            android:textColor="#233d4d"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>
