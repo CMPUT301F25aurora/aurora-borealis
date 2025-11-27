@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:text="Entrant"
             android:textSize="12sp"
-            android:textColor="#B0BEC5"
+            android:textColor="#FFFFFF"
             android:background="@drawable/bg_input_sharp"
             android:backgroundTint="#233d4d"
             android:paddingHorizontal="8dp"

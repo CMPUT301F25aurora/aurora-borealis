@@ -57,7 +57,7 @@
     <ImageView
         android:id="@+id/imgEventPoster"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
+        android:layout_height="220dp"
         android:layout_marginTop="12dp"
         android:background="#2f4858"
         android:scaleType="centerCrop"
@@ -247,7 +247,13 @@
             android:text="Notify"
             android:textAllCaps="false"
             android:textColor="#fe7f2d"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:paddingHorizontal="2dp"
+            app:autoSizeTextType="uniform"
+            app:autoSizeMinTextSize="8sp"
+            app:autoSizeMaxTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            android:maxLines="1" />
 
         <Button
             android:id="@+id/btnReplace"
