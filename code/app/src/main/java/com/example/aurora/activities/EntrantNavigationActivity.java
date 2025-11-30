@@ -60,9 +60,18 @@ public class EntrantNavigationActivity extends AppCompatActivity {
         });
 
         navAlerts.setOnClickListener(v -> {
-            startActivity(new Intent(this, AlertsActivity.class));
+            String role = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                    .getString("user_role", "");
+
+            if ("organizer".equals(role)) {
+                startActivity(new Intent(this, OrganizerNotificationsActivity.class));
+            } else {
+                startActivity(new Intent(this, AlertsActivity.class));
+            }
+
             overridePendingTransition(0,0);
         });
+
 
         // -------------------------------------------------
         // ROLE SWITCH FAB
