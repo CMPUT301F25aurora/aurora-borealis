@@ -249,57 +249,60 @@ public class FirestoreNotificationHelper {
                 .addOnFailureListener(e ->
                         Log.e("LOGS", "Failed to save log", e)
                 );
+
     }
+// ----------------------------------------------------------
+// ORGANIZER PRIVILEGE CHANGES (USER-FACING + ADMIN LOG)
+// ----------------------------------------------------------
+
     public static void sendOrganizerRevokedNotification(FirebaseFirestore db, String email) {
 
-        NotificationModel nm = new NotificationModel(
-                "organizer_revoked",
-                "Organizer Access Revoked",
-                "Your organizer permissions have been removed by an admin.",
-                null,             // no event ID
-                email,
-                System.currentTimeMillis()
-        );
+        // --- USER FACING NOTIFICATION (shows in Alerts) ---
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "organizer_revoked");
+        notif.put("title", "Organizer Access Revoked");
+        notif.put("message", "An admin has removed your organizer privileges.");
+        notif.put("eventId", null);
+        notif.put("userId", email);   // AlertsActivity listens to THIS FIELD
+        notif.put("timestamp", System.currentTimeMillis());
+        notif.put("status", "unread");
+        db.collection("notifications").add(notif);
 
-        // This one MUST ALWAYS send (opt-out is only for entrants)
-        db.collection("notifications").add(nm);
-
-        // Log the admin action
-        logNotification(
-                db,
-                "admin",         // sender
-                null,            // eventId
-                "Admin Action",  // eventName
-                email,
-                "Organizer privileges revoked",
-                "organizer_revoked"
-        );
+        // --- ADMIN LOG ---
+        Map<String, Object> log = new HashMap<>();
+        log.put("timestamp", System.currentTimeMillis());
+        log.put("sentByOrganizerEmail", "admin");
+        log.put("eventId", null);
+        log.put("eventName", "Admin Action");
+        log.put("toUserEmail", email);
+        log.put("message", "Organizer privileges revoked");
+        log.put("notificationType", "organizer_revoked");
+        db.collection("notificationLogs").add(log);
     }
 
     public static void sendOrganizerEnabledNotification(FirebaseFirestore db, String email) {
 
-        NotificationModel nm = new NotificationModel(
-                "organizer_enabled",
-                "Organizer Access Restored",
-                "Your organizer permissions have been restored by an admin.",
-                null,
-                email,
-                System.currentTimeMillis()
-        );
+        // --- USER FACING NOTIFICATION (shows in Alerts) ---
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "organizer_enabled");
+        notif.put("title", "Organizer Access Restored");
+        notif.put("message", "Your organizer privileges have been restored by an admin.");
+        notif.put("eventId", null);
+        notif.put("userId", email);
+        notif.put("timestamp", System.currentTimeMillis());
+        notif.put("status", "unread");
+        db.collection("notifications").add(notif);
 
-        // ALWAYS SEND (no opt-out)
-        db.collection("notifications").add(nm);
-
-        // Log the action
-        logNotification(
-                db,
-                "admin",
-                null,
-                "Admin Action",
-                email,
-                "Organizer privileges restored",
-                "organizer_enabled"
-        );
+        // --- ADMIN LOG ---
+        Map<String, Object> log = new HashMap<>();
+        log.put("timestamp", System.currentTimeMillis());
+        log.put("sentByOrganizerEmail", "admin");
+        log.put("eventId", null);
+        log.put("eventName", "Admin Action");
+        log.put("toUserEmail", email);
+        log.put("message", "Organizer privileges restored");
+        log.put("notificationType", "organizer_enabled");
+        db.collection("notificationLogs").add(log);
     }
 
 
