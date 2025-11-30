@@ -76,7 +76,7 @@ import java.util.List;
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;
-    private TextView txtJoinedBadge, txtTitle,  txtTime,
+    private TextView txtTitle,  txtTime,
             txtLocation, txtAbout, txtStats, txtRegWindow;//txtSubtitle
     private Button btnCriteria;
     private Button btnShowQr;
@@ -100,7 +100,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         userId = resolveCurrentUserKey();   // <- EMAIL (with fallback)
 
         imgBanner = findViewById(R.id.imgBanner);
-        txtJoinedBadge = findViewById(R.id.txtJoinedBadge);
         txtTitle = findViewById(R.id.txtTitle);
         //txtSubtitle = findViewById(R.id.txtSubtitle);
         txtTime = findViewById(R.id.txtTime);
