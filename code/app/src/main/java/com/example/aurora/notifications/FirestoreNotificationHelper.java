@@ -250,5 +250,57 @@ public class FirestoreNotificationHelper {
                         Log.e("LOGS", "Failed to save log", e)
                 );
     }
+    public static void sendOrganizerRevokedNotification(FirebaseFirestore db, String email) {
+
+        NotificationModel nm = new NotificationModel(
+                "organizer_revoked",
+                "Organizer Access Revoked",
+                "Your organizer permissions have been removed by an admin.",
+                null,             // no event ID
+                email,
+                System.currentTimeMillis()
+        );
+
+        // This one MUST ALWAYS send (opt-out is only for entrants)
+        db.collection("notifications").add(nm);
+
+        // Log the admin action
+        logNotification(
+                db,
+                "admin",         // sender
+                null,            // eventId
+                "Admin Action",  // eventName
+                email,
+                "Organizer privileges revoked",
+                "organizer_revoked"
+        );
+    }
+
+    public static void sendOrganizerEnabledNotification(FirebaseFirestore db, String email) {
+
+        NotificationModel nm = new NotificationModel(
+                "organizer_enabled",
+                "Organizer Access Restored",
+                "Your organizer permissions have been restored by an admin.",
+                null,
+                email,
+                System.currentTimeMillis()
+        );
+
+        // ALWAYS SEND (no opt-out)
+        db.collection("notifications").add(nm);
+
+        // Log the action
+        logNotification(
+                db,
+                "admin",
+                null,
+                "Admin Action",
+                email,
+                "Organizer privileges restored",
+                "organizer_enabled"
+        );
+    }
+
 
 }

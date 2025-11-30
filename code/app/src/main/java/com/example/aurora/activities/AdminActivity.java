@@ -83,6 +83,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.example.aurora.notifications.FirestoreNotificationHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -330,7 +331,9 @@ public class AdminActivity extends AppCompatActivity {
         TextView nameView  = card.findViewById(R.id.adminProfileName);
         TextView emailView = card.findViewById(R.id.adminProfileEmail);
         TextView roleView  = card.findViewById(R.id.adminProfileRole);
-        Button   removeBtn = card.findViewById(R.id.adminProfileRemoveButton);
+
+        Button removeBtn = card.findViewById(R.id.adminProfileRemoveButton);
+        Button toggleOrganizerBtn = card.findViewById(R.id.adminToggleOrganizerBtn); // ⭐ NEW BUTTON
 
         String name = nz(doc.getString("name"));
         String email = nz(doc.getString("email"));
@@ -340,6 +343,45 @@ public class AdminActivity extends AppCompatActivity {
         emailView.setText(email);
         roleView.setText(role.isEmpty() ? "Entrant" : capitalize(role));
 
+        // ⭐ GET ORGANIZER PERMISSION
+        Boolean orgAllowed = doc.getBoolean("organizer_allowed");
+        boolean isOrganizer = orgAllowed != null && orgAllowed;
+
+        // ⭐ SET INITIAL BUTTON TEXT
+        if (isOrganizer) {
+            toggleOrganizerBtn.setText("Remove Organizer Privileges");
+        } else {
+            toggleOrganizerBtn.setText("Restore Organizer Privileges");
+        }
+
+        // ⭐ TOGGLE PRIVILEGES
+        toggleOrganizerBtn.setOnClickListener(v -> {
+            boolean currentVal = doc.getBoolean("organizer_allowed") != null
+                    && doc.getBoolean("organizer_allowed");
+
+            boolean newVal = !currentVal;
+
+            db.collection("users").document(doc.getId())
+                    .update("organizer_allowed", newVal)
+                    .addOnSuccessListener(x -> {
+
+                        // Send correct notification
+                        if (!newVal) {
+                            FirestoreNotificationHelper.sendOrganizerRevokedNotification(db, email);
+                            ActivityLogger.logOrganizerPrivilegesRevoked(email);
+                            Toast.makeText(this, "Organizer privileges removed.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            FirestoreNotificationHelper.sendOrganizerEnabledNotification(db, email);
+                            ActivityLogger.logOrganizerPrivilegesRestored(email);
+                            Toast.makeText(this, "Organizer privileges restored.", Toast.LENGTH_SHORT).show();
+                        }
+
+                        // Refresh UI
+                        loadProfiles();
+                    });
+        });
+
+        // ORIGINAL REMOVE PROFILE BUTTON
         removeBtn.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Remove Profile")
@@ -350,6 +392,8 @@ public class AdminActivity extends AppCompatActivity {
 
         listContainer.addView(card);
     }
+
+
 
     private void deleteProfile(String docId, String email) {
         db.collection("users").document(docId).delete().addOnSuccessListener(v -> {
