@@ -237,8 +237,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         List<String> waiting = (List<String>) doc.get("waitingList");
         int joinedCount = waiting == null ? 0 : waiting.size();
-        List<String> selected = (List<String>) doc.get("selectedEntrants");
-        boolean isSelected = selected != null && selected.contains(userId);
+
+        List<String> accepted = (List<String>) doc.get("acceptedEntrants");
+        boolean isAccepted = accepted != null && accepted.contains(userId);
 
         List<String> finalEntrants = (List<String>) doc.get("finalEntrants");
         boolean isFinal = finalEntrants != null && finalEntrants.contains(userId);
@@ -247,16 +248,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (isFinal) {
             btnSignUp.setVisibility(View.GONE);
         }
-// If selected → show Sign Up button
-        else if (isSelected) {
+// If accepted → show Sign Up button
+        else if (isAccepted) {
             btnSignUp.setVisibility(View.VISIBLE);
         }
-// If NOT selected → hide button
+// Otherwise → hide button
         else {
             btnSignUp.setVisibility(View.GONE);
         }
 
         isJoined = waiting != null && waiting.contains(userId);
+
 
         currentDeepLink = doc.getString("deepLink");
 
@@ -440,8 +442,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         db.collection("events").document(eventId)
                 .update(
                         "finalEntrants", FieldValue.arrayUnion(userId),
-                        "selectedEntrants", FieldValue.arrayRemove(userId),
-                        "waitingList", FieldValue.arrayRemove(userId)
+                        "acceptedEntrants", FieldValue.arrayRemove(userId)
                 )
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "You are signed up!", Toast.LENGTH_SHORT).show();
@@ -451,5 +452,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to sign up", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
 }

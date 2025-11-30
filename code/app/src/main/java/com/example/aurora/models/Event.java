@@ -60,6 +60,7 @@ public class Event {
     // Lists for waiting/selected/final entrants
     private List<String> waitingList;
     private List<String> selectedEntrants;
+    private List<String> acceptedEntrants;
     private List<String> finalEntrants;
     private List<String> cancelledEntrants;
 
@@ -228,6 +229,15 @@ public class Event {
 
     public void setSelectedEntrants(List<String> selectedEntrants) {
         this.selectedEntrants = selectedEntrants;
+    }
+
+    public List<String> getAcceptedEntrants() {
+        if (acceptedEntrants == null) acceptedEntrants = new ArrayList<>();
+        return acceptedEntrants;
+    }
+
+    public void setAcceptedEntrants(List<String> acceptedEntrants) {
+        this.acceptedEntrants = acceptedEntrants;
     }
 
     public List<String> getFinalEntrants() {

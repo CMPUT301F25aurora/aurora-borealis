@@ -177,18 +177,24 @@ public class AlertsActivity extends AppCompatActivity {
 
         db.collection("events").document(eventId)
                 .update(
-                        "finalEntrants", FieldValue.arrayUnion(userEmail),
-                        "waitingList", FieldValue.arrayRemove(userEmail),
+                        "acceptedEntrants", FieldValue.arrayUnion(userEmail),
                         "selectedEntrants", FieldValue.arrayRemove(userEmail)
                 )
                 .addOnSuccessListener(v -> {
 
                     deleteNotification(notifId);
                     Toast.makeText(this,
-                            "You've accepted your spot!",
-                            Toast.LENGTH_SHORT).show();
-                });
+                            "You've accepted your spot! Open the event to finish sign up.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(
+                        this,
+                        "Failed to accept spot. Please try again.",
+                        Toast.LENGTH_SHORT
+                ).show());
     }
+
 
     private void declineEvent(String eventId, String notifId) {
 
