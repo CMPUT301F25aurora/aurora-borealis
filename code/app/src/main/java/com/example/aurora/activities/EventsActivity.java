@@ -23,6 +23,7 @@ import com.example.aurora.notifications.NotificationHelper;
 import com.example.aurora.models.NotificationModel;
 import com.example.aurora.R;
 import com.example.aurora.models.Event;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -75,7 +76,7 @@ public class EventsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_events);
+        setContentView(R.layout.screen_events);
 
         searchEvents = findViewById(R.id.searchEvents);
         logoutButton = findViewById(R.id.logoutButton);
@@ -94,6 +95,40 @@ public class EventsActivity extends AppCompatActivity {
 
         btnScanQr = findViewById(R.id.btnScanQr);
         btnFilter = findViewById(R.id.btnFilter);
+
+        ExtendedFloatingActionButton fab = findViewById(R.id.roleSwitchFab);
+
+        String userDocId = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_doc_id", null);
+
+        fab.setOnClickListener(v -> {
+            FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(userDocId)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        Boolean allowed = doc.getBoolean("organizer_allowed");
+
+                        if (allowed == null || !allowed) {
+                            new androidx.appcompat.app.AlertDialog.Builder(this)
+                                    .setTitle("Access Denied")
+                                    .setMessage("Organizer privileges have been revoked.")
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                            return;
+                        }
+
+                        // Save mode switch
+                        getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                                .edit()
+                                .putString("user_last_mode", "organizer")
+                                .apply();
+
+                        startActivity(new Intent(this, OrganizerActivity.class));
+                        finish();
+                    });
+        });
+
 
         recyclerEvents.setLayoutManager(new LinearLayoutManager(this));
         adapter = new EventsAdapter(this, eventList);

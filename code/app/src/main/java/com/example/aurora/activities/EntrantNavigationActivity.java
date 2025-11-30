@@ -1,84 +1,94 @@
-/*
- * References:
- *
- * 1) Android Developers — "Slide between fragments using ViewPager2"
- *    https://developer.android.com/develop/ui/views/animations/screen-slide-2
- *    Used as a reference for wiring ViewPager2 with FragmentStateAdapter and swiping between fragment pages.
- *
- * 2) Tutorialwing — "ViewPager2 With Fragment and FragmentStateAdapter"
- *    https://tutorialwing.com/viewpager2-with-fragment-and-fragmentstateadapter/
- *    Used as a reference for implementing a FragmentStateAdapter subclass that returns different fragments by position.
- */
-
 package com.example.aurora.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
-import androidx.annotation.NonNull;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.aurora.fragments.EventsFragment;
-import com.example.aurora.fragments.ProfileFragment;
 import com.example.aurora.R;
-import com.example.aurora.fragments.AlertsFragment;
-
-/**
- * Navigation activity for entrants in the Aurora app.
- *
- * Switches between three main sections using ViewPager2:
- * - Events
- * - Profile
- * - Alerts
- *
- * Each section is shown as a separate fragment to keep the interface
- * organized and easy to navigate.
- */
-
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EntrantNavigationActivity extends AppCompatActivity {
 
-    private ViewPager2 pager;
-    private Button tabEvents, tabProfile, tabAlerts;
+    private Button navEvents, navProfile, navAlerts;
+    private ExtendedFloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_navigation_pager);
 
-        pager = findViewById(R.id.pager);
-        tabEvents = findViewById(R.id.navEvents);
-        tabProfile = findViewById(R.id.navProfile);
-        tabAlerts = findViewById(R.id.navAlerts);
+        // -------------------------------------------------
+        // CHECK SESSION
+        // -------------------------------------------------
+        String userDocId = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .getString("user_doc_id", null);
 
-        pager.setAdapter(new PagerAdapter(this));
-        pager.setUserInputEnabled(true);
-        pager.setCurrentItem(0, false);
-        highlight(0);
-
-        tabEvents.setOnClickListener(v -> pager.setCurrentItem(0, true));
-        tabProfile.setOnClickListener(v -> pager.setCurrentItem(1, true));
-        tabAlerts.setOnClickListener(v -> pager.setCurrentItem(2, true));
-
-        pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override public void onPageSelected(int position) { highlight(position); }
-        });
-    }
-
-    private void highlight(int i) {
-        float on = 1f, off = 0.5f;
-        tabEvents.setAlpha(i==0?on:off);
-        tabProfile.setAlpha(i==1?on:off);
-        tabAlerts.setAlpha(i==2?on:off);
-    }
-
-    static class PagerAdapter extends androidx.viewpager2.adapter.FragmentStateAdapter {
-        public PagerAdapter(@NonNull AppCompatActivity fa) { super(fa); }
-        @NonNull @Override public androidx.fragment.app.Fragment createFragment(int position) {
-            if (position == 0) return new EventsFragment();
-            if (position == 1) return new ProfileFragment();
-            return new AlertsFragment();
+        if (userDocId == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
         }
-        @Override public int getItemCount() { return 3; }
+
+        // -------------------------------------------------
+        // UI HOOKS
+        // -------------------------------------------------
+        navEvents = findViewById(R.id.navEvents);
+        navProfile = findViewById(R.id.navProfile);
+        navAlerts = findViewById(R.id.navAlerts);
+        fab = findViewById(R.id.roleSwitchFab);
+
+        // -------------------------------------------------
+        // LOAD DEFAULT SCREEN (EventsActivity)
+        // -------------------------------------------------
+        startActivity(new Intent(this, EventsActivity.class));
+        overridePendingTransition(0,0);
+
+        // -------------------------------------------------
+        // BOTTOM NAVIGATION
+        // -------------------------------------------------
+        navEvents.setOnClickListener(v -> {
+            startActivity(new Intent(this, EventsActivity.class));
+            overridePendingTransition(0,0);
+        });
+
+        navProfile.setOnClickListener(v -> {
+            startActivity(new Intent(this, ProfileActivity.class));
+            overridePendingTransition(0,0);
+        });
+
+        navAlerts.setOnClickListener(v -> {
+            startActivity(new Intent(this, AlertsActivity.class));
+            overridePendingTransition(0,0);
+        });
+
+        // -------------------------------------------------
+        // ROLE SWITCH FAB
+        // -------------------------------------------------
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(userDocId)
+                .get()
+                .addOnSuccessListener(doc -> {
+                    Boolean allowed = doc.getBoolean("organizer_allowed");
+
+                    if (allowed != null && allowed) {
+                        fab.show();
+                    } else {
+                        fab.hide();
+                    }
+                });
+
+        fab.setOnClickListener(v -> {
+            getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putString("user_last_mode", "organizer")
+                    .apply();
+
+            startActivity(new Intent(this, OrganizerActivity.class));
+            finish();
+        });
     }
 }

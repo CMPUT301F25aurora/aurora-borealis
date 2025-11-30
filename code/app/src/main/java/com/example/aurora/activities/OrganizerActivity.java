@@ -20,6 +20,7 @@ import com.example.aurora.R;
 import com.example.aurora.map.EventMapActivity;
 import com.example.aurora.models.NotificationModel;
 import com.example.aurora.notifications.FirestoreNotificationHelper;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -50,25 +51,49 @@ public class OrganizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
 
+        // -----------------------------
+        // CRITICAL: SESSION CHECK
+        // -----------------------------
+        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+        String docId = sp.getString("user_doc_id", null);
+        organizerEmail = sp.getString("user_email", null);
+
+        if (docId == null || organizerEmail == null) {
+            Toast.makeText(this, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
         db = FirebaseFirestore.getInstance();
-        organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
-                .getString("user_email", null);
 
         bindViews();
         setupTopBar();
         setupTabs();
         setupBottomNav();
         loadEventsFromFirebase();
+
+        ExtendedFloatingActionButton fab = findViewById(R.id.roleSwitchFab);
+
+        // Show entrant mode on organizer side
+        fab.setText("Entrant Mode");
+
+        // Fix overlapping UI
+        fab.setTranslationY(-30);
+
+        fab.setOnClickListener(v -> {
+            sp.edit().putString("user_last_mode","entrant").apply();
+            startActivity(new Intent(this, EntrantNavigationActivity.class));
+            finish();
+        });
+
     }
 
     private void bindViews() {
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
         eventListContainer = findViewById(R.id.eventListContainer);
-
         btnLogout = findViewById(R.id.btnLogoutOrganizer);
-        btnBack = findViewById(R.id.btnBackOrganizer);
-
         bottomHome = findViewById(R.id.bottomHome);
         bottomProfile = findViewById(R.id.bottomProfile);
         bottomAlerts = findViewById(R.id.bottomAlerts);
@@ -87,8 +112,8 @@ public class OrganizerActivity extends AppCompatActivity {
     private void logoutUser() {
         FirebaseAuth.getInstance().signOut();
 
-        SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
-        sp.edit().clear().apply();
+        getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                .edit().clear().apply();
 
         Intent intent = new Intent(OrganizerActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -146,14 +171,12 @@ public class OrganizerActivity extends AppCompatActivity {
     }
 
     private void addEventCard(DocumentSnapshot doc) {
-
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
 
         TextView title = eventView.findViewById(R.id.eventTitle);
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
-
 
         Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
         Button btnManage = eventView.findViewById(R.id.btnManage);
@@ -179,17 +202,11 @@ public class OrganizerActivity extends AppCompatActivity {
         Long maxSpots = doc.getLong("maxSpots");
         if (maxSpots == null) maxSpots = 0L;
 
-
-
         String deepLink = doc.getString("deepLink");
 
         title.setText(titleText);
         date.setText(dateText);
         stats.setText("Max spots: " + maxSpots);
-
-        // CATEGORY EMOJI + FORMATTING
-
-
 
         btnMap.setOnClickListener(v -> {
             Intent i = new Intent(OrganizerActivity.this, EventMapActivity.class);
@@ -197,8 +214,6 @@ public class OrganizerActivity extends AppCompatActivity {
             startActivity(i);
         });
 
-
-        // QR BUTTON
         btnShowQR.setOnClickListener(v -> {
             if (deepLink == null || deepLink.isEmpty()) {
                 Toast.makeText(this, "No QR saved", Toast.LENGTH_SHORT).show();
@@ -207,14 +222,12 @@ public class OrganizerActivity extends AppCompatActivity {
             }
         });
 
-        // MANAGE ENTRANTS
         btnManage.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerEntrantsActivity.class);
             intent.putExtra("eventId", eventId);
             startActivity(intent);
         });
 
-        // LOTTERY BUTTON
         btnLottery.setOnClickListener(v -> runLotteryDialog(eventId));
 
         eventListContainer.addView(eventView);
@@ -222,13 +235,11 @@ public class OrganizerActivity extends AppCompatActivity {
 
     private void runLotteryDialog(String eventId) {
         android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-
         builder.setTitle("Run Lottery");
 
         final android.widget.EditText input = new android.widget.EditText(this);
         input.setHint("Number of entrants to pick");
         input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-
         builder.setView(input);
 
         builder.setPositiveButton("Run", (dialog, which) -> {
@@ -270,23 +281,18 @@ public class OrganizerActivity extends AppCompatActivity {
                     }
 
                     Collections.shuffle(emailsOnly);
-
                     List<String> winners = emailsOnly.subList(0, n);
 
-                    // determine losers (entrants not selected)
                     List<String> losers = new ArrayList<>();
-                    for (String email : emailsOnly) {
-                        if (!winners.contains(email)) {
-                            losers.add(email);   // they LOST the lottery
-                        }
-                    }
+                    for (String email : emailsOnly)
+                        if (!winners.contains(email))
+                            losers.add(email);
 
                     db.collection("events").document(eventId)
                             .update(
                                     "selectedEntrants", winners,
                                     "losersEntrants", FieldValue.arrayUnion(losers.toArray()),
-                                    "waitingList", FieldValue.arrayRemove(winners.toArray())   // ONLY remove winners
-                                    // losers stay in waitingList
+                                    "waitingList", FieldValue.arrayRemove(winners.toArray())
                             )
                             .addOnSuccessListener(x -> {
 
@@ -298,6 +304,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
                 });
     }
+
     private void sendNotSelectedNotifications(String eventId, List<String> allEntrants, List<String> winners) {
 
         for (String email : allEntrants) {
@@ -313,25 +320,19 @@ public class OrganizerActivity extends AppCompatActivity {
                     System.currentTimeMillis()
             );
 
-            // Send to notifications
             FirestoreNotificationHelper.sendIfAllowed(db, email, notif);
 
-            // LOG IT (CORRECT SIGNATURE)
             FirestoreNotificationHelper.logNotification(
                     db,
-                    organizerEmail,                     // who sent it
-                    eventId,                            // event ID
-                    "Lottery Result",                   // EVENT NAME (STRING)
-                    email,                              // recipient
-                    "Unfortunately, you were not selected for this event.",  // message
-                    "not_selected"                      // type
+                    organizerEmail,
+                    eventId,
+                    "Lottery Result",
+                    email,
+                    "Unfortunately, you were not selected for this event.",
+                    "not_selected"
             );
         }
     }
-
-
-
-
 
     private void sendWinnerNotifications(String eventId, List<String> winners) {
         for (String email : winners) {
@@ -345,24 +346,19 @@ public class OrganizerActivity extends AppCompatActivity {
                     System.currentTimeMillis()
             );
 
-            // Respect notification preference
             FirestoreNotificationHelper.sendIfAllowed(db, email, notif);
 
-            // Correct logging call
             FirestoreNotificationHelper.logNotification(
                     db,
-                    organizerEmail,                          // who sent it
-                    eventId,                                 // event id
-                    "Winner Selected",                       // event name
-                    email,                                   // recipient
-                    "You won the lottery! Accept or decline your spot.", // message
-                    "winner_selected"                        // type
+                    organizerEmail,
+                    eventId,
+                    "Winner Selected",
+                    email,
+                    "You won the lottery! Accept or decline your spot.",
+                    "winner_selected"
             );
         }
     }
-
-
-
 
     private void showWinnersDialog(List<String> winners) {
         StringBuilder sb = new StringBuilder();
@@ -373,11 +369,6 @@ public class OrganizerActivity extends AppCompatActivity {
                 .setMessage(sb.toString())
                 .setPositiveButton("OK", null)
                 .show();
-    }
-
-    private String capitalize(String text) {
-        if (text == null || text.isEmpty()) return "";
-        return text.substring(0, 1).toUpperCase() + text.substring(1).toLowerCase();
     }
 
     private void showQrPopup(String deepLink) {
