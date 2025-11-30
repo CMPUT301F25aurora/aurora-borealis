@@ -63,15 +63,6 @@
                 android:scaleType="centerCrop"/>
 
             <TextView
-                android:id="@+id/txtJoinedBadge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="JOINED"
-                android:textColor="#00E676"
-                android:fontFamily="sans-serif-medium"
-                android:layout_marginTop="16dp"/>
-
-            <TextView
                 android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
