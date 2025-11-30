@@ -56,4 +56,13 @@
         android:textAllCaps="false"
         android:backgroundTint="#D32F2F"
         android:textColor="#FFFFFF" />
+    <Button
+        android:id="@+id/adminToggleOrganizerBtn"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Remove Organizer Privileges"
+        android:backgroundTint="#FE7F2D"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="6dp"/>
+
 </LinearLayout>

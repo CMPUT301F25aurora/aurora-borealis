@@ -83,6 +83,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.example.aurora.notifications.FirestoreNotificationHelper;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -327,29 +328,88 @@ public class AdminActivity extends AppCompatActivity {
 
     private void addProfileCard(DocumentSnapshot doc) {
         View card = getLayoutInflater().inflate(R.layout.item_admin_profile, listContainer, false);
+
         TextView nameView  = card.findViewById(R.id.adminProfileName);
         TextView emailView = card.findViewById(R.id.adminProfileEmail);
         TextView roleView  = card.findViewById(R.id.adminProfileRole);
-        Button   removeBtn = card.findViewById(R.id.adminProfileRemoveButton);
 
-        String name = nz(doc.getString("name"));
+        Button removeBtn         = card.findViewById(R.id.adminProfileRemoveButton);
+        Button toggleOrganizerBtn = card.findViewById(R.id.adminToggleOrganizerBtn);
+
+        // -------------------------
+        // READ USER FIELDS
+        // -------------------------
+        String name  = nz(doc.getString("name"));
         String email = nz(doc.getString("email"));
-        String role = nz(doc.getString("role"));
+        String role  = nz(doc.getString("role"));
 
         nameView.setText(name.isEmpty() ? "Unnamed" : name);
         emailView.setText(email);
         roleView.setText(role.isEmpty() ? "Entrant" : capitalize(role));
 
+        // If user is ADMIN → hide organizer privilege button
+        if ("admin".equalsIgnoreCase(role)) {
+            toggleOrganizerBtn.setVisibility(View.GONE);
+        }
+        else {
+            // -------------------------
+            // ENTRANT USER → SHOW BUTTON
+            // -------------------------
+            toggleOrganizerBtn.setVisibility(View.VISIBLE);
+
+            Boolean orgAllowed = doc.getBoolean("organizer_allowed");
+            boolean isOrganizer = orgAllowed != null && orgAllowed;
+
+            toggleOrganizerBtn.setText(
+                    isOrganizer
+                            ? "Remove Organizer Privileges"
+                            : "Restore Organizer Privileges"
+            );
+
+            // -------------------------
+            // PRIVILEGE TOGGLE HANDLER
+            // -------------------------
+            toggleOrganizerBtn.setOnClickListener(v -> {
+
+                boolean currentVal = doc.getBoolean("organizer_allowed") != null &&
+                        doc.getBoolean("organizer_allowed");
+
+                boolean newVal = !currentVal;
+
+                db.collection("users").document(doc.getId())
+                        .update("organizer_allowed", newVal)
+                        .addOnSuccessListener(x -> {
+
+                            // LOG IN notificationLogs (not device notifications)
+                            if (!newVal) {
+                                FirestoreNotificationHelper.sendOrganizerRevokedNotification(db, email);
+                            } else {
+                                FirestoreNotificationHelper.sendOrganizerEnabledNotification(db, email);
+                            }
+
+                            // Refresh list so button text updates
+                            loadProfiles();
+                        });
+            });
+        }
+
+        // -------------------------
+        // REMOVE USER BUTTON
+        // -------------------------
         removeBtn.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Remove Profile")
                         .setMessage("Remove user \"" + email + "\"?")
                         .setPositiveButton("Remove", (dialog, which) -> deleteProfile(doc.getId(), email))
                         .setNegativeButton("Cancel", null)
-                        .show());
+                        .show()
+        );
 
         listContainer.addView(card);
     }
+
+
+
 
     private void deleteProfile(String docId, String email) {
         db.collection("users").document(docId).delete().addOnSuccessListener(v -> {

@@ -249,6 +249,61 @@ public class FirestoreNotificationHelper {
                 .addOnFailureListener(e ->
                         Log.e("LOGS", "Failed to save log", e)
                 );
+
     }
+// ----------------------------------------------------------
+// ORGANIZER PRIVILEGE CHANGES (USER-FACING + ADMIN LOG)
+// ----------------------------------------------------------
+
+    public static void sendOrganizerRevokedNotification(FirebaseFirestore db, String email) {
+
+        // --- USER FACING NOTIFICATION (shows in Alerts) ---
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "organizer_revoked");
+        notif.put("title", "Organizer Access Revoked");
+        notif.put("message", "An admin has removed your organizer privileges.");
+        notif.put("eventId", null);
+        notif.put("userId", email);   // AlertsActivity listens to THIS FIELD
+        notif.put("timestamp", System.currentTimeMillis());
+        notif.put("status", "unread");
+        db.collection("notifications").add(notif);
+
+        // --- ADMIN LOG ---
+        Map<String, Object> log = new HashMap<>();
+        log.put("timestamp", System.currentTimeMillis());
+        log.put("sentByOrganizerEmail", "admin");
+        log.put("eventId", null);
+        log.put("eventName", "Admin Action");
+        log.put("toUserEmail", email);
+        log.put("message", "Organizer privileges revoked");
+        log.put("notificationType", "organizer_revoked");
+        db.collection("notificationLogs").add(log);
+    }
+
+    public static void sendOrganizerEnabledNotification(FirebaseFirestore db, String email) {
+
+        // --- USER FACING NOTIFICATION (shows in Alerts) ---
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "organizer_enabled");
+        notif.put("title", "Organizer Access Restored");
+        notif.put("message", "Your organizer privileges have been restored by an admin.");
+        notif.put("eventId", null);
+        notif.put("userId", email);
+        notif.put("timestamp", System.currentTimeMillis());
+        notif.put("status", "unread");
+        db.collection("notifications").add(notif);
+
+        // --- ADMIN LOG ---
+        Map<String, Object> log = new HashMap<>();
+        log.put("timestamp", System.currentTimeMillis());
+        log.put("sentByOrganizerEmail", "admin");
+        log.put("eventId", null);
+        log.put("eventName", "Admin Action");
+        log.put("toUserEmail", email);
+        log.put("message", "Organizer privileges restored");
+        log.put("notificationType", "organizer_enabled");
+        db.collection("notificationLogs").add(log);
+    }
+
 
 }

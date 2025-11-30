@@ -161,4 +161,25 @@ public class ActivityLogger {
 
         addLog(log);
     }
+    // =============================================================
+// ADMIN PRIVILEGE CHANGES
+// =============================================================
+    public static void logOrganizerPrivilegesRevoked(String email) {
+        Map<String, Object> log = new HashMap<>();
+        log.put("type", "organizer_privileges_revoked");
+        log.put("title", "Organizer privileges revoked");
+        log.put("message", "Organizer privileges revoked for: " + email);
+        log.put("userEmail", email);
+        addLog(log);
+    }
+
+    public static void logOrganizerPrivilegesRestored(String email) {
+        Map<String, Object> log = new HashMap<>();
+        log.put("type", "organizer_privileges_restored");
+        log.put("title", "Organizer privileges restored");
+        log.put("message", "Organizer privileges restored for: " + email);
+        log.put("userEmail", email);
+        addLog(log);
+    }
+
 }
