@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 public class AlertsActivity extends AppCompatActivity {
 
@@ -78,12 +79,27 @@ public class AlertsActivity extends AppCompatActivity {
 
                     emptyMsg.setVisibility(View.GONE);
 
-                    for (DocumentSnapshot doc : snapshot.getDocuments()) {
+                    List<DocumentSnapshot> docs = snapshot.getDocuments();
+                    docs.sort((a, b) -> {
+                        long t1 = getDocTime(a);   // ⭐ NEW
+                        long t2 = getDocTime(b);   // ⭐ NEW
+                        return Long.compare(t2, t1); // Newest first
+                    });
+
+                    for (DocumentSnapshot doc : docs) {
                         addNotificationCard(doc);
                     }
                 });
     }
+    private long getDocTime(DocumentSnapshot doc) {
+        Long createdAt = doc.getLong("createdAt");
+        if (createdAt != null) return createdAt;
 
+        Long ts = doc.getLong("timestamp");
+        if (ts != null) return ts;
+
+        return 0L; // fallback
+    }
     private void addNotificationCard(DocumentSnapshot doc) {
 
         View card = LayoutInflater.from(this)
@@ -108,18 +124,23 @@ public class AlertsActivity extends AppCompatActivity {
         msg.setText(doc.getString("message"));
 
         // Time formatting
-        Object t = doc.get("timestamp");
+        // Read the real timestamp you stored
+        // Try both field names: createdAt (entrant) OR timestamp (admin)
+            Object t = doc.get("createdAt");
+            if (t == null) t = doc.get("timestamp");
+
+            if (t instanceof Long) {
+                time.setText(getRelativeTime((Long) t));
+            } else if (t instanceof com.google.firebase.Timestamp) {
+                long ms = ((com.google.firebase.Timestamp) t).toDate().getTime();
+                time.setText(getRelativeTime(ms));
+            } else {
+                time.setVisibility(View.GONE);
+            }
 
 
-        if (t instanceof com.google.firebase.Timestamp) {
-            com.google.firebase.Timestamp ts = (com.google.firebase.Timestamp)t;
-            time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(ts.toDate()));
-        } else if (t instanceof Long) {
-            long ms = (long) t;
-            time.setText(new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault()).format(ms));
-        }
 
-        // 🚫 HIDE Accept/Decline for NOT_SELECTED
+            // 🚫 HIDE Accept/Decline for NOT_SELECTED
         ///// CHANGED — Added waiting_list_info handling
 
         // ⭐ DISMISS-ONLY NOTIFICATIONS
@@ -339,4 +360,12 @@ public class AlertsActivity extends AppCompatActivity {
                 .document(notifId)
                 .update("status", status);
     }
+    private String getRelativeTime(long millis) {
+        return android.text.format.DateUtils.getRelativeTimeSpanString(
+                millis,
+                System.currentTimeMillis(),
+                android.text.format.DateUtils.MINUTE_IN_MILLIS
+        ).toString();
+    }
+
 }
