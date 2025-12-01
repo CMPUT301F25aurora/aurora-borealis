@@ -37,8 +37,10 @@
                     android:layout_weight="1"
                     android:text="Discover Events"
                     android:textColor="#fe7f2d"
-                    android:textSize="26sp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textSize="45sp"
+                    android:fontFamily="@font/titanone_regular"
+                    android:letterSpacing="-0.01"/>
+
 
                 <ImageButton
                     android:id="@+id/logoutButton"
@@ -46,10 +48,10 @@
                     android:layout_height="40dp"
                     android:background="@drawable/bg_input_sharp"
                     android:backgroundTint="#2f4858"
-                    android:src="@drawable/ic_logout"
-                    android:tint="#fe7f2d"
+                    android:contentDescription="Logout"
                     android:padding="8dp"
-                    android:contentDescription="Logout"/>
+                    android:src="@drawable/ic_logout"
+                    android:tint="#fe7f2d" />
 
             </LinearLayout>
 

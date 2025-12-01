@@ -32,11 +32,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-
                 android:text="Organizer Dashboard"
                 android:textColor="#fe7f2d"
-                android:fontFamily="sans-serif-medium"
-                android:textSize="26sp" />
+                android:textSize="40sp"
+                android:fontFamily="@font/titanone_regular"
+                android:letterSpacing="-0.01"/>
+
 
             <Button
                 android:id="@+id/btnLogoutOrganizer"
