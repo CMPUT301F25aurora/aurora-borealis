@@ -82,12 +82,23 @@ public class EntrantsAdapter extends RecyclerView.Adapter<EntrantsAdapter.Entran
 
 
         // Checkbox
-        holder.checkBox.setOnCheckedChangeListener(null);
-        holder.checkBox.setChecked(item.isChecked());
-        holder.checkBox.setOnCheckedChangeListener((btn, checked) -> {
-            item.setChecked(checked);
-            if (selectionListener != null) selectionListener.onChanged();
-        });
+        // ----- CHECKBOX LOGIC -----
+
+// Hide checkbox ONLY for FINAL tab
+        if (item.getStatus().equals("Final")) {
+            holder.checkBox.setVisibility(View.GONE);
+        } else {
+            holder.checkBox.setVisibility(View.VISIBLE);
+
+            // Normal checkbox behavior for other statuses
+            holder.checkBox.setOnCheckedChangeListener(null);
+            holder.checkBox.setChecked(item.isChecked());
+            holder.checkBox.setOnCheckedChangeListener((btn, checked) -> {
+                item.setChecked(checked);
+                if (selectionListener != null) selectionListener.onChanged();
+            });
+        }
+
 
         // DELETE BUTTON logic
         if (item.getStatus().equals("Selected")) {
