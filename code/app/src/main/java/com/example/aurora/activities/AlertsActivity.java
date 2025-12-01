@@ -252,7 +252,7 @@ public class AlertsActivity extends AppCompatActivity {
                 .addOnSuccessListener(v -> {
 
                     deleteNotification(notifId);
-                    sendDeclineNoticeToOrganizer(eventId);
+
 
                     Toast.makeText(
                             this,
@@ -269,52 +269,12 @@ public class AlertsActivity extends AppCompatActivity {
 
 
     /**
-     * Sends a replacement-chance notification to a user when a spot opens up.
-     */
-    private void sendReplacementNotification(String eventId, String userEmail) {
-        Map<String, Object> notif = new HashMap<>();
-        notif.put("userEmail", userEmail);
-        notif.put("eventId", eventId);
-        notif.put("type", "replacement_chance");
-        notif.put("message", "A spot has opened for an event you joined. You have a new chance to register!");
-        notif.put("status", "unread");
-        notif.put("timestamp", Timestamp.now());
-
-        db.collection("notifications").add(notif);
-    }
-
-    /**
      * Removes a notification from Firestore permanently.
      */
     private void deleteNotification(String notifId) {
         db.collection("notifications")
                 .document(notifId)
                 .delete();
-    }
-
-    /**
-     * Notifies the organizer when an entrant declines their spot.
-     * Creates a lightweight NotificationModel and stores it in Firestore.
-     */
-    private void sendDeclineNoticeToOrganizer(String eventId) {
-        db.collection("events")
-                .document(eventId)
-                .get()
-                .addOnSuccessListener(doc -> {
-                    String organizerEmail = doc.getString("organizerEmail");
-                    if (organizerEmail == null) return;
-
-                    NotificationModel nm = new NotificationModel(
-                            "entrant_declined",
-                            "Entrant Declined",
-                            userEmail + " declined their spot.",
-                            eventId,
-                            organizerEmail,
-                            System.currentTimeMillis()
-                    );
-
-                    db.collection("notifications").add(nm);
-                });
     }
 
     /**
