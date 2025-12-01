@@ -115,6 +115,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.aurora.map.MapPickerActivity;
 import com.example.aurora.R;
 import com.example.aurora.utils.ActivityLogger;
@@ -494,6 +495,10 @@ public class CreateEventActivity extends AppCompatActivity {
      * Configures the ActivityResultLauncher used to pick images from the gallery.
      * When an image is selected, a preview is displayed on the screen.
      */
+    /**
+     * Configures the ActivityResultLauncher used to pick images from the gallery.
+     * When an image is selected, a preview is displayed on the screen.
+     */
     private void setupPosterPicker() {
         posterPickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -502,12 +507,14 @@ public class CreateEventActivity extends AppCompatActivity {
                         selectedPosterUri = result.getData().getData();
                         if (selectedPosterUri != null) {
                             imgPosterPreview.setVisibility(View.VISIBLE);
-                            loadPosterPreview(selectedPosterUri);   // use helper
+                            loadPosterPreview(selectedPosterUri);
+                            findViewById(R.id.posterPlaceholderContainer).setVisibility(View.GONE);
                         }
                     }
                 }
         );
     }
+
 
     /**
      * Loads and decodes the selected poster image into a Bitmap preview.
@@ -516,22 +523,14 @@ public class CreateEventActivity extends AppCompatActivity {
      * @param uri the Uri of the poster image selected by the user
      */
     private void loadPosterPreview(Uri uri) {
-        try {
-            Bitmap bitmap;
+        imgPosterPreview.setVisibility(View.VISIBLE);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.Source src = ImageDecoder.createSource(getContentResolver(), uri);
-                bitmap = ImageDecoder.decodeBitmap(src);
-            } else {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-            }
-
-            imgPosterPreview.setImageBitmap(bitmap);
-
-        } catch (IOException e) {
-            Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
-        }
+        Glide.with(this)
+                .load(uri)
+                .centerCrop()
+                .into(imgPosterPreview);
     }
+
 
     /**
      * Launches an image picker intent to allow the organizer
@@ -761,6 +760,13 @@ public class CreateEventActivity extends AppCompatActivity {
                     return ref.getDownloadUrl();
                 })
                 .addOnSuccessListener(downloadUri -> {
+
+                    // ⭐ NEW: Update preview with actual Firebase URL
+                    Glide.with(this)
+                            .load(downloadUri)
+                            .centerCrop()
+                            .into(imgPosterPreview);
+
                     db.collection("events")
                             .document(eventId)
                             .update("posterUrl", downloadUri.toString())
@@ -771,6 +777,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     goBackToOrganizerHome();
                 });
     }
+
 
     /**
      * Navigates the organizer back to the OrganizerActivity home screen.
