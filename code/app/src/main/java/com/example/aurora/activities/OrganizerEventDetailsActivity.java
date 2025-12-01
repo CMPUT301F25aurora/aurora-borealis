@@ -37,6 +37,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
+
 /**
  * OrganizerEventDetailsActivity.java
  *
@@ -46,9 +47,6 @@ import java.util.List;
  * - Ensures only the event creator (organizer) can access their event details.
  * - Provides a simple back button for navigation.
  */
-
-
-
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
