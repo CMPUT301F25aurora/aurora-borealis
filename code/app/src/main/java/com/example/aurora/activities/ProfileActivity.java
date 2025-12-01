@@ -190,12 +190,21 @@ public class ProfileActivity extends AppCompatActivity {
     private void saveProfile() {
         String n = fullName.getText().toString().trim();
         String e = email.getText().toString().trim();
-        String p = phone.getText().toString().trim();
+        String pRaw = phone.getText().toString();
+
+        // --- PHONE VALIDATION (optional but must be 10 digits if filled) ---
+        String pTrimmed = pRaw.trim();
+        String pDigits = pTrimmed.replaceAll("\\D", ""); // remove all non-digits
+
+        if (!pTrimmed.isEmpty() && pDigits.length() != 10) {
+            Toast.makeText(this, "Phone number must be 10 digits or left blank", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         Map<String, Object> upd = new HashMap<>();
         upd.put("name", n);
         upd.put("email", e);
-        upd.put("phone", p);
+        upd.put("phone", pRaw);
         // DO NOT overwrite "role" here; keep whatever is stored on the doc.
 
         userRef.set(upd, SetOptions.merge())

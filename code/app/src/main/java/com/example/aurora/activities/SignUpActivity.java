@@ -70,19 +70,27 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void attemptSignup() {
         String name = signupName.getText().toString().trim();
-        String email = signupEmail.getText().toString().trim();
+        String email = signupEmail.getText().toString().trim().toLowerCase();
         String phone = signupPhone.getText().toString().trim();
         String password = signupPassword.getText().toString().trim();
 
-        if (name.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty()) {
-            toast("Please fill in all fields");
+
+
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            toast("Please fill in all Required fields");
             return;
         }
 
-        if (!phone.matches("\\d{10}")) {
-            toast("Phone number must be exactly 10 digits");
+        if (password.length() < 6) {
+            toast("Password must be at least 6 characters long");
             return;
         }
+
+        if (!phone.isEmpty() && !phone.matches("\\d{10}")) {
+            toast("Phone number must be 10 digits or left blank");
+            return;
+        }
+
 
         createAuthAccount(name, email, phone, password);
     }
