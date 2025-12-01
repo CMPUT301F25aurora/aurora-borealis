@@ -54,31 +54,21 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal">
 
+
                 <ImageView
-                    android:id="@+id/avatarCircle"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                    android:id="@+id/profileImage"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
                     android:background="@drawable/circle_background"
-                    android:backgroundTint="#233d4d"
-                    android:src="@mipmap/ic_launcher_round"
-                    android:padding="4dp"
+                    android:backgroundTint="#2f4858"
+                    android:src="@drawable/ic_msagent"
+                    android:padding="19dp"
+                    android:scaleType="fitCenter"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
-                <ImageButton
-                    android:id="@+id/btnEditPhoto"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@drawable/circle_background"
-                    android:backgroundTint="#fe7f2d"
-                    android:src="@android:drawable/ic_menu_camera"
-                    android:tint="#233d4d"
-                    android:padding="8dp"
-                    android:elevation="4dp"
-                    app:layout_constraintBottom_toBottomOf="@id/avatarCircle"
-                    app:layout_constraintEnd_toEndOf="@id/avatarCircle" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
