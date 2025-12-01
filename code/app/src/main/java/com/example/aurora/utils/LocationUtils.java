@@ -1,3 +1,17 @@
+/*
+ * source: Android Developers — "Request location permissions".
+ * url: https://developer.android.com/training/location/permissions
+ * note: Used for checking ContextCompat.checkSelfPermission and requesting permissions if needed.
+ *
+ * source: Android Developers — "Get the last known location".
+ * url: https://developer.android.com/develop/sensors-and-location/location/retrieve-current
+ * note: Used for FusedLocationProviderClient.getLastLocation() to fetch the user's coordinates.
+ *
+ * source: Stack Overflow user — "Check if GPS is enabled programmatically".
+ * url: https://stackoverflow.com/questions/843675/how-do-i-find-out-if-the-gps-is-enabled
+ * note: Logic adapted for isGpsEnabled() using the LocationManager system service.
+ */
+
 package com.example.aurora.utils;
 
 import android.Manifest;
