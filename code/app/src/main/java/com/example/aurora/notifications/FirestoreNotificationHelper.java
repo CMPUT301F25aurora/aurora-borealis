@@ -17,7 +17,6 @@ import java.util.Map;
  */
 public class FirestoreNotificationHelper {
 
-    // 🔹 Sends only if user allows notifications
     public static void sendIfAllowed(FirebaseFirestore db, String email, NotificationModel nm) {
 
         db.collection("users")
@@ -32,16 +31,22 @@ public class FirestoreNotificationHelper {
 
                     Boolean enabled = userDoc.getBoolean("entrant_notifications_enabled");
 
-                    // Default = true if missing
                     if (enabled == null || enabled) {
                         db.collection("notifications").add(nm);
                     }
                 });
     }
 
-    // ----------------------------------------------------------
-    // 🔵 WAITING LIST NOTIFICATION
-    // ----------------------------------------------------------
+    /**
+     * Sends a notification to a user informing them that they are on the waiting list.
+     * Also logs the action in "notificationLogs".
+     *
+     * @param db              Firestore instance
+     * @param userIdentifier  email or Firestore UID
+     * @param eventName       readable event title
+     * @param eventId         Firestore event document ID
+     * @param organizerEmail  organizer performing the action
+     */
     public static void sendWaitingListNotification(FirebaseFirestore db,
                                                    String userIdentifier,
                                                    String eventName,
@@ -69,10 +74,8 @@ public class FirestoreNotificationHelper {
                     System.currentTimeMillis()
             );
 
-            // Send notification if allowed
             sendIfAllowed(db, email, nm);
 
-            // LOGGING
             logNotification(
                     db,
                     organizerEmail,
@@ -86,9 +89,15 @@ public class FirestoreNotificationHelper {
         });
     }
 
-    // ----------------------------------------------------------
-    // 🔵 SELECTED LIST — WINNER NOTIFICATION
-    // ----------------------------------------------------------
+    /**
+     * Notifies a user that they have been selected for an event.
+     *
+     * @param db              Firestore instance
+     * @param userIdentifier  email or document ID
+     * @param eventName       event name
+     * @param eventId         event ID
+     * @param organizerEmail  organizer performing the action
+     */
     public static void sendSelectedListNotification(FirebaseFirestore db,
                                                     String userIdentifier,
                                                     String eventName,
@@ -130,9 +139,15 @@ public class FirestoreNotificationHelper {
         });
     }
 
-    // ----------------------------------------------------------
-    // 🔵 CANCELLED FROM EVENT
-    // ----------------------------------------------------------
+    /**
+     * Notifies a user that their status for an event has been cancelled.
+     *
+     * @param db              Firestore instance
+     * @param userIdentifier  email or document ID
+     * @param eventName       event name
+     * @param eventId         event ID
+     * @param organizerEmail  organizer performing the action
+     */
     public static void sendCancelledNotification(FirebaseFirestore db,
                                                  String userIdentifier,
                                                  String eventName,
@@ -174,9 +189,16 @@ public class FirestoreNotificationHelper {
         });
     }
 
-    // ----------------------------------------------------------
-    // 🔵 CUSTOM MESSAGE
-    // ----------------------------------------------------------
+    /**
+     * Sends a custom text message notification to a specific user.
+     *
+     * @param db              Firestore instance
+     * @param userIdentifier  email or document ID
+     * @param eventName       event name
+     * @param eventId         event ID
+     * @param message         message body to send
+     * @param organizerEmail  organizer performing the action
+     */
     public static void sendCustomNotification(FirebaseFirestore db,
                                               String userIdentifier,
                                               String eventName,
@@ -207,22 +229,29 @@ public class FirestoreNotificationHelper {
 
             sendIfAllowed(db, email, nm);
 
-            // 🔥 FIXED: Log the real message
             logNotification(
                     db,
                     organizerEmail,
                     eventId,
                     eventName,
                     email,
-                    message,           // <-- Correct
+                    message,
                     "custom_message"
             );
         });
     }
 
-    // ----------------------------------------------------------
-// 🔵 LOGGING FUNCTION (REQUIRED BY ALL NOTIFICATION TYPES)
-// ----------------------------------------------------------
+    /**
+     * Saves a record of every notification organizers send to users.
+     *
+     * @param db              Firestore instance
+     * @param organizerEmail  organizer/admin performing the action
+     * @param eventId         ID of event involved (nullable)
+     * @param eventName       name of event
+     * @param recipientEmail  user receiving the notification
+     * @param message         message content
+     * @param type            notification type
+     */
     public static void logNotification(
             FirebaseFirestore db,
             String organizerEmail,
@@ -252,26 +281,23 @@ public class FirestoreNotificationHelper {
                 );
 
     }
-// ----------------------------------------------------------
-// ORGANIZER PRIVILEGE CHANGES (USER-FACING + ADMIN LOG)
-// ----------------------------------------------------------
-
+    /**
+     * Sends a user-facing notification + admin log when organizer access is revoked.
+     */
     public static void sendOrganizerRevokedNotification(FirebaseFirestore db, String email) {
 
-        // Build model for user-facing notification
-        NotificationModel nm = new NotificationModel(
-                "organizer_revoked",
-                "Organizer Access Revoked",
-                "An admin has removed your organizer privileges.",
-                null,        // eventId
-                email,       // user
-                System.currentTimeMillis()
-        );
 
-        // Respect user notification preference
-        sendIfAllowed(db, email, nm);
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "organizer_revoked");
+        notif.put("title", "Organizer Access Revoked");
+        notif.put("message", "An admin has removed your organizer privileges.");
+        notif.put("eventId", null);
+        notif.put("userId", email);
+        notif.put("timestamp", System.currentTimeMillis());
+        notif.put("status", "unread");
+        db.collection("notifications").add(notif);
 
-        // Admin log
+
         Map<String, Object> log = new HashMap<>();
         log.put("timestamp", System.currentTimeMillis());
         log.put("sentByOrganizerEmail", "admin");
@@ -280,27 +306,24 @@ public class FirestoreNotificationHelper {
         log.put("toUserEmail", email);
         log.put("message", "Organizer privileges revoked");
         log.put("notificationType", "organizer_revoked");
-
         db.collection("notificationLogs").add(log);
     }
 
-
+    /**
+     * Sends a notification + log when organizer access is restored.
+     */
     public static void sendOrganizerEnabledNotification(FirebaseFirestore db, String email) {
 
-        // Build model for user-facing notification
-        NotificationModel nm = new NotificationModel(
-                "organizer_enabled",
-                "Organizer Access Restored",
-                "Your organizer privileges have been restored by an admin.",
-                null,
-                email,
-                System.currentTimeMillis()
-        );
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("type", "organizer_enabled");
+        notif.put("title", "Organizer Access Restored");
+        notif.put("message", "Your organizer privileges have been restored by an admin.");
+        notif.put("eventId", null);
+        notif.put("userId", email);
+        notif.put("timestamp", System.currentTimeMillis());
+        notif.put("status", "unread");
+        db.collection("notifications").add(notif);
 
-        // Respect user's notification preference
-        sendIfAllowed(db, email, nm);
-
-        // Admin log
         Map<String, Object> log = new HashMap<>();
         log.put("timestamp", System.currentTimeMillis());
         log.put("sentByOrganizerEmail", "admin");
@@ -309,7 +332,8 @@ public class FirestoreNotificationHelper {
         log.put("toUserEmail", email);
         log.put("message", "Organizer privileges restored");
         log.put("notificationType", "organizer_enabled");
-
         db.collection("notificationLogs").add(log);
     }
+
+
 }
