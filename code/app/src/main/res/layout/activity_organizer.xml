@@ -150,7 +150,7 @@
         <LinearLayout
             android:id="@+id/organizerBottomNav"
             android:layout_width="match_parent"
-            android:layout_height="64dp"
+            android:layout_height="60dp"
             android:orientation="horizontal"
             android:gravity="center"
             android:background="#2f4858"
@@ -163,8 +163,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="🏠"
-                android:textSize="24sp"
+                android:text="Home"
                 android:textColor="#fe7f2d" />
 
             <TextView
@@ -173,8 +172,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="👤"
-                android:textSize="24sp"
+                android:text="Profile"
                 android:textColor="#fe7f2d" />
 
             <TextView
@@ -183,8 +181,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="🔔"
-                android:textSize="24sp"
+                android:text="Alerts"
                 android:textColor="#fe7f2d" />
         </LinearLayout>
 
@@ -193,11 +190,13 @@
     <!-- ROLE SWITCH FAB (ABOVE BOTTOM NAV, SAME AS ENTRANT) -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/roleSwitchFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
         android:text="Entrant Mode"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="20dp"
+        android:textColor="#233d4d"
+        android:textAllCaps="false"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="20dp"
         android:layout_marginBottom="90dp"
         app:backgroundTint="#fe7f2d"
         app:iconPadding="8dp" />

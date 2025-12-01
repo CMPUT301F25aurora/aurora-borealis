@@ -173,60 +173,62 @@
             android:paddingBottom="8dp" />
 
         <LinearLayout
+            android:id="@+id/entrantBottomNav"
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal"
-            android:background="#2f4858"
             android:gravity="center"
+            android:background="#2f4858"
+            android:paddingHorizontal="32dp"
             android:elevation="8dp">
 
-            <Button
+            <TextView
                 android:id="@+id/navEvents"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Events"
-                android:textAllCaps="false"
-                android:background="@android:color/transparent"
-                android:textColor="#fe7f2d" />
+                android:textColor="#fe7f2d"
+                android:textSize="14sp" />
 
-            <Button
+            <TextView
                 android:id="@+id/navProfile"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Profile"
-                android:textAllCaps="false"
-                android:background="@android:color/transparent"
-                android:textColor="#fe7f2d" />
+                android:textColor="#fe7f2d"
+                android:textSize="14sp" />
 
-            <Button
+            <TextView
                 android:id="@+id/navAlerts"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:gravity="center"
                 android:text="Alerts"
-                android:textAllCaps="false"
-                android:background="@android:color/transparent"
-                android:textColor="#fe7f2d" />
+                android:textColor="#fe7f2d"
+                android:textSize="14sp" />
+
         </LinearLayout>
+
     </LinearLayout>
 
     <!-- FLOATING FAB FOR ROLE SWITCH -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/roleSwitchFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
         android:text="Organizer Mode"
         android:textColor="#233d4d"
         android:textAllCaps="false"
-
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
         android:layout_marginBottom="90dp"
-
         android:backgroundTint="#fe7f2d"
-        android:elevation="12dp"
-        android:layout_gravity="bottom|end">
+        android:layout_gravity="bottom|start"
+        app:iconPadding="8dp">
 
     </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 
