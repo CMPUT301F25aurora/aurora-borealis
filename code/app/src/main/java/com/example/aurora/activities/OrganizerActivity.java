@@ -56,12 +56,9 @@ import java.util.List;
 
 public class OrganizerActivity extends AppCompatActivity {
 
-    private Button myEventsButton, createEventButton;
-    private Button btnLogout;
-    private ImageButton btnBack;
+    private ImageButton btnLogout;
     private LinearLayout eventListContainer;
-
-    private TextView bottomHome, bottomProfile, bottomAlerts;
+    private LinearLayout bottomHome, bottomProfile, createEventButton;
 
     private FirebaseFirestore db;
     private String organizerEmail;
@@ -84,16 +81,12 @@ public class OrganizerActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         bindViews();
-        bottomAlerts.setVisibility(View.GONE);
         setupTopBar();
-        setupTabs();
         setupBottomNav();
         loadEventsFromFirebase();
 
         ExtendedFloatingActionButton fab = findViewById(R.id.roleSwitchFab);
-
         fab.setText("Entrant Mode");
-
         fab.setTranslationY(-30);
 
         fab.setOnClickListener(v -> {
@@ -106,20 +99,15 @@ public class OrganizerActivity extends AppCompatActivity {
 
     /** Connects XML views to Java fields. */
     private void bindViews() {
-        myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
         eventListContainer = findViewById(R.id.eventListContainer);
         btnLogout = findViewById(R.id.btnLogoutOrganizer);
         bottomHome = findViewById(R.id.bottomHome);
         bottomProfile = findViewById(R.id.bottomProfile);
-        bottomAlerts = findViewById(R.id.bottomAlerts);
     }
 
     /** Sets up logout and back button behavior in the top bar. */
     private void setupTopBar() {
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> onBackPressed());
-        }
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> logoutUser());
         }
@@ -138,18 +126,8 @@ public class OrganizerActivity extends AppCompatActivity {
         finish();
     }
 
-    /** Top tab buttons: My Events + Create Event. */
-    private void setupTabs() {
-        myEventsButton.setOnClickListener(v ->
-                Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show()
-        );
 
-        createEventButton.setOnClickListener(v ->
-                startActivity(new Intent(OrganizerActivity.this, CreateEventActivity.class))
-        );
-    }
-
-    /** Bottom navigation bar for Home, Profile, Alerts. */
+    /** Bottom navigation bar for Home, Profile, Create Event. */
     private void setupBottomNav() {
         bottomHome.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
@@ -162,11 +140,11 @@ public class OrganizerActivity extends AppCompatActivity {
                 startActivity(new Intent(OrganizerActivity.this, OrganizerProfileActivity.class))
         );
 
-        // Disable Alerts for organizers
-        bottomAlerts.setOnClickListener(v ->
-                Toast.makeText(this, "Organizer alerts are not available.", Toast.LENGTH_SHORT).show()
+        createEventButton.setOnClickListener(v ->
+                startActivity(new Intent(OrganizerActivity.this, CreateEventActivity.class))
         );
     }
+
 
     /** Loads all events created by this organizer from Firestore. */
     private void loadEventsFromFirebase() {
@@ -209,10 +187,10 @@ public class OrganizerActivity extends AppCompatActivity {
         TextView date = eventView.findViewById(R.id.eventDate);
         TextView stats = eventView.findViewById(R.id.eventStats);
 
-        Button btnShowQR = eventView.findViewById(R.id.btnShowQR);
         Button btnManage = eventView.findViewById(R.id.btnManage);
         Button btnLottery = eventView.findViewById(R.id.btnLottery);
-        Button btnMap = eventView.findViewById(R.id.btnMap);
+        ImageButton btnShowQR = eventView.findViewById(R.id.btnShowQR);
+        ImageButton btnMap = eventView.findViewById(R.id.btnMap);
         ImageButton btnDelete = eventView.findViewById(R.id.btnDeleteEvent);
 
 
