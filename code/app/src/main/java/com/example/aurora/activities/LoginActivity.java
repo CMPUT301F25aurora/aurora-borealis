@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            startActivity(new Intent(this, EntrantNavigationActivity.class));
+            startActivity(new Intent(this, EventsActivity.class));
             finish();
             return;
         }
@@ -148,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
      * Saves user session to SharedPreferences and redirects:
      *  admin → AdminActivity
      *  organizer → OrganizerActivity
-     *  entrant → EntrantNavigationActivity
+     *  entrant → EventsActivity
      */
     private void handleLogin(DocumentSnapshot doc) {
 
@@ -181,7 +181,7 @@ public class LoginActivity extends AppCompatActivity {
         } else if (role.equals("organizer")) {
             intent = new Intent(this, OrganizerActivity.class);
         } else {
-            intent = new Intent(this, EntrantNavigationActivity.class);
+            intent = new Intent(this, EventsActivity.class);
         }
 
         startActivity(intent);

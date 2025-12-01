@@ -202,7 +202,7 @@ public class SignUpActivity extends AppCompatActivity {
      */
     private void navigateAfterSignup(String name, String email, String phone) {
 
-        Intent intent = new Intent(this, EntrantNavigationActivity.class);
+        Intent intent = new Intent(this, EventsActivity.class);
 
         intent.putExtra("userName", name);
         intent.putExtra("userEmail", email);

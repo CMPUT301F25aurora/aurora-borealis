@@ -53,7 +53,6 @@
 
         <!-- Entrant surfaces -->
         <activity android:name=".activities.EventsActivity" android:exported="false" />
-        <activity android:name=".activities.EntrantNavigationActivity" android:exported="false" />
         <activity android:name=".activities.ProfileActivity" android:exported="false" />
         <activity android:name=".activities.AlertsActivity" android:exported="false" />
         <activity android:name=".activities.EntrantEventHistoryActivity" />
@@ -70,7 +69,6 @@
         <activity android:name=".activities.OrganizerActivity" android:exported="false" />
         <activity android:name=".activities.CreateEventActivity" android:exported="false" />
         <activity android:name=".activities.OrganizerProfileActivity" android:exported="false" />
-        <activity android:name=".activities.OrganizerNotificationsActivity" android:exported="false" />
         <activity android:name=".activities.OrganizerEntrantsActivity" />
         <activity android:name=".activities.OrganizerEventDetailsActivity" android:exported="false" />
         <activity android:name=".map.MapPickerActivity" />

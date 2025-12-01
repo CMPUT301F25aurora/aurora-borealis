@@ -91,7 +91,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
         fab.setOnClickListener(v -> {
             sp.edit().putString("user_last_mode","entrant").apply();
-            startActivity(new Intent(this, EntrantNavigationActivity.class));
+            startActivity(new Intent(this, EventsActivity.class));
             finish();
         });
 
