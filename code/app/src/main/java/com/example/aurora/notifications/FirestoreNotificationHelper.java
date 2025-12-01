@@ -286,18 +286,20 @@ public class FirestoreNotificationHelper {
      */
     public static void sendOrganizerRevokedNotification(FirebaseFirestore db, String email) {
 
+        // Build model for user-facing notification
+        NotificationModel nm = new NotificationModel(
+                "organizer_revoked",
+                "Organizer Access Revoked",
+                "An admin has removed your organizer privileges.",
+                null,        // eventId
+                email,       // user
+                System.currentTimeMillis()
+        );
 
-        Map<String, Object> notif = new HashMap<>();
-        notif.put("type", "organizer_revoked");
-        notif.put("title", "Organizer Access Revoked");
-        notif.put("message", "An admin has removed your organizer privileges.");
-        notif.put("eventId", null);
-        notif.put("userId", email);
-        notif.put("timestamp", System.currentTimeMillis());
-        notif.put("status", "unread");
-        db.collection("notifications").add(notif);
+        // Respect user notification preference
+        sendIfAllowed(db, email, nm);
 
-
+        // Admin log
         Map<String, Object> log = new HashMap<>();
         log.put("timestamp", System.currentTimeMillis());
         log.put("sentByOrganizerEmail", "admin");
@@ -306,24 +308,27 @@ public class FirestoreNotificationHelper {
         log.put("toUserEmail", email);
         log.put("message", "Organizer privileges revoked");
         log.put("notificationType", "organizer_revoked");
+
         db.collection("notificationLogs").add(log);
     }
 
-    /**
-     * Sends a notification + log when organizer access is restored.
-     */
+
     public static void sendOrganizerEnabledNotification(FirebaseFirestore db, String email) {
 
-        Map<String, Object> notif = new HashMap<>();
-        notif.put("type", "organizer_enabled");
-        notif.put("title", "Organizer Access Restored");
-        notif.put("message", "Your organizer privileges have been restored by an admin.");
-        notif.put("eventId", null);
-        notif.put("userId", email);
-        notif.put("timestamp", System.currentTimeMillis());
-        notif.put("status", "unread");
-        db.collection("notifications").add(notif);
+        // Build model for user-facing notification
+        NotificationModel nm = new NotificationModel(
+                "organizer_enabled",
+                "Organizer Access Restored",
+                "Your organizer privileges have been restored by an admin.",
+                null,
+                email,
+                System.currentTimeMillis()
+        );
 
+        // Respect user's notification preference
+        sendIfAllowed(db, email, nm);
+
+        // Admin log
         Map<String, Object> log = new HashMap<>();
         log.put("timestamp", System.currentTimeMillis());
         log.put("sentByOrganizerEmail", "admin");
@@ -332,8 +337,7 @@ public class FirestoreNotificationHelper {
         log.put("toUserEmail", email);
         log.put("message", "Organizer privileges restored");
         log.put("notificationType", "organizer_enabled");
+
         db.collection("notificationLogs").add(log);
     }
-
-
 }
