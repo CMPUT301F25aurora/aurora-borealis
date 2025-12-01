@@ -80,7 +80,6 @@ public class ProfileFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
 
-        avatar = v.findViewById(R.id.avatarCircle);
         roleBadge = v.findViewById(R.id.roleBadge);
         headerName = v.findViewById(R.id.headerName);
         joinedCount = v.findViewById(R.id.joinedCount);
@@ -103,12 +102,6 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Event History coming soon", Toast.LENGTH_SHORT).show());
 
         btnNotifSettings.setOnClickListener(x -> toggleNotifications());
-
-        ImageButton btnEditPhoto = v.findViewById(R.id.btnEditPhoto);
-        btnEditPhoto.setOnClickListener(x -> {
-            Toast.makeText(getContext(), "Profile photo upload coming soon!", Toast.LENGTH_SHORT).show();
-            // Logic to open image picker would go here
-        });
 
         btnDelete.setOnClickListener(x -> {
             if (userRef == null) {

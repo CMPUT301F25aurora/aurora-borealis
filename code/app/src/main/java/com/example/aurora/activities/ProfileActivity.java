@@ -67,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         backButton       = findViewById(R.id.backButtonProfile);
-        avatar           = findViewById(R.id.avatarCircle);
         roleBadge        = findViewById(R.id.roleBadge);
         headerName       = findViewById(R.id.headerName);
         joinedCount      = findViewById(R.id.joinedCount);
