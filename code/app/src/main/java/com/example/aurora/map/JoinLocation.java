@@ -1,10 +1,3 @@
-/*
- * source: Firebase docs — "Custom objects".
- * url: https://firebase.google.com/docs/firestore/manage-data/add-data#custom_objects
- * note: Demonstrates why a public no-argument constructor is required for Firestore serialization.
- */
-
-
 package com.example.aurora.map;
 /**
  * JoinLocation
