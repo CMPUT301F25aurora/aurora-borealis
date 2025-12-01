@@ -43,13 +43,14 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Entrant home screen (main screen after login)
+ * EventsActivity
  *
- * Shows events + receives real-time notifications from organizers.
+ * Main entrant home screen.
+ * Shows events, supports category filters, availability filters,
+ * searching, QR scanning, and listens for real-time notifications.
  */
 public class EventsActivity extends AppCompatActivity {
 
-    // 🔔 Notification listener
     private ListenerRegistration notifListener;
 
     private EditText searchEvents;
@@ -119,7 +120,6 @@ public class EventsActivity extends AppCompatActivity {
                             return;
                         }
 
-                        // Save mode switch
                         getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                                 .edit()
                                 .putString("user_last_mode", "organizer")
@@ -166,17 +166,12 @@ public class EventsActivity extends AppCompatActivity {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Load events
         loadEvents(null);
 
-        // 🔔 START NOTIFICATION LISTENER FOR ENTRANTS
         listenForNotifications();
     }
 
-    // ------------------------------------------------------------
-    // 🔔 REALTIME NOTIFICATION LISTENER
-    // ------------------------------------------------------------
-
+    /** Listens for Firestore notifications targeted at this entrant. */
     private void listenForNotifications() {
 
         String email = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
@@ -206,10 +201,7 @@ public class EventsActivity extends AppCompatActivity {
                 });
     }
 
-    // ------------------------------------------------------------
-    // 🔔 SHOW ANDROID NOTIFICATION
-    // ------------------------------------------------------------
-
+    /** Displays a local Android notification triggering AlertsActivity. */
     private void showLocalNotification(NotificationModel notif) {
 
         NotificationHelper helper = new NotificationHelper(this);
@@ -223,23 +215,20 @@ public class EventsActivity extends AppCompatActivity {
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
-
         helper.getManager().notify(
                 (int) System.currentTimeMillis(),
                 helper.getNotification(notif.getTitle(), notif.getMessage(), pIntent).build()
         );
     }
 
+    /** Removes Firestore listener to prevent leaks. */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (notifListener != null) notifListener.remove();
     }
 
-    // ------------------------------------------------------------
-    // EXISTING CODE — EVENTS, FILTERS, QR SCAN ETC (UNCHANGED)
-    // ------------------------------------------------------------
-
+    /** Signs out user and clears SharedPreferences. */
     private void logoutUser() {
         FirebaseAuth.getInstance().signOut();
 
@@ -253,13 +242,16 @@ public class EventsActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Loads events from Firestore.
+     * If category != null → loads filtered category.
+     */
     private void loadEvents(@Nullable String category) {
         currentCategory = category;
         Query q = db.collection("events");
         if (category != null) {
             q = q.whereEqualTo("category", category);
         }
-
         q.get()
                 .addOnSuccessListener(query -> {
                     baseEvents.clear();
@@ -274,6 +266,7 @@ public class EventsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Error loading events", Toast.LENGTH_SHORT).show());
     }
 
+    /** Shows availability filter dialog (days + morning/afternoon/evening). */
     private void showFilterDialog() {
         android.view.View view = getLayoutInflater()
                 .inflate(R.layout.dialog_filter_availability, null);
@@ -354,6 +347,10 @@ public class EventsActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Applies search + availability filters
+     * and refreshes the RecyclerView list.
+     */
     private void applyFiltersAndRefresh() {
         String q = searchEvents.getText() == null
                 ? ""
@@ -368,6 +365,7 @@ public class EventsActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    /** Returns true if event matches search text. */
     private boolean matchesSearch(Event e, String query) {
         if (query.isEmpty()) return true;
 
@@ -382,6 +380,7 @@ public class EventsActivity extends AppCompatActivity {
         return title.contains(query) || location.contains(query) || description.contains(query);
     }
 
+    /** Returns true if event fits availability filters. */
     private boolean matchesAvailability(Event e) {
         if (!isAvailabilityFilterActive()) return true;
 
@@ -415,18 +414,15 @@ public class EventsActivity extends AppCompatActivity {
 
         return dayOk && slotOk;
     }
-
     private boolean isAvailabilityFilterActive() {
         return anyDaySelected() || slotMorning || slotAfternoon || slotEvening;
     }
-
     private boolean anyDaySelected() {
         for (boolean b : daySelected) {
             if (b) return true;
         }
         return false;
     }
-
     private int dayIndexFromCalendar(int calDay) {
         switch (calDay) {
             case Calendar.MONDAY: return 0;
@@ -461,6 +457,7 @@ public class EventsActivity extends AppCompatActivity {
         return null;
     }
 
+    /** Starts QR code scanner for entering/joining events. */
     private void startQrScan() {
         IntentIntegrator integrator = new IntentIntegrator(this);
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE);
@@ -470,6 +467,7 @@ public class EventsActivity extends AppCompatActivity {
         integrator.initiateScan();
     }
 
+    /** Handles QR scan result → opens EventDetailsActivity. */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -484,6 +482,7 @@ public class EventsActivity extends AppCompatActivity {
         }
     }
 
+    /** Parses scanned QR text to detect Aurora event links. */
     private void handleScannedText(String text) {
         try {
             Uri uri = Uri.parse(text);

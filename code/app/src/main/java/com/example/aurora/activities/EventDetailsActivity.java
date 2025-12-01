@@ -77,7 +77,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgBanner;
     private TextView txtTitle,  txtTime,
-            txtLocation, txtAbout, txtStats, txtRegWindow;//txtSubtitle
+            txtLocation, txtAbout, txtStats, txtRegWindow;
     private Button btnCriteria;
     private Button btnShowQr;
     private ImageButton btnBackEvent;
@@ -86,7 +86,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private String eventId;
-    /** Identifier stored in waitingList (email preferred, else device id). */
+
     private String userId;
     private boolean isJoined = false;
     private String currentDeepLink;
@@ -97,11 +97,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details);
 
         db = FirebaseFirestore.getInstance();
-        userId = resolveCurrentUserKey();   // <- EMAIL (with fallback)
+        userId = resolveCurrentUserKey();
 
         imgBanner = findViewById(R.id.imgBanner);
         txtTitle = findViewById(R.id.txtTitle);
-        //txtSubtitle = findViewById(R.id.txtSubtitle);
+
         txtTime = findViewById(R.id.txtTime);
         txtLocation = findViewById(R.id.txtLocation);
         txtAbout = findViewById(R.id.txtAbout);
@@ -111,18 +111,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         btnShowQr = findViewById(R.id.btnShowQr);
         btnBackEvent = findViewById(R.id.btnBackEvent);
 
-        // Back arrow
         btnBackEvent.setOnClickListener(v -> onBackPressed());
         btnSignUp = findViewById(R.id.btnSignUp);
         btnSignUp.setOnClickListener(v -> signUpForEvent(eventId));
 
-
-        // Get event ID from intent extra or deep link
         eventId = getIntent().getStringExtra("eventId");
         if (eventId == null) {
             eventId = DeepLinkUtil.extractEventIdFromIntent(getIntent());
         }
-
         if (eventId == null || eventId.isEmpty()) {
             Toast.makeText(this, "No event selected", Toast.LENGTH_SHORT).show();
             finish();
@@ -132,19 +128,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         String role = sp.getString("user_role", null);
         if (role == null || role.isEmpty()) {
-            // User not logged in — save event and redirect
             getSharedPreferences("aurora", MODE_PRIVATE)
                     .edit()
                     .putString("pending_event", eventId)
                     .apply();
-
             Intent i = new Intent(this, WelcomeActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
             finish();
             return;
         }
-
 
         btnCriteria.setOnClickListener(v -> showCriteriaDialog());
 
@@ -160,24 +153,19 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Prefer to use the entrant's EMAIL as the waitingList key.
-     * Fallbacks:
-     *  - SharedPreferences "user_email" (if your login stored it)
-     *  - FirebaseAuth currentUser email
-     *  - ANDROID_ID (old behaviour)
+     * Returns the login identifier for this user.
+     * Prefers email, falls back to ANDROID_ID.
      */
     private String resolveCurrentUserKey() {
-        // 1) SharedPreferences (if you store email there)
+
         String email = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getString("user_email", null);
 
-        // 2) FirebaseAuth email
         if ((email == null || email.isEmpty())
                 && FirebaseAuth.getInstance().getCurrentUser() != null) {
             email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         }
 
-        // 3) Fallback to device ID to preserve old behaviour
         if (email == null || email.isEmpty()) {
             email = Settings.Secure.getString(
                     getContentResolver(),
@@ -187,7 +175,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         return email;
     }
 
-    // Loading + binding event
+    /** Loads the event document from Firestore. */
     private void loadEventDetails() {
         db.collection("events")
                 .document(eventId)
@@ -199,10 +187,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Binds the event fields into the UI (title, image, info).
+     * Also evaluates acceptance / final status.
+     */
     private void bindEvent(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-            // (Comment out finish() when doing certain UI tests if needed)
             finish();
             return;
         }
@@ -217,7 +208,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         String location = doc.getString("location");
         String regStart = doc.getString("registrationStart");
         String regEnd = doc.getString("registrationEnd");
-        // ⭐ Load poster image
+
         String posterUrl = doc.getString("posterUrl");
         if (posterUrl != null && !posterUrl.isEmpty()) {
             Glide.with(this)
@@ -243,26 +234,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         List<String> finalEntrants = (List<String>) doc.get("finalEntrants");
         boolean isFinal = finalEntrants != null && finalEntrants.contains(userId);
 
-// If already final → hide button
+
         if (isFinal) {
             btnSignUp.setVisibility(View.GONE);
         }
-// If accepted → show Sign Up button
         else if (isAccepted) {
             btnSignUp.setVisibility(View.VISIBLE);
         }
-// Otherwise → hide button
         else {
             btnSignUp.setVisibility(View.GONE);
         }
-
         isJoined = waiting != null && waiting.contains(userId);
-
 
         currentDeepLink = doc.getString("deepLink");
 
         txtTitle.setText(title == null ? "Event" : title);
-        //txtSubtitle.setText(location == null ? "" : location);
         txtTime.setText(date == null ? "" : date);
         txtLocation.setText(location == null ? "" : location);
         txtAbout.setText(description == null ? "" : description);
@@ -278,135 +264,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     }
 
-    // Join / leave waiting list  (stores EMAIL or fallback key and lat/lng)
-    // Join / leave waiting list  (stores EMAIL or fallback key and lat/lng)
-    private void toggleJoin() {
-        if (eventId == null) return;
-
-        final String finalEventId = eventId;
-        final String finalUserId = userId;
-
-        db.collection("events")
-                .document(finalEventId)
-                .get()
-                .addOnSuccessListener(doc -> {
-
-                    if (!doc.exists()) {
-                        Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    // ---- read geoRequired safely ----
-                    Boolean tmpGeo = doc.getBoolean("geoRequired");
-                    final boolean geoRequiredFinal = (tmpGeo != null && tmpGeo);
-
-                    // You can also recompute join here if you prefer:
-                    // List<String> waiting = (List<String>) doc.get("waitingList");
-                    // isJoined = waiting != null && waiting.contains(finalUserId);
-
-                    // --------------------------
-                    // LEAVE WAITING LIST
-                    // --------------------------
-                    if (isJoined) {
-                        db.collection("events")
-                                .document(finalEventId)
-                                .update("waitingList", FieldValue.arrayRemove(finalUserId))
-                                .addOnSuccessListener(v -> {
-                                    // Only matters if we ever stored a location
-                                    removeUserLocation(finalEventId, finalUserId);
-                                    isJoined = false;
-                                    Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
-                                });
-                        return;
-                    }
-
-                    // --------------------------
-                    // JOIN WAITING LIST
-                    // --------------------------
-
-                    // ✅ CASE 1: geoRequired == false
-                    // → NO location permission, NO GPS, NO getUserLocation()
-                    if (!geoRequiredFinal) {
-
-                        db.collection("events")
-                                .document(finalEventId)
-                                .update("waitingList", FieldValue.arrayUnion(finalUserId))
-                                .addOnSuccessListener(v -> {
-                                    isJoined = true;
-                                    Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
-                                });
-
-                        return;
-                    }
-
-                    // ✅ CASE 2: geoRequired == true
-                    // → enforce permission + GPS + real coordinates
-
-                    // 1) Permission check
-                    if (!LocationUtils.isLocationPermissionGranted(this)) {
-                        Toast.makeText(this,
-                                "This event requires your location to join.",
-                                Toast.LENGTH_LONG).show();
-                        LocationUtils.requestLocationPermission(this);
-                        return;
-                    }
-
-                    // 2) GPS setting check
-                    if (!LocationUtils.isGpsEnabled(this)) {
-                        Toast.makeText(this,
-                                "Please enable GPS to join this event.",
-                                Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        return;
-                    }
-
-                    // 3) Fetch actual location ONLY when geoRequired = true
-                    LocationUtils.getUserLocation(this, (lat, lng) -> {
-
-                        if (Double.isNaN(lat) || Double.isNaN(lng)) {
-                            Toast.makeText(this,
-                                    "Unable to get your location. Make sure GPS is enabled.",
-                                    Toast.LENGTH_LONG).show();
-                            return;
-                        }
-
-                        // 4) Save location for entrant
-                        db.collection("events")
-                                .document(finalEventId)
-                                .collection("waitingLocations")
-                                .add(new JoinLocation(finalUserId, lat, lng))
-                                .addOnSuccessListener(s -> {
-
-                                    // 5) Add to waiting list
-                                    db.collection("events")
-                                            .document(finalEventId)
-                                            .update("waitingList", FieldValue.arrayUnion(finalUserId))
-                                            .addOnSuccessListener(v -> {
-                                                isJoined = true;
-                                                Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
-                                            });
-                                });
-                    });
-
-                });
-    }
-
-
-
-
-    private void removeUserLocation(String eventId, String userId) {
-        db.collection("events")
-                .document(eventId)
-                .collection("waitingLocations")
-                .whereEqualTo("userKey", userId)
-                .get()
-                .addOnSuccessListener(query -> {
-                    for (DocumentSnapshot doc : query.getDocuments()) {
-                        doc.getReference().delete();
-                    }
-                });
-    }
-
+    /** Shows the selection criteria dialog (custom layout). */
     private void showCriteriaDialog() {
         View view = LayoutInflater.from(this)
                 .inflate(R.layout.dialog_criteria, null, false);
@@ -417,18 +275,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                 .setView(view)
                 .create();
 
-        // --- THE FIX STARTS HERE ---
-        // This removes the default white square background from the dialog window
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
         }
-
 
         btnGotIt.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }
 
-
+    /** Generates a QR code Bitmap and shows it in a popup dialog. */
     private void showQrPopup(String deepLink) {
         try {
             int size = 800;
@@ -458,6 +313,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Moves the entrant from acceptedEntrants → finalEntrants.
+     * Called when they press "Sign Up".
+     */
     private void signUpForEvent(String eventId) {
 
         db.collection("events").document(eventId)
@@ -473,6 +332,4 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to sign up", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
 }

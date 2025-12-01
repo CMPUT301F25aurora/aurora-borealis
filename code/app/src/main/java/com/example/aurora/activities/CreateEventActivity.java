@@ -161,7 +161,6 @@ import android.provider.MediaStore;
  */
 public class CreateEventActivity extends AppCompatActivity {
 
-    // UI Components
     private EditText editTitle, editDescription;
     private AutoCompleteTextView editLocation;
     private Spinner spinnerCategory;
@@ -172,37 +171,32 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private ImageView imgPosterPreview;
 
-    // Date/Time Pickers
     private Button btnPickStartDate, btnPickStartTime;
     private Button btnPickEndDate, btnPickEndTime;
     private Button btnPickRegStartDate, btnPickRegStartTime;
     private Button btnPickRegEndDate, btnPickRegEndTime;
 
-    // Date/Time Display TextViews
     private TextView txtStartDateTime, txtEndDateTime;
     private TextView txtRegStartDateTime, txtRegEndDateTime;
 
-    // Calendar instances to store selected dates/times
     private Calendar startCalendar = Calendar.getInstance();
     private Calendar endCalendar = Calendar.getInstance();
     private Calendar regStartCalendar = Calendar.getInstance();
     private Calendar regEndCalendar = Calendar.getInstance();
 
-    // Event Location (lat/lng chosen from map)
     private Double eventLat = null;
     private Double eventLng = null;
 
-    // ActivityResultLauncher for map picker
     private ActivityResultLauncher<Intent> mapPickerLauncher;
     // Poster
     private Uri selectedPosterUri = null;
 
-    // Firebase
+
     private FirebaseFirestore db;
     private StorageReference posterStorageRef;
     private ActivityResultLauncher<Intent> posterPickerLauncher;
 
-    // Date format for display
+
     private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
     private PlacesClient placesClient;
     private ArrayAdapter<String> locationSuggestionsAdapter;
@@ -368,10 +362,8 @@ public class CreateEventActivity extends AppCompatActivity {
                     .addOnSuccessListener(fetchResponse -> {
                         Place place = fetchResponse.getPlace();
 
-                        // Set text
                         editLocation.setText(place.getAddress());
 
-                        // Set lat/lng for event
                         if (place.getLatLng() != null) {
                             eventLat = place.getLatLng().latitude;
                             eventLng = place.getLatLng().longitude;
@@ -386,9 +378,9 @@ public class CreateEventActivity extends AppCompatActivity {
      * These correspond to the organizer user stories for event tagging.
      */
     private void setupCategorySpinner() {
-        // Categories from user stories
+
         String[] categories = {
-                "Select a category", // This will be your hint
+                "Select a category",
                 "Music",
                 "Sports",
                 "Education",
@@ -397,14 +389,12 @@ public class CreateEventActivity extends AppCompatActivity {
                 "Community"
         };
 
-        // Use 'R.layout.item_spinner' (the file we created) instead of 'android.R.layout.simple_spinner_item'
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 R.layout.item_spinner,
                 categories
         );
 
-        // This sets how the list looks when you click it open
         adapter.setDropDownViewResource(R.layout.item_spinner);
 
         spinnerCategory.setAdapter(adapter);
@@ -415,19 +405,16 @@ public class CreateEventActivity extends AppCompatActivity {
      * When a date/time is selected, the appropriate TextView is updated.
      */
     private void setupDateTimePickers() {
-        // Start Date/Time
+
         btnPickStartDate.setOnClickListener(v -> showDatePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
         btnPickStartTime.setOnClickListener(v -> showTimePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
 
-        // End Date/Time
         btnPickEndDate.setOnClickListener(v -> showDatePicker(endCalendar, () -> updateDateTimeDisplay(txtEndDateTime, endCalendar)));
         btnPickEndTime.setOnClickListener(v -> showTimePicker(endCalendar, () -> updateDateTimeDisplay(txtEndDateTime, endCalendar)));
 
-        // Registration Start Date/Time
         btnPickRegStartDate.setOnClickListener(v -> showDatePicker(regStartCalendar, () -> updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar)));
         btnPickRegStartTime.setOnClickListener(v -> showTimePicker(regStartCalendar, () -> updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar)));
 
-        // Registration End Date/Time
         btnPickRegEndDate.setOnClickListener(v -> showDatePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
         btnPickRegEndTime.setOnClickListener(v -> showTimePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
     }
@@ -488,7 +475,7 @@ public class CreateEventActivity extends AppCompatActivity {
     private void updateDateTimeDisplay(TextView textView, Calendar calendar) {
         String formatted = dateTimeFormat.format(calendar.getTime());
         textView.setText(formatted);
-        textView.setTextColor(Color.parseColor("#212121")); // Make it dark when set
+        textView.setTextColor(Color.parseColor("#212121"));
     }
 
     /**
@@ -514,7 +501,6 @@ public class CreateEventActivity extends AppCompatActivity {
                 }
         );
     }
-
 
     /**
      * Loads and decodes the selected poster image into a Bitmap preview.
@@ -549,12 +535,11 @@ public class CreateEventActivity extends AppCompatActivity {
      * If validation succeeds, begins Firestore event creation.
      */
     private void createEvent() {
-        // Get basic info
+
         String title = editTitle.getText().toString().trim();
         String description = editDescription.getText().toString().trim();
         String location = editLocation.getText().toString().trim();
 
-        // Get category from spinner
         int categoryPosition = spinnerCategory.getSelectedItemPosition();
         if (categoryPosition == 0) {
             Toast.makeText(this, "Please select a category", Toast.LENGTH_SHORT).show();
@@ -562,19 +547,16 @@ public class CreateEventActivity extends AppCompatActivity {
         }
         String category = spinnerCategory.getSelectedItem().toString();
 
-        // Validate required fields
         if (title.isEmpty() || description.isEmpty() || location.isEmpty()) {
             Toast.makeText(this, "Please fill in title, description, and location", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Check if start date/time was set
         if (txtStartDateTime.getText().toString().equals("No date/time selected")) {
             Toast.makeText(this, "Please set a start date and time", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Get date/time strings
         String startDate = dateTimeFormat.format(startCalendar.getTime());
         String endDate = txtEndDateTime.getText().toString().equals("No date/time selected")
                 ? null
@@ -586,7 +568,6 @@ public class CreateEventActivity extends AppCompatActivity {
                 ? null
                 : dateTimeFormat.format(regEndCalendar.getTime());
 
-        // Get capacity/lottery options
         String maxSpotsStr = editMaxSpots.getText().toString().trim();
         String lotterySizeStr = editLotterySampleSize.getText().toString().trim();
 
@@ -611,7 +592,6 @@ public class CreateEventActivity extends AppCompatActivity {
         }
 
         boolean geoRequired = checkGeoRequired.isChecked();
-        // ⭐ FIX — image size validation OK
         if (selectedPosterUri != null) {
             Cursor cursor = getContentResolver().query(selectedPosterUri, null, null, null, null);
             if (cursor != null) {
@@ -633,7 +613,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
         if (eventLat == null || eventLng == null) {
             geocodeTextLocation(location);
-            return; // createEventInFirestore will run AFTER geocoding
+            return;
         }
 
 
@@ -683,45 +663,35 @@ public class CreateEventActivity extends AppCompatActivity {
         event.put("location", location);
         event.put("category", category);
 
-        // Event timing
+
         event.put("startDate", startDate);
         event.put("endDate", endDate);
-        // For older parts of the app that expect a "date" string
+
         event.put("date", startDate);
 
-        // Registration window
         event.put("registrationStart", regStart);
         event.put("registrationEnd", regEnd);
 
-        // Capacity / lottery
         event.put("maxSpots", maxSpots);
         event.put("lotterySampleSize", lotterySampleSize);
 
-        // Geo requirement
         event.put("geoRequired", geoRequired);
 
-        // Poster
-        // ⭐ CHANGE — at creation, file doesn't exist yet
         event.put("posterUrl", null);
 
-
-        // Organizer
         String organizerEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getString("user_email", null);
         event.put("organizerEmail", organizerEmail);
 
-        // Lists for lottery management
         event.put("waitingList", new ArrayList<String>());
         event.put("selectedEntrants", new ArrayList<String>());
         event.put("finalEntrants", new ArrayList<String>());
         event.put("cancelledEntrants", new ArrayList<String>());
 
-        // Metadata
         event.put("createdAt", FieldValue.serverTimestamp());
 
         event.put("eventLat", eventLat);
         event.put("eventLng", eventLng);
-
 
         db.collection("events")
                 .add(event)
@@ -732,9 +702,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
                     ActivityLogger.logEventCreated(eventId, title);
 
-                    // ⭐ CHANGE — upload poster BEFORE showing QR / navigating home
                     if (posterUri != null) {
-                        uploadPosterAndAttachToEvent(eventId, posterUri, deepLink); // ⭐ FIX added deepLink param
+                        uploadPosterAndAttachToEvent(eventId, posterUri, deepLink);
                     } else {
                         goBackToOrganizerHome();
                     }
@@ -761,7 +730,6 @@ public class CreateEventActivity extends AppCompatActivity {
                 })
                 .addOnSuccessListener(downloadUri -> {
 
-                    // ⭐ NEW: Update preview with actual Firebase URL
                     Glide.with(this)
                             .load(downloadUri)
                             .centerCrop()
@@ -817,7 +785,6 @@ public class CreateEventActivity extends AppCompatActivity {
                 eventLat = addr.getLatitude();
                 eventLng = addr.getLongitude();
 
-                // Directly create event — DO NOT call createEvent() again
                 createEventInFirestore(
                         selectedPosterUri,
                         editTitle.getText().toString().trim(),
@@ -846,7 +813,4 @@ public class CreateEventActivity extends AppCompatActivity {
             Toast.makeText(this, "Error finding location", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
 }

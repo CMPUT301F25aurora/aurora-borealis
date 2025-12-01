@@ -1,3 +1,9 @@
+/**
+ * Shows all notifications for the logged-in user.
+ * Listens to Firestore in real time and displays each alert.
+ * Supports accepting/declining event invites and dismissing messages.
+ */
+
 package com.example.aurora.activities;
 
 import android.os.Bundle;
@@ -17,14 +23,18 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-
-import java.text.SimpleDateFormat;
+;
 import java.util.HashMap;
-import java.util.Locale;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Collections;
 
+
+/**
+ * Displays real-time notifications for the logged-in user.
+ * Listens to Firestore for new notifications, sorts them by time,
+ * and shows actionable buttons such as Accept, Decline, or Dismiss.
+ */
 public class AlertsActivity extends AppCompatActivity {
 
     private LinearLayout alertsContainer;
@@ -34,6 +44,10 @@ public class AlertsActivity extends AppCompatActivity {
 
     private ListenerRegistration notifListener;
 
+    /**
+     * Initializes the Alerts screen, binds UI components, loads the user's email,
+     * and begins listening for live notification updates.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +67,12 @@ public class AlertsActivity extends AppCompatActivity {
         listenNotifications();
     }
 
+
+    /**
+     * Sets a real-time Firestore listener on the user's notifications.
+     * Automatically refreshes the UI whenever notifications are added, removed,
+     * or updated. Sorts notifications by timestamp (newest first).
+     */
     private void listenNotifications() {
 
         if (userEmail == null || userEmail.isEmpty()) {
@@ -61,7 +81,6 @@ public class AlertsActivity extends AppCompatActivity {
             return;
         }
 
-        // Clean old listener if reopening the screen
         if (notifListener != null) notifListener.remove();
 
         notifListener = db.collection("notifications")
@@ -81,9 +100,9 @@ public class AlertsActivity extends AppCompatActivity {
 
                     List<DocumentSnapshot> docs = snapshot.getDocuments();
                     docs.sort((a, b) -> {
-                        long t1 = getDocTime(a);   // ⭐ NEW
-                        long t2 = getDocTime(b);   // ⭐ NEW
-                        return Long.compare(t2, t1); // Newest first
+                        long t1 = getDocTime(a);
+                        long t2 = getDocTime(b);
+                        return Long.compare(t2, t1);
                     });
 
                     for (DocumentSnapshot doc : docs) {
@@ -91,6 +110,13 @@ public class AlertsActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    /**
+     * Extracts a timestamp from a notification document.
+     * Supports both 'createdAt' and 'timestamp' fields for compatibility.
+     *
+     * @return time in milliseconds, or 0 if missing.
+     */
     private long getDocTime(DocumentSnapshot doc) {
         Long createdAt = doc.getLong("createdAt");
         if (createdAt != null) return createdAt;
@@ -98,8 +124,14 @@ public class AlertsActivity extends AppCompatActivity {
         Long ts = doc.getLong("timestamp");
         if (ts != null) return ts;
 
-        return 0L; // fallback
+        return 0L;
     }
+
+    /**
+     * Inflates a notification card into the list and populates it with title,
+     * message, timestamp, and action buttons. Decides which action buttons to show
+     * based on notification type (winner, waiting info, custom message, etc.).
+     */
     private void addNotificationCard(DocumentSnapshot doc) {
 
         View card = LayoutInflater.from(this)
@@ -111,10 +143,8 @@ public class AlertsActivity extends AppCompatActivity {
 
         View btnAccept = card.findViewById(R.id.btnAccept);
         View btnDecline = card.findViewById(R.id.btnDecline);
-        ///// ADDED
-        View btnDismiss = card.findViewById(R.id.btnDismiss);
-///// END
 
+        View btnDismiss = card.findViewById(R.id.btnDismiss);
 
         String notifId = doc.getId();
         String eventId = doc.getString("eventId");
@@ -123,9 +153,6 @@ public class AlertsActivity extends AppCompatActivity {
         title.setText(doc.getString("title"));
         msg.setText(doc.getString("message"));
 
-        // Time formatting
-        // Read the real timestamp you stored
-        // Try both field names: createdAt (entrant) OR timestamp (admin)
             Object t = doc.get("createdAt");
             if (t == null) t = doc.get("timestamp");
 
@@ -138,12 +165,6 @@ public class AlertsActivity extends AppCompatActivity {
                 time.setVisibility(View.GONE);
             }
 
-
-
-            // 🚫 HIDE Accept/Decline for NOT_SELECTED
-        ///// CHANGED — Added waiting_list_info handling
-
-        // ⭐ DISMISS-ONLY NOTIFICATIONS
         if ("waiting_list_info".equals(notifType)
                 || "selected_list_info".equals(notifType)
                 || "cancelled_list_info".equals(notifType)) {
@@ -188,13 +209,14 @@ public class AlertsActivity extends AppCompatActivity {
             btnDismiss.setOnClickListener(v -> deleteNotification(notifId));
         }
 
-
-///// END
-
-
         alertsContainer.addView(card);
     }
 
+
+    /**
+     * Marks the user as having accepted their selected event spot.
+     * Updates Firestore and removes the corresponding notification.
+     */
     private void acceptEvent(String eventId, String notifId) {
 
         db.collection("events").document(eventId)
@@ -216,8 +238,10 @@ public class AlertsActivity extends AppCompatActivity {
                 ).show());
     }
 
-
-
+    /**
+     * Marks the user as having declined the event spot. Removes them from the
+     * selected list, logs the decline, notifies the organizer, and deletes the notification.
+     */
     private void declineEvent(String eventId, String notifId) {
 
         db.collection("events").document(eventId)
@@ -244,8 +268,9 @@ public class AlertsActivity extends AppCompatActivity {
     }
 
 
-
-
+    /**
+     * Sends a replacement-chance notification to a user when a spot opens up.
+     */
     private void sendReplacementNotification(String eventId, String userEmail) {
         Map<String, Object> notif = new HashMap<>();
         notif.put("userEmail", userEmail);
@@ -258,13 +283,19 @@ public class AlertsActivity extends AppCompatActivity {
         db.collection("notifications").add(notif);
     }
 
-
+    /**
+     * Removes a notification from Firestore permanently.
+     */
     private void deleteNotification(String notifId) {
         db.collection("notifications")
                 .document(notifId)
                 .delete();
     }
 
+    /**
+     * Notifies the organizer when an entrant declines their spot.
+     * Creates a lightweight NotificationModel and stores it in Firestore.
+     */
     private void sendDeclineNoticeToOrganizer(String eventId) {
         db.collection("events")
                 .document(eventId)
@@ -286,60 +317,19 @@ public class AlertsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Stops the Firestore real-time listener to prevent memory leaks.
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (notifListener != null) notifListener.remove();
     }
 
-    private void pickReplacementEntrant(String eventId) {
-
-        db.collection("events").document(eventId).get()
-                .addOnSuccessListener(doc -> {
-
-                    if (!doc.exists()) return;
-
-                    List<String> waiting = (List<String>) doc.get("waitingList");
-                    List<String> selected = (List<String>) doc.get("selectedEntrants");
-
-                    if (waiting == null || waiting.isEmpty()) {
-                        return;
-                    }
-
-                    String replacement = waiting.get(0);
-
-                    db.collection("events").document(eventId)
-                            .update(
-                                    "selectedEntrants", FieldValue.arrayUnion(replacement),
-                                    "waitingList", FieldValue.arrayRemove(replacement)
-                            )
-                            .addOnSuccessListener(v -> sendReplacementNotification(eventId, replacement));
-                });
-    }
-
-
-    private void createReplacementNotification(String eventId, String userEmail) {
-
-        String notifId = db.collection("notifications").document().getId();
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", notifId);
-        data.put("eventId", eventId);
-        data.put("userEmail", userEmail);
-        data.put("type", "replacement_offer");
-        data.put("title", "You have been selected!");
-        data.put("message", "A spot opened up for an event you joined.");
-        data.put("timestamp", System.currentTimeMillis());
-        data.put("status", "unread");
-
-        db.collection("notifications").document(notifId).set(data);
-    }
-
-    private void markNotificationStatus(String notifId, String status) {
-        db.collection("notifications")
-                .document(notifId)
-                .update("status", status);
-    }
+    /**
+     * Formats a timestamp into a human-readable relative time string
+     * (e.g., "5 minutes ago", "Yesterday").
+     */
     private String getRelativeTime(long millis) {
         return android.text.format.DateUtils.getRelativeTimeSpanString(
                 millis,
