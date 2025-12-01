@@ -47,9 +47,6 @@ public class AdminFeaturesTest {
         // Common setup if needed
     }
 
-    // ==================================================================
-    // US 03.04.01 & US 03.01.01: BROWSING & REMOVING EVENTS (10 Tests)
-    // ==================================================================
 
     @Test
     public void testEvent_Browsing_CalculatesWaitingCount() {

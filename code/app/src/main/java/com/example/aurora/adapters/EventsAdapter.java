@@ -27,7 +27,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/**
+ * RecyclerView adapter for displaying event cards in the Entrant view.
+ * Handles:
+ * - Loading event info (poster, title, date, location)
+ * - Determining user status (waiting, selected, accepted, final, cancelled, none)
+ * - Joining / leaving waiting lists
+ * - Location-based restrictions
+ * - Live Firestore updates for event lists
+ */
 public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewHolder> {
 
     private final Context context;
@@ -58,11 +66,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         this.userKey = email;
     }
 
-    // ============================================================
-    // USER CURRENT STATUS
-    // ============================================================
-    // USER CURRENT STATUS
-// ============================================================
+    /**
+     * Determines the user's current participation status in an event.
+     * @return one of: "final", "accepted", "selected", "cancelled", "waiting", "none"
+     */
     private String getUserStatus(Event e) {
 
         if (e.getFinalEntrants() != null && e.getFinalEntrants().contains(userKey)) {
@@ -84,10 +91,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return "none";
     }
 
-
-    // ============================================================
-    // UPDATE BUTTON UI
-    // ============================================================
+    /**
+     * Updates the join button text and state depending on the user's status.
+     */
     private void updateJoinButton(Button btn, String status) {
 
         switch (status) {
@@ -124,7 +130,12 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         }
     }
 
-
+    /**
+     * Attempts to join the waiting list.
+     * Handles all cases:
+     * - geoRequired false → optionally store location
+     * - geoRequired true → require permission + GPS
+     */
     private void joinWaitingList(Event e, Button button) {
 
         String eventId = e.getEventId();
@@ -151,16 +162,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    // ============================================================
-                    // CASE A: geoRequired = FALSE
-                    // ============================================================
                     if (!geoRequired) {
 
                         boolean hasPermission = LocationUtils.isLocationPermissionGranted(context);
                         boolean gpsOn = LocationUtils.isGpsEnabled(context);
 
-                        // ---- SUBCASE A1: GPS OFF OR NO PERMISSION ----
-                        // join list WITHOUT storing a location
                         if (!hasPermission || !gpsOn) {
 
                             db.collection("events")
@@ -174,8 +180,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                             return;
                         }
 
-                        // ---- SUBCASE A2: GPS ON + permission granted ----
-                        // join normally AND store location
+
                         LocationUtils.getUserLocation(context, (lat, lng) -> {
 
                             if (Double.isNaN(lat) || Double.isNaN(lng)) {
@@ -189,7 +194,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                                         });
                                 return;
                             }
-
                             // Save location
                             db.collection("events")
                                     .document(eventId)
@@ -210,14 +214,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    // ============================================================
-                    // CASE B: geoRequired = TRUE
-                    // ============================================================
-
                     boolean hasPermission = LocationUtils.isLocationPermissionGranted(context);
                     boolean gpsOn = LocationUtils.isGpsEnabled(context);
 
-                    // ---- SUBCASE B1: missing permission or GPS ----
                     if (!hasPermission) {
                         Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
                         LocationUtils.requestLocationPermission(context);
@@ -233,7 +232,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    // ---- SUBCASE B2: everything ON → fetch location ----
                     LocationUtils.getUserLocation(context, (lat, lng) -> {
 
                         if (Double.isNaN(lat) || Double.isNaN(lng)) {
@@ -241,7 +239,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                             return;
                         }
 
-                        // Save location
                         db.collection("events")
                                 .document(eventId)
                                 .collection("waitingLocations")
@@ -260,11 +257,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 });
     }
 
-
-
-    // ============================================================
-    // LEAVE WAITING LIST
-    // ============================================================
+    /**
+     * Removes the user from the waiting list and deletes their stored location entry.
+     */
     private void leaveWaitingList(Event e, Button button) {
 
         String eventId = e.getEventId();
@@ -292,7 +287,9 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 });
     }
 
-    // SIGN UP FROM PREVIEW (accepted -> final)
+    /**
+     * Moves user from accepted → final entrants when they sign up.
+     */
     private void signUpFromPreview(Event e, Button button) {
 
         String eventId = e.getEventId();
@@ -313,9 +310,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     }
 
 
-    // ============================================================
-    // BIND VIEW HOLDER
-    // ============================================================
     @NonNull
     @Override
     public EventViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -323,6 +317,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return new EventViewHolder(view);
     }
 
+    /**
+     * Binds event data, loads poster, sets up real-time Firestore listener,
+     * handles join/leave/sign-up logic, and opens details screen.
+     */
     @Override
     public void onBindViewHolder(@NonNull EventViewHolder holder, int position) {
 
@@ -358,9 +356,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                     updateJoinButton(holder.btnJoin, getUserStatus(e));
                 });
 
-        // BUTTON ACTION
-        // BUTTON ACTION
-        // BUTTON ACTION
         holder.btnJoin.setOnClickListener(v -> {
 
             String status = getUserStatus(e);
@@ -374,8 +369,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             }
         });
 
-
-        // DETAILS BUTTON
         holder.btnViewDetails.setOnClickListener(v -> {
             Intent i = new Intent(context, EventDetailsActivity.class);
             i.putExtra("eventId", e.getEventId());
@@ -388,9 +381,10 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return events.size();
     }
 
-    // ============================================================
-    // VIEW HOLDER
-    // ============================================================
+    /**
+     * Holds references to event title, date, location, poster,
+     * join button, and details button.
+     */
     public static class EventViewHolder extends RecyclerView.ViewHolder {
 
         ImageView eventImage;

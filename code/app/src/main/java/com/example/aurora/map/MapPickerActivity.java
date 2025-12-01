@@ -1,3 +1,15 @@
+/*
+ * References for this screen:
+ *
+ * 1) source: Google Maps SDK — "Maps SDK for Android"
+ *    https://developers.google.com/maps/documentation/android-sdk
+ *    Used for implementing GoogleMap, markers, and tap listeners.
+ *
+ * 2) source: Android Developers — "Request App Permissions"
+ *    https://developer.android.com/training/permissions/requesting
+ *    Used for runtime ACCESS_FINE_LOCATION permission flow.
+ *
+ */
 package com.example.aurora.map;
 
 import android.Manifest;
@@ -24,15 +36,26 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCallback {
+/**
+ * MapPickerActivity
+ *
+ * This screen allows the user to visually select an event location on
+ * a Google Map by tapping anywhere on the map.
+ *
+ * Features:
+ *  Displays a Google Map with the user's current location (if permitted).
+ *  Lets the user tap anywhere to drop a marker.
+ *  Sends the selected latitude/longitude back to the caller activity via setResult().
+ *  Handles runtime location permissions cleanly.
+ */
 
+public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private Marker currentMarker;
     private LatLng selectedLatLng;
 
     private FusedLocationProviderClient fusedLocationClient;
     private Button btnConfirm;
-
     private static final int REQUEST_LOCATION = 1001;
 
     @Override
@@ -68,6 +91,12 @@ public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCa
         });
     }
 
+    /**
+     * Called when the GoogleMap is fully ready.
+     * Sets tap listener and enables user location display.
+     *
+     * @param googleMap the fully loaded Google Map instance
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
@@ -87,6 +116,10 @@ public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCa
         enableUserLocation();
     }
 
+    /**
+     * Requests location permission if not granted.
+     * If granted, enables blue "my location" dot and centers the camera.
+     */
     private void enableUserLocation() {
         if (ActivityCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -102,7 +135,6 @@ public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCa
         }
 
         mMap.setMyLocationEnabled(true);
-
         // Center map on user's current location
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(location -> {
@@ -113,6 +145,10 @@ public class MapPickerActivity extends AppCompatActivity implements OnMapReadyCa
                 });
     }
 
+    /**
+     * Handles the result of a permission request.
+     * If location is granted, enable location display; otherwise show a warning.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
