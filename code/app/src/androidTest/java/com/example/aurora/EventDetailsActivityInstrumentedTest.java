@@ -171,4 +171,60 @@ public class EventDetailsActivityInstrumentedTest {
                 .check(matches(isDisplayed()));
     }
 
+    @Test
+    public void testSignUpVisibleForAcceptedEntrantAndClickable() throws Exception {
+        Context context = ApplicationProvider.getApplicationContext();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // This will be the "identity" of the entrant in the event doc
+        String testEmail = "entrant-signup-test@example.com";
+        String acceptedEventId = "test-event-accepted-123";
+
+        // Pretend we are logged in as an entrant with this email
+        SharedPreferences sp =
+                context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("user_role", "entrant")
+                .putString("user_email", testEmail)
+                .apply();
+
+        // Seed the event so that this user is in acceptedEntrants
+        Map<String,Object> data = new HashMap<>();
+        data.put("title", "Accepted Event");
+        data.put("about", "You have been selected and can now sign up.");
+        data.put("description", "Sign-up test event");
+        data.put("capacity", 5L);
+
+        java.util.List<String> accepted = new java.util.ArrayList<>();
+        accepted.add(testEmail);
+        data.put("acceptedEntrants", accepted);
+
+        // Optional: also include them in waitingList to mirror real data shape
+        java.util.List<String> waiting = new java.util.ArrayList<>();
+        waiting.add(testEmail);
+        data.put("waitingList", waiting);
+
+        // Write and wait for completion so the doc definitely exists
+        Tasks.await(
+                db.collection("events").document(acceptedEventId).set(data),
+                5,
+                java.util.concurrent.TimeUnit.SECONDS
+        );
+
+        // Launch EventDetailsActivity for this accepted event
+        Intent intent = new Intent(context, com.example.aurora.activities.EventDetailsActivity.class);
+        intent.putExtra("eventId", acceptedEventId);
+        ActivityScenario.launch(intent);
+
+        // Because this user is in acceptedEntrants, the Sign Up button
+        // should be visible (not GONE) on the details screen.
+        onView(withId(R.id.btnSignUp))
+                .check(matches(withEffectiveVisibility(
+                        androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
+                )));
+
+        // And tapping it should not crash the app
+        onView(withId(R.id.btnSignUp))
+                .perform(click());
+    }
 }
