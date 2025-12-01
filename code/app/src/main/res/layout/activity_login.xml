@@ -9,13 +9,15 @@
     android:padding="24dp">
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/welcomeLogo"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:layout_marginBottom="16dp"
+        android:background="@drawable/logo_circle_mask"
+        android:backgroundTint="#2f4858"
         android:src="@drawable/ourlogo"
-        android:contentDescription="Aurora Chance Logo"
-        android:layout_gravity="center" />
+        android:scaleType="centerCrop"
+        android:clipToOutline="true"
+        android:contentDescription="Aurora Chance Logo" />
 
     <TextView
         android:layout_width="wrap_content"

@@ -12,6 +12,9 @@
  * 3) source: Android Developers — "Intent and Intent Filters"
  *    https://developer.android.com/guide/components/intents-filters
  *    Used for understanding how explicit Intents are used to navigate between screens.
+ *
+ * 4) source: Gemini Image Generator - To generate the aurora_logo.png
+ *    Used to create a team logo (mainly to help to the overall vibe of the app
  */
 
 package com.example.aurora.activities;

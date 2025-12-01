@@ -281,7 +281,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Waiting"
-            android:textColor="#fe7f2d"
+            android:textColor="#29B6F6"
             android:textStyle="bold" />
 
         <TextView
@@ -292,7 +292,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Selected"
-            android:textColor="#FFFFFF" />
+            android:textColor="#50d313" />
 
         <TextView
             android:id="@+id/tabCancelled"
@@ -302,7 +302,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Cancelled"
-            android:textColor="#FFFFFF" />
+            android:textColor="#EF5350" />
 
         <TextView
             android:id="@+id/tabFinal"
@@ -312,7 +312,7 @@
             android:gravity="center"
             android:paddingVertical="8dp"
             android:text="Final"
-            android:textColor="#FFFFFF" />
+            android:textColor="#fe7f2d" />
 
     </LinearLayout>
 
