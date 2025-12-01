@@ -60,4 +60,11 @@ public class NotificationHelper extends ContextWrapper {
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
     }
+
+    public class NotificationUtils {
+        public static boolean shouldSendToUser(boolean notificationsEnabledFlag) {
+            return notificationsEnabledFlag; // basic example
+        }
+    }
+
 }
