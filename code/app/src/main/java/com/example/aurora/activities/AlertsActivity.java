@@ -221,49 +221,28 @@ public class AlertsActivity extends AppCompatActivity {
     private void declineEvent(String eventId, String notifId) {
 
         db.collection("events").document(eventId)
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    if (!snapshot.exists()) return;
+                .update(
+                        "cancelledEntrants", FieldValue.arrayUnion(userEmail),
+                        "selectedEntrants", FieldValue.arrayRemove(userEmail)
+                )
+                .addOnSuccessListener(v -> {
 
-                    List<String> waiting = (List<String>) snapshot.get("waitingList");
-                    List<String> selected = (List<String>) snapshot.get("selectedEntrants");
+                    deleteNotification(notifId);
+                    sendDeclineNoticeToOrganizer(eventId);
 
-                    // Remove declining user from selected + add to cancelled
-                    db.collection("events").document(eventId)
-                            .update(
-                                    "cancelledEntrants", FieldValue.arrayUnion(userEmail),
-                                    "selectedEntrants", FieldValue.arrayRemove(userEmail)
-                            )
-                            .addOnSuccessListener(v -> {
-
-                                deleteNotification(notifId);
-                                sendDeclineNoticeToOrganizer(eventId);
-
-                                // ---- PICK NEXT USER ----
-                                if (waiting != null && !waiting.isEmpty()) {
-
-                                    String nextUser = waiting.get(0);
-
-                                    db.collection("events").document(eventId)
-                                            .update(
-                                                    "selectedEntrants", FieldValue.arrayUnion(nextUser),
-                                                    "waitingList", FieldValue.arrayRemove(nextUser)
-                                            )
-                                            .addOnSuccessListener(r -> {
-
-                                                // Notify the next user
-                                                sendReplacementNotification(eventId, nextUser);
-
-                                                Toast.makeText(
-                                                        this,
-                                                        "You’ve declined your spot. Another entrant has been selected.",
-                                                        Toast.LENGTH_SHORT
-                                                ).show();
-                                            });
-                                }
-                            });
-                });
+                    Toast.makeText(
+                            this,
+                            "You’ve declined your spot.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                })
+                .addOnFailureListener(e -> Toast.makeText(
+                        this,
+                        "Failed to decline spot.",
+                        Toast.LENGTH_SHORT
+                ).show());
     }
+
 
 
 
