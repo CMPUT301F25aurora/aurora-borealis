@@ -406,17 +406,63 @@ public class CreateEventActivity extends AppCompatActivity {
      */
     private void setupDateTimePickers() {
 
-        btnPickStartDate.setOnClickListener(v -> showDatePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
-        btnPickStartTime.setOnClickListener(v -> showTimePicker(startCalendar, () -> updateDateTimeDisplay(txtStartDateTime, startCalendar)));
+        btnPickStartDate.setOnClickListener(v ->
+                showDatePicker(startCalendar, () -> {
+                    updateDateTimeDisplay(txtStartDateTime, startCalendar);
+                    btnPickStartDate.setText(dateOnly(startCalendar));  // ★ FIX
+                })
+        );
 
-        btnPickEndDate.setOnClickListener(v -> showDatePicker(endCalendar, () -> updateDateTimeDisplay(txtEndDateTime, endCalendar)));
-        btnPickEndTime.setOnClickListener(v -> showTimePicker(endCalendar, () -> updateDateTimeDisplay(txtEndDateTime, endCalendar)));
+        btnPickStartTime.setOnClickListener(v ->
+                showTimePicker(startCalendar, () -> {
+                    updateDateTimeDisplay(txtStartDateTime, startCalendar);
+                    btnPickStartTime.setText(timeOnly(startCalendar));  // ★ FIX
+                })
+        );
 
-        btnPickRegStartDate.setOnClickListener(v -> showDatePicker(regStartCalendar, () -> updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar)));
-        btnPickRegStartTime.setOnClickListener(v -> showTimePicker(regStartCalendar, () -> updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar)));
+        btnPickEndDate.setOnClickListener(v ->
+                showDatePicker(endCalendar, () -> {
+                    updateDateTimeDisplay(txtEndDateTime, endCalendar);
+                    btnPickEndDate.setText(dateOnly(endCalendar));
+                })
+        );
 
-        btnPickRegEndDate.setOnClickListener(v -> showDatePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
-        btnPickRegEndTime.setOnClickListener(v -> showTimePicker(regEndCalendar, () -> updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar)));
+        btnPickEndTime.setOnClickListener(v ->
+                showTimePicker(endCalendar, () -> {
+                    updateDateTimeDisplay(txtEndDateTime, endCalendar);
+                    btnPickEndTime.setText(timeOnly(endCalendar));
+                })
+        );
+
+        btnPickRegStartDate.setOnClickListener(v ->
+                showDatePicker(regStartCalendar, () -> {
+                    updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar);
+                    btnPickRegStartDate.setText(dateOnly(regStartCalendar));    // ★ FIX
+                })
+        );
+
+        btnPickRegStartTime.setOnClickListener(v ->
+                showTimePicker(regStartCalendar, () -> {
+                    updateDateTimeDisplay(txtRegStartDateTime, regStartCalendar);
+                    btnPickRegStartTime.setText(timeOnly(regStartCalendar));
+                })
+        );
+
+
+        // REGISTRATION END DATE/TIME
+        btnPickRegEndDate.setOnClickListener(v ->
+                showDatePicker(regEndCalendar, () -> {
+                    updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar);
+                    btnPickRegEndDate.setText(dateOnly(regEndCalendar));
+                })
+        );
+
+        btnPickRegEndTime.setOnClickListener(v ->
+                showTimePicker(regEndCalendar, () -> {
+                    updateDateTimeDisplay(txtRegEndDateTime, regEndCalendar);
+                    btnPickRegEndTime.setText(timeOnly(regEndCalendar));
+                })
+        );
     }
 
     /**
@@ -813,4 +859,14 @@ public class CreateEventActivity extends AppCompatActivity {
             Toast.makeText(this, "Error finding location", Toast.LENGTH_SHORT).show();
         }
     }
+    private String dateOnly(Calendar c) {
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                .format(c.getTime());
+    }
+
+    private String timeOnly(Calendar c) {
+        return new SimpleDateFormat("HH:mm", Locale.getDefault())
+                .format(c.getTime());
+    }
+
 }
