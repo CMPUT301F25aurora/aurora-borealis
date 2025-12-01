@@ -61,10 +61,15 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     // ============================================================
     // USER CURRENT STATUS
     // ============================================================
+    // USER CURRENT STATUS
+// ============================================================
     private String getUserStatus(Event e) {
 
         if (e.getFinalEntrants() != null && e.getFinalEntrants().contains(userKey)) {
             return "final";
+        }
+        if (e.getAcceptedEntrants() != null && e.getAcceptedEntrants().contains(userKey)) {
+            return "accepted";
         }
         if (e.getSelectedEntrants() != null && e.getSelectedEntrants().contains(userKey)) {
             return "selected";
@@ -79,6 +84,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
         return "none";
     }
 
+
     // ============================================================
     // UPDATE BUTTON UI
     // ============================================================
@@ -89,39 +95,35 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
             case "waiting":
                 btn.setText("Leave Waiting List");
                 btn.setEnabled(true);
-                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.red));
-                //btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
             case "selected":
                 btn.setText("Selected – Pending");
                 btn.setEnabled(false);
-                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.grey));
-                //btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
             case "cancelled":
                 btn.setText("Declined Invitation");
                 btn.setEnabled(false);
-                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.grey));
-               // btn.setTextColor(ContextCompat.getColor(context, R.color.white));
                 break;
 
             case "final":
                 btn.setText("Selected!");
                 btn.setEnabled(false);
-                //btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.green));
-                //btn.setTextColor(ContextCompat.getColor(context, R.color.white));
+                break;
+
+            case "accepted":
+                btn.setText("Sign Up");
+                btn.setEnabled(true);
                 break;
 
             default: // none
                 btn.setText("Join List");
                 btn.setEnabled(true);
-               // btn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.orange));
-               // btn.setTextColor(ContextCompat.getColor(context, R.color.dark_blue));
                 break;
         }
     }
+
 
     // ============================================================
     // JOIN WAITING LIST
@@ -231,6 +233,27 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 });
     }
 
+    // SIGN UP FROM PREVIEW (accepted -> final)
+    private void signUpFromPreview(Event e, Button button) {
+
+        String eventId = e.getEventId();
+
+        db.collection("events")
+                .document(eventId)
+                .update(
+                        "finalEntrants", FieldValue.arrayUnion(userKey),
+                        "acceptedEntrants", FieldValue.arrayRemove(userKey)
+                )
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(context, "You are signed up!", Toast.LENGTH_SHORT).show();
+                    updateJoinButton(button, "final");
+                })
+                .addOnFailureListener(err -> {
+                    Toast.makeText(context, "Failed to sign up", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
     // ============================================================
     // BIND VIEW HOLDER
     // ============================================================
@@ -270,11 +293,14 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                     e.setWaitingList((List<String>) doc.get("waitingList"));
                     e.setSelectedEntrants((List<String>) doc.get("selectedEntrants"));
                     e.setCancelledEntrants((List<String>) doc.get("cancelledEntrants"));
+                    e.setAcceptedEntrants((List<String>) doc.get("acceptedEntrants"));
                     e.setFinalEntrants((List<String>) doc.get("finalEntrants"));
 
                     updateJoinButton(holder.btnJoin, getUserStatus(e));
                 });
 
+        // BUTTON ACTION
+        // BUTTON ACTION
         // BUTTON ACTION
         holder.btnJoin.setOnClickListener(v -> {
 
@@ -284,8 +310,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                 leaveWaitingList(e, holder.btnJoin);
             } else if (status.equals("none")) {
                 joinWaitingList(e, holder.btnJoin);
+            } else if (status.equals("accepted")) {
+                signUpFromPreview(e, holder.btnJoin);
             }
         });
+
 
         // DETAILS BUTTON
         holder.btnViewDetails.setOnClickListener(v -> {
