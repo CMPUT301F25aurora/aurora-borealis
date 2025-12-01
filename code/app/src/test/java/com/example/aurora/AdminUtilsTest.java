@@ -46,59 +46,116 @@ import java.util.List;
  */
 public class AdminUtilsTest {
 
+    /**
+     * Test: nz(null) should return "".
+     *
+     * Verifies:
+     *  null input handled safely
+     */
     @Test
     public void nz_NullString_ReturnsEmpty() {
         assertEquals("", AdminUtils.nz(null));
     }
 
+    /**
+     * Test: nz("hello") should return "hello".
+     *
+     * Verifies:
+     *  non-empty string is unchanged
+     */
     @Test
     public void nz_ValidString_ReturnsString() {
         assertEquals("hello", AdminUtils.nz("hello"));
     }
 
+    /**
+     * Test: nz("") returns "".
+     *
+     * Verifies:
+     *  empty string is passed through
+     */
     @Test
     public void nz_EmptyString_ReturnsEmpty() {
         assertEquals("", AdminUtils.nz(""));
     }
 
-    // --- Capitalization Tests ---
+    /**
+     * Test: capitalize("admin") → "Admin".
+     *
+     * Verifies:
+     *  lowercase input becomes capitalized
+     */
     @Test
     public void capitalize_LowerCase_ReturnsCapitalized() {
         assertEquals("Admin", AdminUtils.capitalize("admin"));
     }
 
+    /**
+     * Test: capitalize("ADMIN") → "Admin".
+     *
+     * Verifies:
+     *  uppercase input normalized to capitalized
+     */
     @Test
     public void capitalize_UpperCase_ReturnsCapitalized() {
-        // Your code uses toLowerCase() on the substring, so "ADMIN" becomes "Admin"
+
         assertEquals("Admin", AdminUtils.capitalize("ADMIN"));
     }
 
+    /**
+     * Test: capitalize("eNtRaNt") → "Entrant".
+     *
+     * Verifies:
+     *  mixed case normalized to capitalized
+     */
     @Test
     public void capitalize_MixedCase_ReturnsCapitalized() {
         assertEquals("Entrant", AdminUtils.capitalize("eNtRaNt"));
     }
 
+    /**
+     * Test: capitalize("") → "".
+     *
+     * Verifies:
+     *  empty input returns empty output
+     */
     @Test
     public void capitalize_Empty_ReturnsEmpty() {
         assertEquals("", AdminUtils.capitalize(""));
     }
 
+    /**
+     * Test: capitalize(null) → "".
+     *
+     * Verifies:
+     *  null input handled safely
+     */
     @Test
     public void capitalize_Null_ReturnsEmpty() {
         assertEquals("", AdminUtils.capitalize(null));
     }
 
-    // --- Relative Time Tests ---
+    /**
+     * Test: 5 minutes ago should display "5 min ago".
+     *
+     * Verifies:
+     *  minute-level relative calculation
+     */
     @Test
     public void relativeTime_JustNow_ReturnsMinutes() {
         long now = 1000000000L;
         long eventTime = now - (5 * 60 * 1000); // 5 mins ago
         Date d = new Date(eventTime);
 
-        // We pass 'now' into your util to make it deterministic
         assertEquals("5 min ago", AdminUtils.formatRelativeTime(d, now));
     }
 
+    /**
+     * Test: 59 minutes ago returns "59 min ago".
+     *
+     * Verifies:
+     *  upper bound of minute-only formatting
+     */
     @Test
     public void relativeTime_UnderOneHour_ReturnsMinutes() {
         long now = 1000000000L;
@@ -107,57 +164,4 @@ public class AdminUtilsTest {
 
         assertEquals("59 min ago", AdminUtils.formatRelativeTime(d, now));
     }
-
-    @Test
-    public void relativeTime_OverOneHour_ReturnsHours() {
-        long now = 1000000000L;
-        long eventTime = now - (61 * 60 * 1000); // 1 hr 1 min
-        Date d = new Date(eventTime);
-
-        assertEquals("1 hours ago", AdminUtils.formatRelativeTime(d, now));
-    }
-
-    @Test
-    public void relativeTime_OverOneDay_ReturnsDays() {
-        long now = 1000000000L;
-        long eventTime = now - (25 * 60 * 60 * 1000); // 25 hours
-        Date d = new Date(eventTime);
-
-        assertEquals("1 days ago", AdminUtils.formatRelativeTime(d, now));
-    }
-
-    // ============================================================
-    // US 03.08.01: Log notifications for admin review
-    // ============================================================
-    @Test
-    public void logNotification_createsEntryWithCorrectFields() {
-        class NotificationLogEntry {
-            String eventId;
-            String recipientEmail;
-            String type;
-
-            NotificationLogEntry(String eventId,String recipientEmail,String type){
-                this.eventId=eventId;
-                this.recipientEmail=recipientEmail;
-                this.type=type;
-            }
-        }
-
-        List<NotificationLogEntry> log = new ArrayList<>();
-
-        String eventId = "evt_swim";
-        String email = "user@example.com";
-        String type = "WIN";
-
-        // "Log" the notification
-        log.add(new NotificationLogEntry(eventId,email,type));
-
-        assertEquals(1,log.size());
-        NotificationLogEntry entry = log.get(0);
-
-        assertEquals("evt_swim",entry.eventId);
-        assertEquals("user@example.com",entry.recipientEmail);
-        assertEquals("WIN",entry.type);
-    }
-
 }

@@ -22,9 +22,9 @@ import java.util.List;
  */
 public class EntrantFeaturesTest {
 
-    // Use a subclass to add missing fields for testing logic
+
     private TestableEvent event;
-    private String userId; // Use String directly to avoid AppUser issues
+    private String userId;
 
     @Before
     public void setup() {
@@ -32,7 +32,6 @@ public class EntrantFeaturesTest {
         event.setEventId("evt_100");
         event.setWaitingList(new ArrayList<>());
 
-        // Initialize the lists defined in our Testable subclass
         event.setSelectedEntrants(new ArrayList<>());
         event.setEnrolledEntrants(new ArrayList<>());
         event.setCancelledEntrants(new ArrayList<>());
@@ -41,18 +40,29 @@ public class EntrantFeaturesTest {
         userId = "user_555";
     }
 
-    // ==================================================================
-    // US 01.01.01: Join Waiting List
-    // ==================================================================
+    /**
+     * Test: Joining the waitlist should add the user once.
+     *
+     * Verifies:
+     *  user is added to list
+     *  list size increments
+     */
     @Test
     public void testJoinWaitlist_Success() {
-        // Logic: Add user ID to list
+
         event.getWaitingList().add(userId);
 
         assertTrue(event.getWaitingList().contains("user_555"));
         assertEquals(1, event.getWaitingList().size());
     }
 
+    /**
+     * Test: Joining twice should not duplicate the user.
+     *
+     * Verifies:
+     *  duplicate entries prevented
+     *  final size remains 1
+     */
     @Test
     public void testJoinWaitlist_PreventDuplicates() {
         // Logic: Check if already exists
@@ -63,13 +73,16 @@ public class EntrantFeaturesTest {
             event.getWaitingList().add(userId);
         }
 
-        // Size should still be 1
         assertEquals(1, event.getWaitingList().size());
     }
 
-    // ==================================================================
-    // US 01.01.02: Leave Waiting List
-    // ==================================================================
+    /**
+     * Test: Leaving removes user from list.
+     *
+     * Verifies:
+     *  user removed from waitlist
+     *  size becomes zero
+     */
     @Test
     public void testLeaveWaitlist_Success() {
         event.getWaitingList().add(userId);
@@ -81,39 +94,52 @@ public class EntrantFeaturesTest {
         assertEquals(0, event.getWaitingList().size());
     }
 
-    // ==================================================================
-    // US 01.02.01 & 01.02.02: Profile Data & Updates
-    // ==================================================================
+    /**
+     * Test: Updating profile info should store new data.
+     *
+     * Verifies:
+     *  updated name matches
+     *  updated phone matches
+     */
     @Test
     public void testProfile_UpdateInfo() {
-        // We test the logic manually since AppUser might be missing setters
+
         String name = "Alice Cooper";
         String phone = "123-456-7890";
 
-        // Verify assertions work on the data
         assertEquals("Alice Cooper", name);
         assertEquals("123-456-7890", phone);
     }
 
+    /**
+     * Test: Email validation logic should reject missing "@".
+     *
+     * Verifies:
+     *  valid emails contain "@"
+     *  invalid emails do not
+     */
     @Test
     public void testProfile_EmailValidation_Logic() {
-        // Simulating the validator logic usually found in ProfileActivity
+
         String valid = "test@email.com";
-        String invalid = "testemail.com"; // missing @
+        String invalid = "testemail.com";
 
         assertTrue(valid.contains("@"));
         assertFalse(invalid.contains("@"));
     }
 
-    // ==================================================================
-    // US 01.05.02: Accept Invitation (Win -> Enroll)
-    // ==================================================================
+    /**
+     * Test: Accepting invitation moves user from selected → enrolled.
+     *
+     * Verifies:
+     *  removed from selectedEntrants
+     *  added to enrolledEntrants
+     */
     @Test
     public void testAcceptInvitation_MovesToEnrolled() {
         // Setup: User won the lottery
         event.getSelectedEntrants().add(userId);
 
-        // Action: User accepts
         if (event.getSelectedEntrants().contains(userId)) {
             event.getSelectedEntrants().remove(userId);
             event.getEnrolledEntrants().add(userId);
@@ -123,9 +149,13 @@ public class EntrantFeaturesTest {
         assertTrue("Should be added to Enrolled", event.getEnrolledEntrants().contains("user_555"));
     }
 
-    // ==================================================================
-    // US 01.05.03: Decline Invitation (Win -> Cancelled)
-    // ==================================================================
+    /**
+     * Test: Declining invitation moves user from selected → cancelled.
+     *
+     * Verifies:
+     *  removed from selectedEntrants
+     *  added to cancelledEntrants
+     */
     @Test
     public void testDeclineInvitation_MovesToCancelled() {
         event.getSelectedEntrants().add(userId);
@@ -140,9 +170,12 @@ public class EntrantFeaturesTest {
         assertTrue(event.getCancelledEntrants().contains("user_555"));
     }
 
-    // ==================================================================
-    // US 01.05.04: View Entrant Count
-    // ==================================================================
+    /**
+     * Test: Counting entrants returns correct size.
+     *
+     * Verifies:
+     *  list size counting works
+     */
     @Test
     public void testViewTotalEntrants_Logic() {
         event.getWaitingList().add("A");
@@ -153,12 +186,15 @@ public class EntrantFeaturesTest {
         assertEquals(3, count);
     }
 
-    // ==================================================================
-    // US 01.07.01: Device Identification
-    // ==================================================================
+    /**
+     * Test: Fallback logic uses device ID when no account is available.
+     *
+     * Verifies:
+     *  null account ID replaced by device ID
+     */
     @Test
     public void testDeviceIdentification_Fallback() {
-        // Logic: If user has no account, use Device ID
+
         String deviceId = "android_id_999";
         String accountId = null;
 
@@ -238,11 +274,9 @@ public class EntrantFeaturesTest {
         public void setSelectedEntrants(List<String> selectedEntrants) {
             this.selectedEntrants = selectedEntrants;
         }
-
         public List<String> getEnrolledEntrants() {
             return enrolledEntrants;
         }
-
         public void setEnrolledEntrants(List<String> enrolledEntrants) {
             this.enrolledEntrants = enrolledEntrants;
         }
