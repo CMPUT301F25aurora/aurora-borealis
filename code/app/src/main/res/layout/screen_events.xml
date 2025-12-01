@@ -13,50 +13,48 @@
         android:fitsSystemWindows="true"
         android:clipToPadding="false">
 
+        <!-- HEADER (Fixed) -->
         <LinearLayout
             android:id="@+id/headerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:paddingTop="24dp"
             android:paddingBottom="12dp"
-            android:paddingHorizontal="12dp"
-            android:gravity="center_vertical">
+            android:paddingHorizontal="12dp">
 
-            <TextView
-                android:id="@+id/titleEvents"
-                android:layout_width="0dp"
+            <!-- TITLE + LOGOUT -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Discover Events"
-                android:textColor="#fe7f2d"
-                android:textSize="26sp"
-                android:fontFamily="sans-serif-medium" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <Button
-                android:id="@+id/btnFilter"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_marginEnd="8dp"
-                android:text="Filter"
-                android:textAllCaps="false"
-                android:background="@drawable/bg_input_sharp"
-                android:backgroundTint="#2f4858"
-                android:textColor="#fe7f2d"
-                android:textSize="12sp"/>
+                <TextView
+                    android:id="@+id/titleEvents"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Discover Events"
+                    android:textColor="#fe7f2d"
+                    android:textSize="26sp"
+                    android:fontFamily="sans-serif-medium" />
 
-            <Button
-                android:id="@+id/logoutButton"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:text="Logout"
-                android:textAllCaps="false"
-                android:background="@drawable/bg_input_sharp"
-                android:backgroundTint="#2f4858"
-                android:textColor="#fe7f2d"
-                android:textSize="12sp" />
+                <Button
+                    android:id="@+id/logoutButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Logout"
+                    android:textAllCaps="false"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#2f4858"
+                    android:textColor="#fe7f2d"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
         </LinearLayout>
 
+        <!-- SEARCH BAR -->
         <EditText
             android:id="@+id/searchEvents"
             android:layout_width="match_parent"
@@ -74,6 +72,7 @@
             android:drawablePadding="12dp"
             android:inputType="text" />
 
+        <!-- CATEGORY BUTTONS -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,6 +85,18 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+                <!-- Buttons here (unchanged) -->
+                <Button
+                    android:id="@+id/btnFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Filter"
+                    android:textAllCaps="false"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_input_sharp"
+                    android:backgroundTint="#fe7f2d"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"/>
                 <Button
                     android:id="@+id/btnAll"
                     android:layout_width="wrap_content"
@@ -150,6 +161,7 @@
             </LinearLayout>
         </HorizontalScrollView>
 
+        <!-- SCAN QR BUTTON -->
         <Button
             android:id="@+id/btnScanQr"
             android:layout_width="match_parent"
@@ -163,6 +175,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+        <!-- EVENTS LIST -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerEvents"
             android:layout_width="match_parent"
@@ -172,6 +185,7 @@
             android:paddingTop="8dp"
             android:paddingBottom="8dp" />
 
+        <!-- BOTTOM NAV -->
         <LinearLayout
             android:id="@+id/entrantBottomNav"
             android:layout_width="match_parent"
@@ -216,7 +230,7 @@
 
     </LinearLayout>
 
-    <!-- FLOATING FAB FOR ROLE SWITCH -->
+    <!-- FLOATING ROLE SWITCH FAB -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/roleSwitchFab"
         android:layout_width="140dp"
@@ -228,9 +242,6 @@
         android:layout_marginBottom="90dp"
         android:backgroundTint="#fe7f2d"
         android:layout_gravity="bottom|start"
-        app:iconPadding="8dp">
-
-    </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
-
+        app:iconPadding="8dp" />
 
 </FrameLayout>
