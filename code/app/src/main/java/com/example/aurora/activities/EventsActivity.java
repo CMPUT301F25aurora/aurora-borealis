@@ -3,6 +3,7 @@ package com.example.aurora.activities;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,9 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,14 +58,21 @@ public class EventsActivity extends AppCompatActivity {
     private ListenerRegistration notifListener;
 
     private EditText searchEvents;
-    private Button logoutButton;
+    private ImageButton logoutButton;
     private RecyclerView recyclerEvents;
     private EventsAdapter adapter;
 
-    private Button btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology;
-    private TextView navEvents, navProfile, navAlerts;
-    private Button btnScanQr;
-    private Button btnFilter;
+    // NEW CATEGORY BUTTONS (layouts)
+    private LinearLayout btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology, btnCommunity;
+
+    // NEW CATEGORY ICONS
+    private ImageView iconMusic, iconSports, iconEducation, iconArts, iconTech, iconCommunity;
+
+    // NEW CATEGORY TEXTS
+    private TextView textAll, textMusic, textSports, textEducation, textArts, textTech, textCommunity;
+
+    private LinearLayout navEvents, navProfile, navAlerts;
+    private ImageButton btnFilter;
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -85,18 +96,79 @@ public class EventsActivity extends AppCompatActivity {
         recyclerEvents = findViewById(R.id.recyclerEvents);
 
         btnAll = findViewById(R.id.btnAll);
-        btnMusic = findViewById(R.id.btnMusic);
-        btnSports = findViewById(R.id.btnSports);
-        btnEducation = findViewById(R.id.btnEducation);
-        btnArts = findViewById(R.id.btnArts);
-        btnTechnology = findViewById(R.id.btnTechnology);
+        textAll = findViewById(R.id.textAll);
 
         navEvents = findViewById(R.id.navEvents);
         navProfile = findViewById(R.id.navProfile);
         navAlerts = findViewById(R.id.navAlerts);
 
-        btnScanQr = findViewById(R.id.btnScanQr);
         btnFilter = findViewById(R.id.btnFilter);
+
+        // --- Category layouts ---
+        btnMusic = findViewById(R.id.btnMusic);
+        btnSports = findViewById(R.id.btnSports);
+        btnEducation = findViewById(R.id.btnEducation);
+        btnArts = findViewById(R.id.btnArts);
+        btnTechnology = findViewById(R.id.btnTechnology);
+        btnCommunity = findViewById(R.id.btnCommunity);
+
+        iconMusic = findViewById(R.id.iconMusic);
+        iconSports = findViewById(R.id.iconSports);
+        iconEducation = findViewById(R.id.iconEducation);
+        iconArts = findViewById(R.id.iconArts);
+        iconTech = findViewById(R.id.iconTech);
+        iconCommunity = findViewById(R.id.iconCommunity);
+
+        textMusic = findViewById(R.id.textMusic);
+        textSports = findViewById(R.id.textSports);
+        textEducation = findViewById(R.id.textEducation);
+        textArts = findViewById(R.id.textArts);
+        textTech = findViewById(R.id.textTech);
+        textCommunity = findViewById(R.id.textCommunity);
+
+        btnAll.setOnClickListener(v -> {
+            highlightSelectedNoIcon(btnAll, textAll);
+            loadEvents(null);
+        });
+
+
+        btnMusic.setOnClickListener(v -> {
+            highlightSelected(btnMusic, iconMusic, textMusic);
+            loadEvents("Music");
+        });
+
+        btnSports.setOnClickListener(v -> {
+            highlightSelected(btnSports, iconSports, textSports);
+            loadEvents("Sports");
+        });
+
+        btnEducation.setOnClickListener(v -> {
+            highlightSelected(btnEducation, iconEducation, textEducation);
+            loadEvents("Education");
+        });
+
+        btnArts.setOnClickListener(v -> {
+            highlightSelected(btnArts, iconArts, textArts);
+            loadEvents("Arts");
+        });
+
+        btnTechnology.setOnClickListener(v -> {
+            highlightSelected(btnTechnology, iconTech, textTech);
+            loadEvents("Technology");
+        });
+
+        btnCommunity.setOnClickListener(v -> {
+            highlightSelected(btnCommunity, iconCommunity, textCommunity);
+            loadEvents("Community");
+        });
+
+
+        highlightSelectedNoIcon(btnAll, textAll);
+
+
+        ImageButton iconQr = findViewById(R.id.iconQr);
+
+        iconQr.setOnClickListener(v -> startQrScan());
 
         ExtendedFloatingActionButton fab = findViewById(R.id.roleSwitchFab);
 
@@ -137,22 +209,12 @@ public class EventsActivity extends AppCompatActivity {
 
         logoutButton.setOnClickListener(v -> logoutUser());
 
-        btnAll.setOnClickListener(v -> loadEvents(null));
-        btnMusic.setOnClickListener(v -> loadEvents("Music"));
-        btnSports.setOnClickListener(v -> loadEvents("Sports"));
-        btnEducation.setOnClickListener(v -> loadEvents("Education"));
-        btnArts.setOnClickListener(v -> loadEvents("Arts"));
-        btnTechnology.setOnClickListener(v -> loadEvents("Technology"));
-
         navEvents.setOnClickListener(v -> {});
         navProfile.setOnClickListener(v ->
                 startActivity(new Intent(this, ProfileActivity.class)));
         navAlerts.setOnClickListener(v ->
                 startActivity(new Intent(this, AlertsActivity.class)));
 
-        if (btnScanQr != null) {
-            btnScanQr.setOnClickListener(v -> startQrScan());
-        }
 
         if (btnFilter != null) {
             btnFilter.setOnClickListener(v -> showFilterDialog());
@@ -510,4 +572,40 @@ public class EventsActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to handle QR: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+    // ------- CATEGORY HIGHLIGHT VISUALS ONLY -------
+
+    private void highlightSelected(LinearLayout layout, ImageView icon, TextView text) {
+        resetAllCategoryHighlights();
+        layout.setBackgroundResource(R.drawable.bg_category_selected);
+        icon.setColorFilter(Color.parseColor("#233D4D")); // dark text
+        text.setTextColor(Color.parseColor("#233D4D"));
+    }
+
+    private void resetHighlight(LinearLayout layout, ImageView icon, TextView text) {
+        layout.setBackgroundResource(R.drawable.bg_category_unselected);
+        icon.setColorFilter(Color.parseColor("#fe7f2d")); // orange instead of white
+        text.setTextColor(Color.parseColor("#fe7f2d"));
+    }
+    private void highlightSelectedNoIcon(LinearLayout layout, TextView text) {
+        resetAllCategoryHighlights();
+        layout.setBackgroundResource(R.drawable.bg_category_selected);
+        text.setTextColor(Color.parseColor("#233D4D")); // dark text
+    }
+    private void resetHighlightNoIcon(LinearLayout layout, TextView text) {
+        layout.setBackgroundResource(R.drawable.bg_category_unselected);
+        text.setTextColor(Color.parseColor("#fe7f2d"));
+    }
+
+
+    private void resetAllCategoryHighlights() {
+        resetHighlightNoIcon(btnAll, textAll);
+        resetHighlight(btnMusic, iconMusic, textMusic);
+        resetHighlight(btnSports, iconSports, textSports);
+        resetHighlight(btnEducation, iconEducation, textEducation);
+        resetHighlight(btnArts, iconArts, textArts);
+        resetHighlight(btnTechnology, iconTech, textTech);
+        resetHighlight(btnCommunity, iconCommunity, textCommunity);
+    }
+
+
 }
