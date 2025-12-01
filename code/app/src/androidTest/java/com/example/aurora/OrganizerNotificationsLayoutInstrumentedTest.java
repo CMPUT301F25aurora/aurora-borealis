@@ -15,29 +15,47 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Instrumented layout test for the organizer notifications screen.
+ * <p>
+ * This test inflates {@code activity_organizer_notifications} in isolation
+ * and verifies that the header and notifications container sections are
+ * present and structurally correct.
+ */
 @RunWith(AndroidJUnit4.class)
 public class OrganizerNotificationsLayoutInstrumentedTest {
 
+    /**
+     * Verifies that the organizer notifications layout declares both a
+     * header section and an initially empty notifications container.
+     * <p>
+     * The test asserts that:
+     * <ul>
+     *     <li>{@code headerContainer} exists and contains at least one child
+     *         (such as a title or filter controls), and</li>
+     *     <li>{@code notificationsContainer} exists and starts with zero
+     *         child views, indicating that no notification cards are shown
+     *         by default.</li>
+     * </ul>
+     * This ensures the organizer screen is ready to display notifications
+     * while showing a clean state when there are none.
+     */
     @Test
     public void organizerNotificationsLayout_hasHeaderAndContainer() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        // Inflate the activity_organizer_notifications layout
         View root = inflater.inflate(R.layout.activity_organizer_notifications, null);
         assertNotNull(root);
 
         LinearLayout headerContainer = root.findViewById(R.id.headerContainer);
         LinearLayout notificationsContainer = root.findViewById(R.id.notificationsContainer);
 
-        // Both main sections should exist
         assertNotNull(headerContainer);
         assertNotNull(notificationsContainer);
 
-        // Header should contain at least one child view (title/buttons/etc.)
         assertTrue(headerContainer.getChildCount() > 0);
 
-        // Notifications container should start empty (no cards yet)
         assertEquals(0, notificationsContainer.getChildCount());
     }
 }

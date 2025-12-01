@@ -22,9 +22,6 @@
  * note: Base reference for onView(withId(...)).perform(...).check(matches(...))
  *       patterns in this test.
  */
-
-
-
 package com.example.aurora;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -96,10 +93,15 @@ public class EventsActivityInstrumentedTest {
                 .check(matches(isDisplayed()));
     }
 
+    /**
+     * Verifies that the main events list is visible on the entrant home screen.
+     * <p>
+     * This test asserts that the {@code recyclerEvents} view is displayed
+     * when the Events screen is launched, confirming that the list used to
+     * browse and join events is present and rendered on screen.
+     */
     @Test
     public void testEventsScreenShowsRecyclerView() {
-        // The ActivityScenarioRule already launches EventsActivity for us.
-        // Just check that the RecyclerView container for events is visible.
         onView(withId(R.id.recyclerEvents))
                 .check(matches(isDisplayed()));
     }
