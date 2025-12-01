@@ -159,8 +159,6 @@ public class ProfileActivity extends AppCompatActivity {
             String e    = doc.getString("email");
             String p    = doc.getString("phone");
             String role = doc.getString("role");
-            Long joined = doc.getLong("joinedCount");
-            Long wins   = doc.getLong("winsCount");
 
             fullName.setText(n == null ? "" : n);
             email.setText(e == null ? "" : e);
@@ -168,10 +166,6 @@ public class ProfileActivity extends AppCompatActivity {
 
             headerName.setText(TextUtils.isEmpty(n) ? "Entrant" : n);
             roleBadge.setText(TextUtils.isEmpty(role) ? "Entrant" : role);
-
-            joinedCount.setText(String.valueOf(joined == null ? 0 : joined));
-            winsCount.setText(String.valueOf(wins == null ? 0 : wins));
-
             setAvatarInitials(fullName.getText().toString());
 
             Boolean notifs = doc.getBoolean("entrant_notifications_enabled");
@@ -182,9 +176,46 @@ public class ProfileActivity extends AppCompatActivity {
                         .apply();
             }
 
+
+            String myEmail = email.getText().toString().trim();
+            if (!TextUtils.isEmpty(myEmail)) {
+                calculateStats(myEmail);
+            }
+
         }).addOnFailureListener(e ->
                 Toast.makeText(this, "Failed to load profile", Toast.LENGTH_SHORT).show()
         );
+    }
+    /**
+     * Helper to count events where the user is joined or has won.
+     */
+    private void calculateStats(String email) {
+        db.collection("events").get().addOnSuccessListener(snap -> {
+            int joined = 0;
+            int wins = 0;
+
+            for (DocumentSnapshot event : snap) {
+                List<String> waiting = (List<String>) event.get("waitingList");
+                List<String> selected = (List<String>) event.get("selectedEntrants");
+                List<String> finalEntrants = (List<String>) event.get("finalEntrants");
+                List<String> accepted = (List<String>) event.get("acceptedEntrants");
+
+
+                if (waiting != null && waiting.contains(email)) {
+                    joined++;
+                }
+
+
+                if ((selected != null && selected.contains(email)) ||
+                        (accepted != null && accepted.contains(email)) ||
+                        (finalEntrants != null && finalEntrants.contains(email))) {
+                    wins++;
+                }
+            }
+
+            joinedCount.setText(String.valueOf(joined));
+            winsCount.setText(String.valueOf(wins));
+        });
     }
 
     /**
