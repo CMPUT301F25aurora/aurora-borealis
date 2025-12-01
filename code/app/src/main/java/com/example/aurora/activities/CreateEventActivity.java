@@ -164,7 +164,8 @@ public class CreateEventActivity extends AppCompatActivity {
     private EditText editTitle, editDescription;
     private AutoCompleteTextView editLocation;
     private Spinner spinnerCategory;
-    private EditText editMaxSpots, editLotterySampleSize;
+    private EditText editMaxSpots;
+
     private CheckBox checkGeoRequired;
     private Button btnChoosePoster, btnCreateEvent;
     private Button btnPickEventLocation;
@@ -264,7 +265,6 @@ public class CreateEventActivity extends AppCompatActivity {
             spinnerCategory = findViewById(R.id.spinnerCategory);
 
             editMaxSpots = findViewById(R.id.editMaxSpots);
-            editLotterySampleSize = findViewById(R.id.editLotterySampleSize);
             checkGeoRequired = findViewById(R.id.checkGeoRequired);
 
             btnChoosePoster = findViewById(R.id.btnChoosePoster);
@@ -614,8 +614,10 @@ public class CreateEventActivity extends AppCompatActivity {
                 ? null
                 : dateTimeFormat.format(regEndCalendar.getTime());
 
+        // ─────────────────────────────────────────
+        // ONLY KEEP MAX SPOTS (Winner Count Removed)
+        // ─────────────────────────────────────────
         String maxSpotsStr = editMaxSpots.getText().toString().trim();
-        String lotterySizeStr = editLotterySampleSize.getText().toString().trim();
 
         Long maxSpots = null;
         if (!maxSpotsStr.isEmpty()) {
@@ -626,18 +628,11 @@ public class CreateEventActivity extends AppCompatActivity {
                 return;
             }
         }
-
-        Long lotterySampleSize = null;
-        if (!lotterySizeStr.isEmpty()) {
-            try {
-                lotterySampleSize = Long.parseLong(lotterySizeStr);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this, "Lottery sample size must be a number", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
+        // ─────────────────────────────────────────
 
         boolean geoRequired = checkGeoRequired.isChecked();
+
+        // Poster size check
         if (selectedPosterUri != null) {
             Cursor cursor = getContentResolver().query(selectedPosterUri, null, null, null, null);
             if (cursor != null) {
@@ -662,14 +657,16 @@ public class CreateEventActivity extends AppCompatActivity {
             return;
         }
 
-
+        // ✔ Winner count removed — no lotterySampleSize here now
         createEventInFirestore(
                 selectedPosterUri,
                 title, description, location, category,
                 startDate, endDate, regStart, regEnd,
-                maxSpots, lotterySampleSize, geoRequired
+                maxSpots,
+                geoRequired
         );
     }
+
 
     /**
      * Creates the Firestore event document and populates all fields:
@@ -686,7 +683,6 @@ public class CreateEventActivity extends AppCompatActivity {
      * @param regStart           registration start timestamp (nullable)
      * @param regEnd             registration end timestamp (nullable)
      * @param maxSpots           optional limit on entrants (nullable)
-     * @param lotterySampleSize  optional lottery sample size (nullable)
      * @param geoRequired        whether geolocation check-in is required
      */
     private void createEventInFirestore(
@@ -700,7 +696,6 @@ public class CreateEventActivity extends AppCompatActivity {
             String regStart,
             String regEnd,
             Long maxSpots,
-            Long lotterySampleSize,
             boolean geoRequired
     ) {
         Map<String, Object> event = new HashMap<>();
@@ -719,7 +714,6 @@ public class CreateEventActivity extends AppCompatActivity {
         event.put("registrationEnd", regEnd);
 
         event.put("maxSpots", maxSpots);
-        event.put("lotterySampleSize", lotterySampleSize);
 
         event.put("geoRequired", geoRequired);
 
@@ -848,7 +842,6 @@ public class CreateEventActivity extends AppCompatActivity {
                                 ? null
                                 : dateTimeFormat.format(regEndCalendar.getTime()),
                         editMaxSpots.getText().toString().isEmpty() ? null : Long.parseLong(editMaxSpots.getText().toString()),
-                        editLotterySampleSize.getText().toString().isEmpty() ? null : Long.parseLong(editLotterySampleSize.getText().toString()),
                         checkGeoRequired.isChecked()
                 );
 
