@@ -19,10 +19,14 @@
 AuroraChance is a mobile application designed to streamline event registration and participant selection through a transparent, lottery-based system. Built for both organizers and entrants, it simplifies event management, random draws, and participant tracking within an intuitive Android interface.
 
 ## Key-Features
-Key Features
-- Smart Pooling System: Automatically manage event interest by pulling selected entrants from a live waiting list. Organizers can run lotteries or manually choose participants with ease.  
-- QR Code Event Access: Entrants can instantly access event pages by scanning a QR code — view details, join waiting lists, and stay connected without manual searching.  
-- Real-Time Firebase Sync: All event data, attendee updates, notifications, and check-ins stay synced across devices in real time through Firebase integration.  
-- Role-Based User Experience: Entrants, Organizers, and Admins each get a tailored interface and permissions designed specifically for their role within the app.  
-- Event Poster Uploads: Organizers can upload custom event posters to make their event pages more engaging and visually distinct.  
+- Smart Pooling System: Automatically manage event interest by pulling selected entrants from a live waiting list. Organizers can run lotteries or manually choose participants with ease.
+- 
+- QR Code Event Access: Entrants can instantly access event pages by scanning a QR code — view details, join waiting lists, and stay connected without manual searching.
+- 
+- Real-Time Firebase Sync: All event data, attendee updates, notifications, and check-ins stay synced across devices in real time through Firebase integration.
+- 
+- Role-Based User Experience: Entrants, Organizers, and Admins each get a tailored interface and permissions designed specifically for their role within the app.
+
+- Event Poster Uploads: Organizers can upload custom event posters to make their event pages more engaging and visually distinct.
+- 
 - Optional Geolocation Verification: When enabled by organizers, entrants’ join locations are captured from the device to verify authenticity and support location-based event rules.  
