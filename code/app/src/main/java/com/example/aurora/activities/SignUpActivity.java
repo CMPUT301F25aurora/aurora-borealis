@@ -1,3 +1,22 @@
+/*
+ * source: Firebase docs — "Sign up new users".
+ * url: https://firebase.google.com/docs/auth/android/password-auth#create_a_password-based_account
+ * note: Used for mAuth.createUserWithEmailAndPassword() to register the user in Firebase Auth.
+ *
+ * source: Firebase docs — "ServerTimestamp".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data#server_timestamp
+ * note: Used (FieldValue.serverTimestamp()) to record the exact time of account creation.
+ *
+ * source: Stack Overflow user — "Regex for phone number validation".
+ * url: https://stackoverflow.com/questions/2113908/what-regular-expression-will-match-valid-international-phone-numbers
+ * note: Logic adapted for the 10-digit phone number check ("\\d{10}").
+ *
+ * source: Android Developers — "SharedPreferences".
+ * url: https://developer.android.com/training/data-storage/shared-preferences
+ * note: Used to immediately store the new user's session data so they don't have to log in again.
+ */
+
+
 package com.example.aurora.activities;
 
 import android.content.Intent;
