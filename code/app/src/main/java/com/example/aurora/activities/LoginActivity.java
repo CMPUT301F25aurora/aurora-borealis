@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
      * If not found, try phone + password
      */
     private void loginUser() {
-        String input = loginEmail.getText().toString().trim();
+        String input = loginEmail.getText().toString().trim().toLowerCase();
         String password = loginPassword.getText().toString().trim();
 
         if (input.isEmpty() || password.isEmpty()) {
