@@ -1,3 +1,28 @@
+/*
+ * source: Firebase docs — "Get realtime updates with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/listen
+ * note: Used as reference for addSnapshotListener to listen for real-time changes to the notifications collection.
+ *
+ * source: Firebase docs — "Update elements in an array".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+ * note: Used for FieldValue.arrayUnion() and FieldValue.arrayRemove() when accepting or declining event invitations.
+ *
+ * source: Android Developers — "DateUtils".
+ * url: https://developer.android.com/reference/android/text/format/DateUtils#getRelativeTimeSpanString(long,%20long,%20long)
+ * note: Used for getRelativeTimeSpanString to format timestamps into "X minutes ago".
+ *
+ * source: Stack Overflow user — "How to sort a List of objects by a date field".
+ * url: https://stackoverflow.com/questions/5927109/sort-objects-in-arraylist-by-date
+ * note: Referenced for the Comparator logic used in docs.sort() to order notifications newest-first.
+ *
+ * source: Android Developers — "LayoutInflater".
+ * url: https://developer.android.com/reference/android/view/LayoutInflater
+ * note: Used to inflate "item_notification_card" dynamically for each alert.
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names and overall code format to look readable
+ */
+
+
 /**
  * Shows all notifications for the logged-in user.
  * Listens to Firestore in real time and displays each alert.
