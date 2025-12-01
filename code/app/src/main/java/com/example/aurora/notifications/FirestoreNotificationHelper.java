@@ -1,3 +1,22 @@
+/*
+ * source: Firebase docs — "Perform simple and compound queries in Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/queries
+ * note: Used for the logic distinguishing between email queries and document ID queries (FieldPath.documentId()).
+ *
+ * source: Firebase docs — "Add data to Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data
+ * note: Used for db.collection("notifications").add(nm) to write new alerts to the database.
+ *
+ * source: Android Developers — "Log".
+ * url: https://developer.android.com/reference/android/util/Log
+ * note: Used for standard Android logging (Log.d, Log.e) to track the success or failure of notification writes.
+ *
+ * source: Firebase docs — "Get data with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/get-data
+ * note: Used for checking if a user exists and if their notifications are enabled before sending.
+ */
+
+
 package com.example.aurora.notifications;
 
 import android.util.Log;
