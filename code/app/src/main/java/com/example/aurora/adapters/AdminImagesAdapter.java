@@ -1,3 +1,13 @@
+/*
+ * source: Glide Documentation — "Loading Images".
+ * url: https://bumptech.github.io/glide/doc/getting-started.html
+ * note: Used for loading the poster URLs into the admin list thumbnails.
+ *
+ * source: Android Developers — "RecyclerView".
+ * url: https://developer.android.com/reference/androidx/recyclerview/widget/RecyclerView.Adapter
+ * note: General reference for the onBindViewHolder implementation used here.
+ */
+
 package com.example.aurora.adapters;
 
 import android.content.Context;
