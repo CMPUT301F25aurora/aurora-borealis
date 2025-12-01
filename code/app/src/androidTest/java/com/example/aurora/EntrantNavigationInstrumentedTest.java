@@ -48,13 +48,10 @@ public class EntrantNavigationInstrumentedTest {
         onView(withId(R.id.loginEmail)).check(matches(isDisplayed()));
         onView(withId(R.id.loginPassword)).check(matches(isDisplayed()));
 
-        // Traditional login button
         onView(withId(R.id.loginButton)).check(matches(isDisplayed()));
 
-        // Device login option
         onView(withId(R.id.loginDeviceButton)).check(matches(isDisplayed()));
 
-        // "Create one here" text (sign up navigation)
         onView(withId(R.id.createAccountButton)).check(matches(isDisplayed()));
     }
 
@@ -68,7 +65,6 @@ public class EntrantNavigationInstrumentedTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // After clicking, at minimum the app should still be running and not crash.
         // It may stay on the same screen (e.g., if backend rejects login in test env).
         onView(withId(R.id.loginDeviceButton)).check(matches(isDisplayed()));
     }

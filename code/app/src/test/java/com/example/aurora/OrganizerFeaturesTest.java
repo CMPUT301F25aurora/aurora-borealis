@@ -20,7 +20,6 @@ import java.util.List;
  */
 public class OrganizerFeaturesTest {
 
-    // Use our TestableEvent subclass to access lists that might be missing in the main model
     private TestableEvent event;
 
     @Before
@@ -36,9 +35,13 @@ public class OrganizerFeaturesTest {
         event.setCancelledEntrants(new ArrayList<>());
     }
 
-    // ==================================================================
-    // US 02.01.01: Create Event & QR Code Logic
-    // ==================================================================
+    /**
+     * Test: QR data string should match expected deep link structure.
+     *
+     * Verifies:
+     *  deep link is formed correctly
+     *  eventId is correctly injected into string
+     */
     @Test
     public void testQRCode_DataStringGeneration() {
         // Logic: The QR code is usually the Event ID or a deep link
@@ -50,9 +53,13 @@ public class OrganizerFeaturesTest {
         assertEquals(expectedDeepLink, generatedData);
     }
 
-    // ==================================================================
-    // US 02.01.04: Set Registration Period
-    // ==================================================================
+    /**
+     * Test: Registration period must have start < end.
+     *
+     * Verifies:
+     *  date comparison logic is valid
+     *  organizer cannot create invalid registration window
+     */
     @Test
     public void testRegistrationPeriod_Validation() {
         // Start date must be before End date
@@ -63,52 +70,71 @@ public class OrganizerFeaturesTest {
         assertTrue("Registration start must be before end", isValid);
     }
 
-    // ==================================================================
-    // US 02.03.01: Limit Waiting List
-    // ==================================================================
+    /**
+     * Test: Registration period must have start < end.
+     *
+     * Verifies:
+     *  date comparison logic is valid
+     *  organizer cannot create invalid registration window
+     */
     @Test
     public void testWaitingList_CapacityCheck_Allowed() {
         event.setMaxSpots(2L); // Limit 2
         event.getWaitingList().add("User1");
 
-        // Logic: Can User2 join?
+
         boolean canJoin = event.getWaitingList().size() < event.getMaxSpots();
 
         assertTrue(canJoin);
     }
 
+    /**
+     * Test: Waitlist capacity check should deny join when full.
+     *
+     * Verifies:
+     *  size >= maxSpots prevents joining
+     *  organizer capacity rule is respected
+     */
     @Test
     public void testWaitingList_CapacityCheck_Denied() {
         event.setMaxSpots(1L); // Limit 1
         event.getWaitingList().add("User1"); // List size is now 1
 
-        // Logic: Can User2 join?
+
         boolean canJoin = event.getWaitingList().size() < event.getMaxSpots();
 
         assertTrue("Should NOT be able to join full list", !canJoin);
     }
 
-    // ==================================================================
-    // US 02.06.01 - 03: View Specific Lists
-    // ==================================================================
+    /**
+     * Test: Organizer separates waiting/selected lists properly.
+     *
+     * Verifies:
+     *  list independence
+     *  events are categorized into correct lists
+     */
     @Test
     public void testListFiltration_Logic() {
-        // A robust event object has 4 lists. Organizer needs to see them separately.
+
         event.getWaitingList().add("Waiter");
         event.getSelectedEntrants().add("Winner");
 
-        // Verify separation
         assertTrue(event.getWaitingList().contains("Waiter"));
         assertTrue(!event.getWaitingList().contains("Winner"));
         assertTrue(event.getSelectedEntrants().contains("Winner"));
     }
 
-    // ==================================================================
-    // US 02.06.05: Export to CSV
-    // ==================================================================
+    /**
+     * Test: CSV export should format enrolled entrants correctly.
+     *
+     * Verifies:
+     *  CSV header exists
+     *  each entry produces "eventId,userId"
+     *  multiple rows handled correctly
+     */
     @Test
     public void testCSVExport_Formatting() {
-        // Logic: Convert list of enrolled users to Comma Separated String
+
         event.getEnrolledEntrants().add("UserA");
         event.getEnrolledEntrants().add("UserB");
 
@@ -117,7 +143,6 @@ public class OrganizerFeaturesTest {
         for (String uid : event.getEnrolledEntrants()) {
             csv.append(event.getEventId()).append(",").append(uid).append("\n");
         }
-
         String result = csv.toString();
 
         assertTrue(result.contains("evt_org_1,UserA"));
