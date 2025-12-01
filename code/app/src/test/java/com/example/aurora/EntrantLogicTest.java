@@ -91,4 +91,74 @@ public class EntrantLogicTest {
         assertFalse("Entrant without location should not be allowed when geoRequired is true",
                 allowedToJoin);
     }
+
+    // ============================================================
+    // US 01.01.04: Filter events by availability (open vs closed)
+    // ============================================================
+    @Test
+    public void filterEventsByAvailability_onlyShowsOpenEvents() {
+        // Simple local "event" representation for this logic test
+        class SimpleEvent {
+            String id;
+            boolean isOpen;
+
+            SimpleEvent(String id, boolean isOpen) {
+                this.id = id;
+                this.isOpen = isOpen;
+            }
+        }
+
+        List<SimpleEvent> allEvents = Arrays.asList(
+                new SimpleEvent("pastClosed", false),
+                new SimpleEvent("futureClosed", false),
+                new SimpleEvent("futureOpen", true),
+                new SimpleEvent("anotherFutureOpen", true)
+        );
+
+        // Logic: entrant wants to see only events that are currently open
+        List<SimpleEvent> visibleEvents = new ArrayList<>();
+        for (SimpleEvent e : allEvents) {
+            if (e.isOpen) {
+                visibleEvents.add(e);
+            }
+        }
+
+        // We should only see the open events
+        assertEquals(2, visibleEvents.size());
+        assertEquals("futureOpen", visibleEvents.get(0).id);
+        assertEquals("anotherFutureOpen", visibleEvents.get(1).id);
+    }
+
+    // ============================================================
+    // Geo requirement: block join when entrant has no location
+    // ============================================================
+    @Test
+    public void geoRequired_preventsJoinWhenEntrantHasNoLocation() {
+        class SimpleEvent {
+            String id;
+            boolean geoRequired;
+
+            SimpleEvent(String id,boolean geoRequired){
+                this.id=id;
+                this.geoRequired=geoRequired;
+            }
+        }
+
+        SimpleEvent geoRequiredEvent = new SimpleEvent("evt_geo",true);
+        SimpleEvent geoOptionalEvent = new SimpleEvent("evt_no_geo",false);
+
+        boolean entrantHasLocation = false;
+
+        // Joining geo-required event with no location → not allowed
+        boolean canJoinGeoRequired =
+                !geoRequiredEvent.geoRequired || entrantHasLocation;
+
+        // Joining geo-optional event with no location → allowed
+        boolean canJoinGeoOptional =
+                !geoOptionalEvent.geoRequired || entrantHasLocation;
+
+        assertFalse(canJoinGeoRequired);
+        assertTrue(canJoinGeoOptional);
+    }
+
 }

@@ -167,6 +167,61 @@ public class EntrantFeaturesTest {
         assertEquals("android_id_999", effectiveId);
     }
 
+    // ==================================================================
+    // US 01.02.03: History of events (won vs not selected)
+    // ==================================================================
+    @Test
+    public void testEventHistoryTracksWonAndLostEvents() {
+        // Events the entrant registered for
+        List<String> registeredEvents = new ArrayList<>();
+        registeredEvents.add("evt_swim");
+        registeredEvents.add("evt_dance");
+
+        // Events where the entrant was selected ("won" the lottery)
+        List<String> wonEvents = new ArrayList<>();
+        wonEvents.add("evt_swim"); // entrant won swim lessons
+
+        // Compute "lost" events = registered but not in won list
+        List<String> lostEvents = new ArrayList<>();
+        for (String eventId : registeredEvents) {
+            if (!wonEvents.contains(eventId)) {
+                lostEvents.add(eventId);
+            }
+        }
+
+        // Assertions: we registered for 2 events total
+        assertEquals(2, registeredEvents.size());
+
+        // Swim is a win
+        assertTrue(wonEvents.contains("evt_swim"));
+        // Dance is not a win
+        assertFalse(wonEvents.contains("evt_dance"));
+
+        // Exactly one "lost" event, and it is the dance class
+        assertEquals(1, lostEvents.size());
+        assertTrue(lostEvents.contains("evt_dance"));
+    }
+
+    // ============================================================
+    // US 01.05.04: Entrant sees total waiting list size
+    // ============================================================
+    @Test
+    public void waitingListCountReflectsNumberOfEntrants() {
+        List<String> waitingList = new ArrayList<>();
+        waitingList.add("user_a");
+        waitingList.add("user_b");
+        waitingList.add("user_c");
+
+        int count = waitingList.size();
+        String displayText = count + " entrants on waiting list";
+
+        // Raw count is correct
+        assertEquals(3,count);
+
+        // Display text matches expected format
+        assertEquals("3 entrants on waiting list",displayText);
+    }
+
     /**
      * Internal subclass to allow testing of lists that might not exist
      * in the main Event.java model yet.

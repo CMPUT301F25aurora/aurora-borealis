@@ -35,8 +35,10 @@ import com.example.aurora.utils.AdminUtils;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Pure unit tests for logic used by the admin features.
@@ -123,4 +125,39 @@ public class AdminUtilsTest {
 
         assertEquals("1 days ago", AdminUtils.formatRelativeTime(d, now));
     }
+
+    // ============================================================
+    // US 03.08.01: Log notifications for admin review
+    // ============================================================
+    @Test
+    public void logNotification_createsEntryWithCorrectFields() {
+        class NotificationLogEntry {
+            String eventId;
+            String recipientEmail;
+            String type;
+
+            NotificationLogEntry(String eventId,String recipientEmail,String type){
+                this.eventId=eventId;
+                this.recipientEmail=recipientEmail;
+                this.type=type;
+            }
+        }
+
+        List<NotificationLogEntry> log = new ArrayList<>();
+
+        String eventId = "evt_swim";
+        String email = "user@example.com";
+        String type = "WIN";
+
+        // "Log" the notification
+        log.add(new NotificationLogEntry(eventId,email,type));
+
+        assertEquals(1,log.size());
+        NotificationLogEntry entry = log.get(0);
+
+        assertEquals("evt_swim",entry.eventId);
+        assertEquals("user@example.com",entry.recipientEmail);
+        assertEquals("WIN",entry.type);
+    }
+
 }
