@@ -1,6 +1,9 @@
 package com.example.aurora.activities;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -625,26 +628,31 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
      */
     private void showCustomMessageDialog(CustomMessageCallback callback) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Send Message");
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_send_message, null);
 
-        final EditText input = new EditText(this);
-        input.setHint("Type your message...");
-        input.setMinLines(2);
-        input.setPadding(50, 40, 50, 20);
-        builder.setView(input);
+        EditText input = view.findViewById(R.id.dialogInput);
+        TextView btnCancel = view.findViewById(R.id.dialogCancel);
+        TextView btnSend = view.findViewById(R.id.dialogSend);
 
-        builder.setPositiveButton("Send", (dialog, which) -> {
+        AlertDialog dialog = builder.setView(view).create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnSend.setOnClickListener(v -> {
             String msg = input.getText().toString().trim();
             if (msg.isEmpty()) {
                 Toast.makeText(this, "Message cannot be empty", Toast.LENGTH_SHORT).show();
                 return;
             }
             callback.onMessage(msg);
+            dialog.dismiss();
         });
 
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+        dialog.show();
     }
+
 
     /**
      * Exports the FINAL entrants list as a CSV file.
