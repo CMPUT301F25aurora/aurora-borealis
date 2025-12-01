@@ -30,7 +30,6 @@ public class NotificationHelper extends ContextWrapper {
         super(base);
         createChannel();
     }
-
     private void createChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel =
@@ -43,7 +42,6 @@ public class NotificationHelper extends ContextWrapper {
             getManager().createNotificationChannel(channel);
         }
     }
-
     public NotificationManager getManager() {
         if (manager == null) {
             manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -60,4 +58,11 @@ public class NotificationHelper extends ContextWrapper {
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
     }
+
+    public class NotificationUtils {
+        public static boolean shouldSendToUser(boolean notificationsEnabledFlag) {
+            return notificationsEnabledFlag; // basic example
+        }
+    }
+
 }

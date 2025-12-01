@@ -10,7 +10,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
+/**
+ * OrganizerLogicTest
+ *
+ * Contains small focused logic tests used by organizers:
+ *  - Lottery sampling behaviour
+ *  - Handling cases where available spots exceed list size
+ */
 public class OrganizerLogicTest {
 
     /**
@@ -22,16 +28,12 @@ public class OrganizerLogicTest {
      */
     @Test
     public void testLotterySampling_Logic() {
-        // Simulate the Lottery System
+
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E"));
         int spotsAvailable = 2;
-
-        // Logic: Shuffle and Pick top N
-        Collections.shuffle(waitingList, new Random(123)); // Fixed seed for deterministic test
+        Collections.shuffle(waitingList, new Random(123));
         List<String> selected = waitingList.subList(0, spotsAvailable);
-
         assertEquals(2, selected.size());
-        // Verify no duplicates
         assertTrue(!selected.get(0).equals(selected.get(1)));
     }
 
@@ -41,7 +43,7 @@ public class OrganizerLogicTest {
      */
     @Test
     public void testLottery_NotEnoughEntrants() {
-        // If 5 spots but only 2 entrants
+
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B"));
         int spotsAvailable = 5;
 

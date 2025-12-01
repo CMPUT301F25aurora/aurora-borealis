@@ -33,8 +33,9 @@
                 android:id="@+id/eventTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:fontFamily="sans-serif-medium"
+                android:textSize="24sp"
+                android:fontFamily="@font/luckiestguy_regular"
+                android:letterSpacing="-0.01"
                 android:textColor="#fe7f2d"
                 android:text="Sample Event Title" />
 

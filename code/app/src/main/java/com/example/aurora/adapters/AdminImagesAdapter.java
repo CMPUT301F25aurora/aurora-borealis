@@ -16,23 +16,35 @@ import com.example.aurora.R;
 import com.example.aurora.models.AdminImage;
 
 import java.util.List;
-
+/**
+ * Adapter used in the Admin panel to display event poster images.
+ * Shows: event title, event ID, organizer email, and poster thumbnail.
+ * Provides a delete button for each item via a callback.
+ */
 public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.ImageHolder> {
-
     private List<AdminImage> images;
     private Context context;
     private OnDeleteClick listener;
-
     public interface OnDeleteClick {
         void onDelete(AdminImage img);
     }
 
+    /**
+     * Creates an adapter for showing event posters in the admin list.
+     *
+     * @param images   List of AdminImage objects to display.
+     * @param context  Context for inflating layouts and loading images.
+     * @param listener Callback for delete button actions.
+     */
     public AdminImagesAdapter(List<AdminImage> images, Context context, OnDeleteClick listener) {
         this.images = images;
         this.context = context;
         this.listener = listener;
     }
 
+    /**
+     * Inflates the layout for a single admin image card.
+     */
     @NonNull
     @Override
     public ImageHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -41,6 +53,12 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
         return new ImageHolder(v);
     }
 
+    /**
+     * Binds event poster information to the ViewHolder.
+     *
+     * @param holder   The ViewHolder for the current item.
+     * @param position Position of the item in the list.
+     */
     @Override
     public void onBindViewHolder(@NonNull ImageHolder holder, int position) {
         AdminImage img = images.get(position);
@@ -57,21 +75,25 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
         holder.removeBtn.setOnClickListener(v -> listener.onDelete(img));
     }
 
-
+    /**
+     * @return Number of images in the admin list.
+     */
     @Override
     public int getItemCount() {
         return images.size();
     }
 
+    /**
+     * ViewHolder representing a single admin image row.
+     * Holds poster thumbnail, event title, event ID, organizer email,
+     * and the remove button.
+     */
     public class ImageHolder extends RecyclerView.ViewHolder {
-
-
         ImageView thumbnail;
         TextView title;
         TextView eventIdTv;
         TextView organizerTv;
         Button removeBtn;
-
         public ImageHolder(@NonNull View itemView) {
             super(itemView);
 

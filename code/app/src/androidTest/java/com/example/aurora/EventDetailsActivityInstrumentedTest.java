@@ -1,77 +1,228 @@
-/*
- * References for EventDetailsActivityInstrumentedTest:
- *
- * source: Android Developers — "Espresso"
- * url: https://developer.android.com/training/testing/espresso
- * note: Used for checking that text fields, buttons, and other views in the
- *       event details screen are displayed and clickable.
- *
- * source: Android Developers — "Espresso recipes"
- * url: https://developer.android.com/training/testing/espresso/recipes
- * note: Used for examples of matching text, view visibility, and simple assertions.
- *
- * source: Android Developers — "Test your app's activities"
- * url: https://developer.android.com/guide/components/activities/testing
- * note: Used for using ActivityScenario or ActivityScenarioRule to test EventDetailsActivity.
- *
- * author: Stack Overflow user — "How to assert inside a RecyclerView in Espresso?"
- * url: https://stackoverflow.com/questions/31394569/how-to-assert-inside-a-recyclerview-in-espresso
- * note: Used if the event details screen shows lists (for example, entrants) in a RecyclerView
- *       and the test needs to assert on a specific row.
- *
- * source: ChatGPT (OpenAI assistant)
- * note: Helped refine the ideas for what UI states are worth checking in this test,
- *       such as making sure QR or deep link related views appear when expected.
- */
-
-
 package com.example.aurora;
-
-import android.content.Intent;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.example.aurora.activities.EventDetailsActivity;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Very simple UI tests for EventDetailsActivity.
+ * UI tests for EventDetailsActivity that work with the real behaviour:
+ * - bindEvent(...) calls finish() when the event doc does NOT exist.
  *
- * Note for Testing:
- * In EventDetailsActivity.java, comment out the "finish();" line
- * inside bindEvent(DocumentSnapshot doc) before running this test.
- * Otherwise, the test will close the screen right away and fail.
- *
- * Uses a dummy eventId so Firestore does not crash.
+ * We avoid that branch by seeding a dummy event in Firestore before launching.
  */
 @RunWith(AndroidJUnit4.class)
 public class EventDetailsActivityInstrumentedTest {
 
-    @Rule
-    public ActivityScenarioRule<EventDetailsActivity> rule =
-            new ActivityScenarioRule<>(
-                    new Intent(
-                            ApplicationProvider.getApplicationContext(),
-                            EventDetailsActivity.class
-                    ).putExtra("eventId", "dummyEvent123")
-            );
+    private static final String TEST_EVENT_ID = "test-event-details-123";
 
-    @Test
-    public void testEventDetailsScreenVisible() {
-        onView(withId(R.id.txtTitle)).check(matches(isDisplayed()));
-       // onView(withId(R.id.txtSubtitle)).check(matches(isDisplayed()));
-        onView(withId(R.id.txtAbout)).check(matches(isDisplayed()));
+    /**
+     * Create a minimal Firestore event doc so that doc.exists() == true
+     * inside EventDetailsActivity.bindEvent(...).
+     */
+    private void seedTestEvent() throws Exception {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", "Test Event");
+        data.put("about", "Test about text shown in details.");
+        data.put("description", "Test description");
+        data.put("capacity", 10L);
+
+        Tasks.await(
+                db.collection("events").document(TEST_EVENT_ID).set(data),
+                5,
+                TimeUnit.SECONDS
+        );
     }
 
+    /**
+     * Sets user_role and seeds the event before launching the activity.
+     */
+    private void launchEventDetailsScreen() throws Exception {
+        Context context = ApplicationProvider.getApplicationContext();
 
+        SharedPreferences sp =
+                context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("user_role", "entrant")
+                .apply();
+
+        seedTestEvent();
+
+        Intent intent = new Intent(context, EventDetailsActivity.class);
+        intent.putExtra("eventId", TEST_EVENT_ID);
+
+        ActivityScenario.launch(intent);
+    }
+
+    /**
+     * Test: Event details screen loads and critical views are visible.
+     *
+     * Verifies:
+     *  Title is visible
+     *  About text is visible
+     *  Criteria and QR buttons are visible
+     *  Sign Up button is GONE by default
+     */
+    @Test
+    public void testEventDetailsScreenVisible() throws Exception {
+        launchEventDetailsScreen();
+
+        onView(withId(R.id.txtTitle)).check(matches(isDisplayed()));
+        onView(withId(R.id.txtAbout)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnCriteria)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.btnSignUp))
+                .check(matches(withEffectiveVisibility(
+                        androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+                )));
+    }
+
+    /**
+     * Test: Sign Up button should always be hidden in this screen.
+     *
+     * Verifies:
+     *  Sign Up button visibility is GONE
+     */
+    @Test
+    public void testSignUpButtonIsHiddenByDefault() throws Exception {
+        launchEventDetailsScreen();
+
+        onView(withId(R.id.btnSignUp))
+                .check(matches(withEffectiveVisibility(
+                        androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+                )));
+    }
+
+    /**
+     * Test: Criteria button should be clickable.
+     *
+     * Verifies:
+     *  Button is visible
+     *  Button can be tapped
+     */
+    @Test
+    public void testCriteriaButtonClickable() throws Exception {
+        launchEventDetailsScreen();
+
+        onView(withId(R.id.btnCriteria)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnCriteria)).perform(click());
+    }
+
+    /**
+     * Test: QR button should be clickable.
+     *
+     * Verifies:
+     *  Button is visible
+     *  Button responds to click action
+     */
+    @Test
+    public void testShowQrButtonClickable() throws Exception {
+        launchEventDetailsScreen();
+
+        onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnShowQr)).perform(click());
+    }
+
+    /**
+     * Verifies that the criteria dialog for an event is wired correctly.
+     * <p>
+     * The test launches {@code EventDetailsActivity}, taps the "Criteria"
+     * button, and asserts that the dialog containing the {@code btnGotIt}
+     * button is displayed. This confirms that entrants can access the
+     * lottery criteria / guidelines from the event details screen.
+     */
+    @Test
+    public void testCriteriaDialogShowsGotItButton() throws Exception {
+        launchEventDetailsScreen();
+
+        onView(withId(R.id.btnCriteria))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        onView(withId(R.id.btnGotIt))
+                .check(matches(isDisplayed()));
+    }
+
+    /**
+     * Ensures that an entrant who has been accepted for an event can see
+     * and use the "Sign Up" button on the event details screen.
+     * <p>
+     * This test seeds Firestore with an event document where the test
+     * user's email appears in {@code acceptedEntrants}, configures the
+     * shared preferences to log in as that entrant, then launches
+     * {@code EventDetailsActivity} for the seeded event. It asserts that
+     * {@code btnSignUp} is visible and can be clicked without errors,
+     * validating the core sign-up flow for selected entrants.
+     */
+    @Test
+    public void testSignUpVisibleForAcceptedEntrantAndClickable() throws Exception {
+        Context context = ApplicationProvider.getApplicationContext();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        String testEmail = "entrant-signup-test@example.com";
+        String acceptedEventId = "test-event-accepted-123";
+
+        SharedPreferences sp =
+                context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("user_role", "entrant")
+                .putString("user_email", testEmail)
+                .apply();
+
+        Map<String,Object> data = new HashMap<>();
+        data.put("title", "Accepted Event");
+        data.put("about", "You have been selected and can now sign up.");
+        data.put("description", "Sign-up test event");
+        data.put("capacity", 5L);
+
+        java.util.List<String> accepted = new java.util.ArrayList<>();
+        accepted.add(testEmail);
+        data.put("acceptedEntrants", accepted);
+
+        java.util.List<String> waiting = new java.util.ArrayList<>();
+        waiting.add(testEmail);
+        data.put("waitingList", waiting);
+
+        Tasks.await(
+                db.collection("events").document(acceptedEventId).set(data),
+                5,
+                java.util.concurrent.TimeUnit.SECONDS
+        );
+
+        Intent intent = new Intent(context, com.example.aurora.activities.EventDetailsActivity.class);
+        intent.putExtra("eventId", acceptedEventId);
+        ActivityScenario.launch(intent);
+
+        onView(withId(R.id.btnSignUp))
+                .check(matches(withEffectiveVisibility(
+                        androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
+                )));
+
+        onView(withId(R.id.btnSignUp))
+                .perform(click());
+    }
 }

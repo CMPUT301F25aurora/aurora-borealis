@@ -35,8 +35,10 @@ import com.example.aurora.utils.AdminUtils;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Pure unit tests for logic used by the admin features.
@@ -83,7 +85,7 @@ public class AdminUtilsTest {
      */
     @Test
     public void capitalize_UpperCase_ReturnsCapitalized() {
-        // Your code uses toLowerCase() on the substring, so "ADMIN" becomes "Admin"
+
         assertEquals("Admin", AdminUtils.capitalize("ADMIN"));
     }
     /**
@@ -117,10 +119,9 @@ public class AdminUtilsTest {
     @Test
     public void relativeTime_JustNow_ReturnsMinutes() {
         long now = 1000000000L;
-        long eventTime = now - (5 * 60 * 1000); // 5 mins ago
+        long eventTime = now - (5 * 60 * 1000);
         Date d = new Date(eventTime);
 
-        // We pass 'now' into your util to make it deterministic
         assertEquals("5 min ago", AdminUtils.formatRelativeTime(d, now));
     }
     /**
@@ -130,7 +131,7 @@ public class AdminUtilsTest {
     @Test
     public void relativeTime_UnderOneHour_ReturnsMinutes() {
         long now = 1000000000L;
-        long eventTime = now - (59 * 60 * 1000); // 59 mins ago
+        long eventTime = now - (59 * 60 * 1000);
         Date d = new Date(eventTime);
 
         assertEquals("59 min ago", AdminUtils.formatRelativeTime(d, now));

@@ -42,10 +42,9 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#2f4858"
-                android:src="@drawable/ic_person_24"
-                android:padding="24dp"
-                android:scaleType="fitCenter"
-                android:tint="#fe7f2d" />
+                android:src="@drawable/ic_msagent"
+                android:padding="20dp"
+                android:scaleType="fitCenter"/>
 
             <TextView
                 android:id="@+id/profileHeaderName"
@@ -165,7 +164,7 @@
             android:backgroundTint="#2f4858"
             android:text="Delete Account"
             android:textColor="#EF5350"
-            android:drawableLeft="@drawable/ic_baseline_delete_24"
+            android:drawableLeft="@drawable/ic_delete_red"
             android:drawablePadding="8dp"
             android:textAllCaps="false" />
 

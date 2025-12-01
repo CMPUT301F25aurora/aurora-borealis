@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#233d4d">
 
-    <!-- MAIN VERTICAL CONTENT -->
     <LinearLayout
         android:id="@+id/organizer_root"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:fitsSystemWindows="true"
         android:clipToPadding="false">
 
-        <!-- HEADER (NO BACK BUTTON ANYMORE) -->
         <LinearLayout
             android:id="@+id/headerContainer"
             android:layout_width="match_parent"
@@ -27,31 +25,31 @@
             android:paddingEnd="16dp"
             android:paddingBottom="12dp">
 
-            <TextView
-                android:id="@+id/dashboardTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+        <TextView
+            android:id="@+id/dashboardTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Organizer Dashboard"
+            android:textColor="#fe7f2d"
+            android:textSize="40sp"
+            android:fontFamily="@font/titanone_regular"
+            android:letterSpacing="-0.01"/>
 
-                android:text="Organizer Dashboard"
-                android:textColor="#fe7f2d"
-                android:fontFamily="sans-serif-medium"
-                android:textSize="26sp" />
+        <ImageButton
+            android:id="@+id/btnLogoutOrganizer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:src="@drawable/ic_logout"
+            android:tint="#fe7f2d"
+            android:padding="8dp"
+    android:contentDescription="Logout"/>
 
-            <Button
-                android:id="@+id/btnLogoutOrganizer"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_input_sharp"
-                android:backgroundTint="#2f4858"
-                android:text="Logout"
-                android:textSize="12sp"
-                android:textAllCaps="false"
-                android:textColor="#fe7f2d"
-                android:paddingHorizontal="16dp" />
+
         </LinearLayout>
 
-        <!-- SCROLLABLE CONTENT -->
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -65,57 +63,8 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- EVENT TOOLS CARD -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_input_sharp"
-                    android:backgroundTint="#2f4858"
-                    android:padding="16dp"
-                    android:layout_marginBottom="24dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Event Tools"
-                        android:textColor="#fe7f2d"
-                        android:fontFamily="sans-serif-medium"
-                        android:textSize="18sp"
-                        android:layout_marginBottom="12dp" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/myEventsButton"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:text="My Events"
-                            android:fontFamily="sans-serif-medium"
-                            android:textAllCaps="false"
-                            android:background="@drawable/bg_input_sharp"
-                            android:backgroundTint="#233d4d"
-                            android:textColor="#FFFFFF"
-                            android:layout_marginEnd="8dp" />
-
-                        <Button
-                            android:id="@+id/createEventButton"
-                            android:layout_width="0dp"
-                            android:layout_height="52dp"
-                            android:layout_weight="1"
-                            android:text="Create Event"
-                            android:fontFamily="sans-serif-medium"
-                            android:textAllCaps="false"
-                            android:backgroundTint="#fe7f2d"
-                            android:textColor="#233d4d" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- YOUR EVENTS HEADER -->
                 <TextView
                     android:id="@+id/yourEventsLabel"
                     android:layout_width="wrap_content"
@@ -126,7 +75,6 @@
                     android:textSize="20sp"
                     android:layout_marginBottom="12dp" />
 
-                <!-- EVENT LIST CONTAINER -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -140,13 +88,15 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="8dp" />
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="75dp" />
                 </LinearLayout>
 
             </LinearLayout>
         </ScrollView>
 
-        <!-- BOTTOM NAV -->
         <LinearLayout
             android:id="@+id/organizerBottomNav"
             android:layout_width="match_parent"
@@ -157,37 +107,55 @@
             android:paddingHorizontal="32dp"
             android:elevation="8dp">
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/bottomHome"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Home"
-                android:textColor="#fe7f2d" />
+                android:orientation="vertical">
 
-            <TextView
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_home"
+                    android:tint="#fe7f2d" />
+
+            </LinearLayout>
+            <LinearLayout
                 android:id="@+id/bottomProfile"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Profile"
-                android:textColor="#fe7f2d" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/bottomAlerts"
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_user"
+                    android:tint="#fe7f2d" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/createEventButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Alerts"
-                android:textColor="#fe7f2d" />
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_createevent"
+                    android:tint="#fe7f2d" />
+
+            </LinearLayout>
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- ROLE SWITCH FAB (ABOVE BOTTOM NAV, SAME AS ENTRANT) -->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/roleSwitchFab"
         android:layout_width="140dp"

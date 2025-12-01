@@ -448,6 +448,7 @@ public class AdminActivity extends AppCompatActivity {
 
                             if (!newVal) {
                                 FirestoreNotificationHelper.sendOrganizerRevokedNotification(db, email);
+                                deleteAllEventsForOrganizer(email);
                             } else {
                                 FirestoreNotificationHelper.sendOrganizerEnabledNotification(db, email);
                             }
@@ -511,7 +512,7 @@ public class AdminActivity extends AppCompatActivity {
 
     /**
      * Renders a poster card showing thumbnail, event name, organizer
-     * and delete button (removes Storage image & clears posterUrl in Firestore).
+     * and delete button (removes Storage image and clears posterUrl in Firestore).
      *
      * @param img AdminImage containing metadata for display.
      */
@@ -808,5 +809,68 @@ public class AdminActivity extends AppCompatActivity {
         long days = hours / 24;
         return days + " days ago";
     }
+
+    /**
+     * Deletes every event created by a given organizer.
+     *
+     * Finds all events where `organizerEmail` matches the provided email,
+     * then deletes each one using {@link #deleteEventById(FirebaseFirestore, String)}.
+     *
+     * @param organizerEmail The organizer's email whose events should be removed.
+     */
+    private void deleteAllEventsForOrganizer(String organizerEmail) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("events")
+                .whereEqualTo("organizerEmail", organizerEmail)
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query) {
+                        deleteEventById(db, doc.getId());
+                    }
+                });
+    }
+    /**
+     * Deletes a single event and all its associated Firestore data.
+     *
+     * This performs a multi-step cleanup:
+     *  1. Deletes all documents in the event's "waitingLocations" subcollection.
+     *  2. Deletes all notification documents referencing this event (via eventId).
+     *  3. Finally deletes the event document itself from the "events" collection.
+     *
+     * The deletions are chained using success listeners to ensure ordering:
+     * subcollections → notifications → parent event.
+     *
+     * @param db       The Firestore instance to operate on.
+     * @param eventId  The ID of the event document to delete.
+     */
+    private void deleteEventById(FirebaseFirestore db, String eventId) {
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingLocations")
+                .get()
+                .addOnSuccessListener(waitSnap -> {
+
+                    for (DocumentSnapshot d : waitSnap.getDocuments()) {
+                        d.getReference().delete();
+                    }
+
+                    db.collection("notifications")
+                            .whereEqualTo("eventId", eventId)
+                            .get()
+                            .addOnSuccessListener(notifSnap -> {
+
+                                for (DocumentSnapshot d : notifSnap.getDocuments()) {
+                                    d.getReference().delete();
+                                }
+
+                                db.collection("events").document(eventId)
+                                        .delete();
+                            });
+                });
+    }
+
+
 }
 

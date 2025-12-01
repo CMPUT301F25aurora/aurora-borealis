@@ -7,7 +7,14 @@ import com.example.aurora.models.AdminEventItem;
 import com.example.aurora.models.AdminImage;
 
 import org.junit.Test;
-
+/**
+ * Unit tests for simple Admin model classes:
+ *
+ * Verifies:
+ *  AdminEventItem getters/setters work correctly
+ *  AdminImage constructor assigns fields correctly
+ *  AdminImage empty constructor leaves fields null
+ */
 public class AdminModelTest {
 
     /**
@@ -52,6 +59,5 @@ public class AdminModelTest {
     public void testAdminImage_EmptyConstructor() {
         AdminImage img = new AdminImage();
         assertNull(img.eventId);
-        // Ensure it doesn't crash on null access if fields are public
     }
 }

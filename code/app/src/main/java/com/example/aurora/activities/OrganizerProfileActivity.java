@@ -16,13 +16,21 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+/**
+ * OrganizerProfileActivity
+ *
+ * Displays the organizer’s personal profile information.
+ * Features:
+ *  Shows name, email, phone, and number of active events.
+ *  Allows user to delete their entire account.
+ *  Loads profile data from Firestore.
+ *  Handles session validation and redirects if session is invalid.
+ */
 
 public class OrganizerProfileActivity extends AppCompatActivity {
-
     private ImageView backButton;
     private TextView profileName, profileEmail, profilePhone, profileHeaderName, profileHeaderRole, activeEventsCount;
     private Button deleteAccountButton;
-
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
@@ -37,9 +45,6 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        // -----------------------------
-        // SESSION VALIDATION
-        // -----------------------------
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         userDocId = sp.getString("user_doc_id", null);
         userEmail = sp.getString("user_email", null);
@@ -63,6 +68,9 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         deleteAccountButton.setOnClickListener(v -> showDeleteDialog());
     }
 
+    /**
+     * Connects all XML layout views to their corresponding Java variables.
+     */
     private void bindViews() {
         backButton = findViewById(R.id.backButton);
         profileName = findViewById(R.id.profileName);
@@ -74,6 +82,10 @@ public class OrganizerProfileActivity extends AppCompatActivity {
         deleteAccountButton = findViewById(R.id.deleteAccountButton);
     }
 
+    /**
+     * Loads the organizer’s profile details and active event count from Firestore.
+     * Updates the UI with name, email, phone, and event statistics.
+     */
     private void loadProfileData() {
 
         db.collection("users").document(userDocId)
@@ -83,7 +95,6 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                         Toast.makeText(this, "User profile not found.", Toast.LENGTH_SHORT).show();
                         return;
                     }
-
                     String fullName = doc.getString("name");
                     String phone = doc.getString("phone");
 
@@ -107,6 +118,10 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                         Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Displays a confirmation dialog asking the organizer
+     * if they really want to delete their account.
+     */
     private void showDeleteDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Account")
@@ -116,11 +131,18 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Fully deletes the organizer account.
+     *
+     * Steps:
+     *  1) Deletes all events created by the organizer.
+     *  2) Deletes organizer's Firestore user document.
+     *  3) Deletes Firebase Auth account.
+     *  4) Clears stored session data.
+     *  5) Redirects user back to LoginScreen.
+     */
     private void deleteAccount() {
 
-        // -----------------------------
-        // STEP 1: Delete all events by organizer
-        // -----------------------------
         db.collection("events")
                 .whereEqualTo("organizerEmail", userEmail)
                 .get()
@@ -132,32 +154,20 @@ public class OrganizerProfileActivity extends AppCompatActivity {
                                 .delete();
                     }
 
-                    // -----------------------------
-                    // STEP 2: Delete Firestore user document
-                    // -----------------------------
                     db.collection("users").document(userDocId)
                             .delete()
                             .addOnSuccessListener(aVoid -> {
 
-                                // -----------------------------
-                                // STEP 3: Delete Firebase Auth user
-                                // -----------------------------
                                 FirebaseUser user = auth.getCurrentUser();
                                 if (user != null) {
                                     user.delete();
                                 }
 
-                                // -----------------------------
-                                // STEP 4: Clear SharedPreferences
-                                // -----------------------------
                                 getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                                         .edit().clear().apply();
 
                                 Toast.makeText(this, "Account deleted.", Toast.LENGTH_SHORT).show();
 
-                                // -----------------------------
-                                // STEP 5: Back to login
-                                // -----------------------------
                                 Intent intent = new Intent(this, LoginActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);

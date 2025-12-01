@@ -49,6 +49,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+/**
+ * Instrumented UI tests for AdminActivity.
+ *
+ * These tests verify:
+ *  Tabs switch correctly
+ *  Lists display contents
+ *  Confirmation dialogs appear for destructive actions
+ */
 @RunWith(AndroidJUnit4.class)
 public class AdminActivityInstrumentedTest {
 
@@ -74,7 +82,6 @@ public class AdminActivityInstrumentedTest {
 
             @Override
             protected boolean matchesSafely(View view) {
-                // IMPORTANT: increment *after* the comparison so only one view returns true
                 if (matcher.matches(view)) {
                     return currentIndex++ == index;
                 }
@@ -83,58 +90,143 @@ public class AdminActivityInstrumentedTest {
         };
     }
 
-    // Browsing tests
+    /**
+     * Test: Opening the "Events" tab should display the main list container.
+     *
+     * Verifies:
+     * Tab switches correctly
+     * Event list is visible
+     */
     @Test
     public void testBrowseEventsTabShowsList() {
         onView(withId(R.id.tabEvents)).perform(click());
         onView(withId(R.id.adminListContainer)).check(matches(isDisplayed()));
     }
 
+    /**
+     * Test: Opening the "Profiles" tab should display the main list container.
+     *
+     * Verifies:
+     *  Profiles tab switches correctly
+     *  Profile list container is visible
+     */
     @Test
     public void testBrowseProfilesTabShowsList() {
         onView(withId(R.id.tabProfiles)).perform(click());
         onView(withId(R.id.adminListContainer)).check(matches(isDisplayed()));
     }
 
+    /**
+     * Test: Opening the "Logs" tab should update the section title.
+     *
+     * Verifies:
+     *  Logs tab switches correctly
+     *  The header "Activity Logs" appears
+     */
     @Test
     public void testLogsTabShowsActivityLogsTitle() {
         onView(withId(R.id.tabLogs)).perform(click());
         onView(withText("Activity Logs")).check(matches(isDisplayed()));
     }
 
-    // Remove Event confirmation
+    /**
+     * Test: Clicking a remove button in the Events tab opens a confirmation dialog.
+     *
+     * Verifies:
+     *  Remove button responds to clicks
+     *  Confirmation dialog appears with:
+     *   "Remove Event"
+     *   Remove button
+     *   Cancel button
+     */
     @Test
     public void testRemoveEventShowsConfirmationDialog() {
         // Go to Events tab
         onView(withId(R.id.tabEvents)).perform(click());
 
-        // Click the FIRST remove button in the list of events
         onView(withIndex(withId(R.id.adminEventRemoveButton), 0)).perform(click());
 
-        // Verify the confirmation dialog appears
         onView(withText("Remove Event")).check(matches(isDisplayed()));
         onView(withText("Remove")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
 
-        // Close dialog so test ends cleanly
         onView(withText("Cancel")).perform(click());
     }
-    // Remove Profile confirmation
 
+    /**
+     * Test: Clicking a remove button in the Profiles tab opens a confirmation dialog.
+     *
+     * Verifies:
+     * Remove button reacts correctly
+     * Confirmation dialog appears containing:
+     *   "Remove Profile"
+     *   Remove button
+     *   Cancel button
+     */
     @Test
     public void testRemoveProfileShowsConfirmationDialog() {
-        // Go to Profiles tab
+
         onView(withId(R.id.tabProfiles)).perform(click());
 
-        // Click the FIRST remove button in the list of profiles
         onView(withIndex(withId(R.id.adminProfileRemoveButton), 0)).perform(click());
 
-        // Verify the confirmation dialog appears
+
         onView(withText("Remove Profile")).check(matches(isDisplayed()));
         onView(withText("Remove")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
 
         // Close dialog
         onView(withText("Cancel")).perform(click());
+    }
+
+    /**
+     * Verifies that the admin tab bar responds to user interaction.
+     * <p>
+     * This test checks that the Events tab is visible on launch and that
+     * the user can tap the Events, Profiles, and Logs tabs in sequence
+     * without the app crashing. It indirectly validates that the tab
+     * click listeners are wired correctly.
+     */
+    @Test
+    public void testAdminTabsSwitchBetweenSections() {
+
+        onView(withId(R.id.tabEvents)).check(matches(isDisplayed()));
+        onView(withId(R.id.tabEvents)).perform(click());
+        onView(withId(R.id.tabProfiles)).perform(click());
+        onView(withId(R.id.tabLogs)).perform(click());
+    }
+
+    /**
+     * Ensures that the core UI elements of the admin dashboard are visible
+     * when {@code AdminActivity} launches.
+     * <p>
+     * This includes the main scroll container, the admin tab bar (Events,
+     * Profiles, Images, Logs), the section title, and the list container
+     * that displays the current section's content. Together these checks
+     * confirm that the admin overview screen is rendered and ready for use.
+     */
+    @Test
+    public void adminActivity_showsHeaderAndTabsOnLaunch() {
+        // Scroll container
+        onView(withId(R.id.adminScroll))
+                .check(matches(isDisplayed()));
+
+        // Tab bar and its tabs
+        onView(withId(R.id.adminTabBar))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabEvents))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabProfiles))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabImages))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabLogs))
+                .check(matches(isDisplayed()));
+
+        // Section title + list container
+        onView(withId(R.id.textSectionTitle))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.adminListContainer))
+                .check(matches(isDisplayed()));
     }
 }

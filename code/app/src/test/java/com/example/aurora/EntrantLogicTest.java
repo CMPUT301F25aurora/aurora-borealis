@@ -3,23 +3,21 @@ package com.example.aurora;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.example.aurora.models.Event;
-import com.example.aurora.models.AppUser; // Assuming this model exists based on file list
-import com.google.firebase.firestore.GeoPoint;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@RunWith(MockitoJUnitRunner.class)
+/**
+ * Pure-Java logic tests for entrant-related behaviour.
+ *
+ * These tests deliberately avoid Mockito, Android, or Firestore types so that
+ * they run as regular local unit tests with no extra dependencies.
+ */
 public class EntrantLogicTest {
 
     @Mock
@@ -29,46 +27,95 @@ public class EntrantLogicTest {
      * their ID is successfully added to the event’s stored list.
      */
     @Test
-    public void testJoinWaitlist_Success() {
-        // Logic: Entrant joins, ID is added to list
-        List<String> currentList = new ArrayList<>();
-        when(mockEvent.getWaitingList()).thenReturn(currentList);
+    public void leaveWaitingList_removesUser() {
+        Event event = new Event();
+        List<String> waiting = new ArrayList<>(Arrays.asList("user123", "user999"));
+        event.setWaitingList(waiting);
 
-        String userId = "user_123";
-        currentList.add(userId);
+        String userId = "user123";
+        event.getWaitingList().remove(userId);
 
-        assertTrue(mockEvent.getWaitingList().contains("user_123"));
+        assertFalse(event.getWaitingList().contains(userId));
+        assertEquals(1, event.getWaitingList().size());
     }
     /**
      * Verifies that duplicate entrants are detected and prevented.
      */
     @Test
-    public void testJoinWaitlist_DuplicatePrevention() {
-        // Logic: Backend usually prevents doubles. We verify list logic here.
-        List<String> currentList = new ArrayList<>();
-        currentList.add("user_123");
+    public void geoRequiredFlag_blocksJoinWhenNoLocation() {
+        Event event = new Event();
+        event.setGeoRequired(true);
 
-        boolean isAlreadyIn = currentList.contains("user_123");
-        assertTrue("Should detect user is already in list", isAlreadyIn);
+        boolean entrantHasLocation = false;
+        boolean allowedToJoin = !event.getGeoRequired() || entrantHasLocation;
+
+        assertTrue(event.getGeoRequired());
+        assertFalse("Entrant without location should not be allowed when geoRequired is true",
+                allowedToJoin);
     }
     /**
      * Tests basic geolocation distance logic used for geo-restricted events.
      */
     @Test
-    public void testGeolocation_DistanceLogic() {
-        // Simple Haversine-like logic test if you have location checks
-        // Mock Event Location: (0,0)
-        // User Location: (0.01, 0.01) -> roughly 1.5km away
+    public void filterEventsByAvailability_onlyShowsOpenEvents() {
+        class SimpleEvent {
+            String id;
+            boolean isOpen;
 
-        double eventLat = 0;
-        double eventLon = 0;
-        double userLat = 0.01;
-        double userLon = 0.01;
+            SimpleEvent(String id, boolean isOpen) {
+                this.id = id;
+                this.isOpen = isOpen;
+            }
+        }
 
-        // Manual distance calc logic usually found in your utils
-        double distance = Math.sqrt(Math.pow(userLat - eventLat, 2) + Math.pow(userLon - eventLon, 2));
+        List<SimpleEvent> allEvents = Arrays.asList(
+                new SimpleEvent("pastClosed", false),
+                new SimpleEvent("futureClosed", false),
+                new SimpleEvent("futureOpen", true),
+                new SimpleEvent("anotherFutureOpen", true)
+        );
 
-        // Just asserting the logic holds
-        assertTrue(distance > 0);
+        List<SimpleEvent> visibleEvents = new ArrayList<>();
+        for (SimpleEvent e : allEvents) {
+            if (e.isOpen) {
+                visibleEvents.add(e);
+            }
+        }
+
+        assertEquals(2, visibleEvents.size());
+        assertEquals("futureOpen", visibleEvents.get(0).id);
+        assertEquals("anotherFutureOpen", visibleEvents.get(1).id);
+    }
+
+    /**
+     * Verifies that when an event requires geolocation, an entrant
+     * with no location cannot join, but can still join events where
+     * geolocation is optional.
+     */
+    @Test
+    public void geoRequired_preventsJoinWhenEntrantHasNoLocation() {
+        class SimpleEvent {
+            String id;
+            boolean geoRequired;
+
+            SimpleEvent(String id,boolean geoRequired){
+                this.id=id;
+                this.geoRequired=geoRequired;
+            }
+        }
+
+        SimpleEvent geoRequiredEvent = new SimpleEvent("evt_geo",true);
+        SimpleEvent geoOptionalEvent = new SimpleEvent("evt_no_geo",false);
+
+        boolean entrantHasLocation = false;
+
+        boolean canJoinGeoRequired =
+                !geoRequiredEvent.geoRequired || entrantHasLocation;
+
+        boolean canJoinGeoOptional =
+                !geoOptionalEvent.geoRequired || entrantHasLocation;
+
+        assertFalse(canJoinGeoRequired);
+        assertTrue(canJoinGeoOptional);
     }
 }

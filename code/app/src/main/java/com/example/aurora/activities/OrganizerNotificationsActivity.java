@@ -57,8 +57,13 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
 
         loadNotifications();
     }
+
+    /**
+     * Fetches all notifications from Firestore ordered by latest timestamp.
+     * If none exist, displays a default empty-state message.
+     * Each notification is passed to addNotificationCard().
+     */
     private void loadNotifications() {
-        // Fetch organizer notifications from Firestore
         db.collection("notifications")
                 .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
@@ -83,6 +88,14 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    /**
+     * Creates a UI card for one notification and inserts it into the scroll container.
+     *
+     * @param title   Notification title text.
+     * @param message Notification message body.
+     * @param time    Formatted timestamp string.
+     */
     private void addNotificationCard(String title, String message, String time) {
         View cardView = LayoutInflater.from(this)
                 .inflate(R.layout.item_notification_card_organizer, notificationsContainer, false);

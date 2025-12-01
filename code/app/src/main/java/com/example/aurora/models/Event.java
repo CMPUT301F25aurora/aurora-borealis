@@ -29,7 +29,6 @@ import java.util.List;
 
 public class Event {
 
-    // Not stored; you set it from doc.getId()
     private String eventId;
 
     // New-ish fields
@@ -38,10 +37,9 @@ public class Event {
     private String location;
     private String category;
 
-    // Old & new date fields
-    private String date;         // legacy combined date field
-    private String startDate;    // new
-    private String endDate;      // new
+    private String date;
+    private String startDate;
+    private String endDate;
 
     private String registrationStart;
     private String registrationEnd;
@@ -49,15 +47,12 @@ public class Event {
     private String posterUrl;
     private String deepLink;
 
-    private Boolean geoRequired; // optional
+    private Boolean geoRequired;
 
-    // Numeric capacity for new events
-    private Long maxSpots;       // we’ll save this in Firestore going forward
+    private Long maxSpots;
 
-    // Legacy title field
-    private String name;         // old code used this
+    private String name;
 
-    // Lists for waiting/selected/final entrants
     private List<String> waitingList;
     private List<String> selectedEntrants;
     private List<String> acceptedEntrants;
@@ -77,8 +72,14 @@ public class Event {
         this.eventId = eventId;
     }
 
-    // Title / Name 
-
+    /**
+     * Unified title getter.
+     * - Prefer "title"
+     * - Fallback to "name" for old events
+     * - Always returns a non-null string
+     *
+     * @return event title
+     */
     public String getTitle() {
         if (title != null && !title.isEmpty()) return title;
         if (name != null && !name.isEmpty()) return name;
@@ -107,7 +108,7 @@ public class Event {
         this.description = description;
     }
 
-    // Location / Category 
+    // Location / Category
 
     public String getLocation() {
         return location;
@@ -191,7 +192,7 @@ public class Event {
         this.deepLink = deepLink;
     }
 
-    // Capacity (new) 
+    // Capacity (new)
 
     public Long getMaxSpots() {
         return maxSpots;
@@ -211,7 +212,7 @@ public class Event {
         this.geoRequired = geoRequired;
     }
 
-    // Lists 
+    // Lists
 
     public List<String> getWaitingList() {
         if (waitingList == null) waitingList = new ArrayList<>();
@@ -230,21 +231,17 @@ public class Event {
     public void setSelectedEntrants(List<String> selectedEntrants) {
         this.selectedEntrants = selectedEntrants;
     }
-
     public List<String> getAcceptedEntrants() {
         if (acceptedEntrants == null) acceptedEntrants = new ArrayList<>();
         return acceptedEntrants;
     }
-
     public void setAcceptedEntrants(List<String> acceptedEntrants) {
         this.acceptedEntrants = acceptedEntrants;
     }
-
     public List<String> getFinalEntrants() {
         if (finalEntrants == null) finalEntrants = new ArrayList<>();
         return finalEntrants;
     }
-
     public void setFinalEntrants(List<String> finalEntrants) {
         this.finalEntrants = finalEntrants;
     }

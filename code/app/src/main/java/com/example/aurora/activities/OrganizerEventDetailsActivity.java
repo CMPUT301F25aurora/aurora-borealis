@@ -50,13 +50,11 @@ import java.util.List;
 
 
 public class OrganizerEventDetailsActivity extends AppCompatActivity {
-
     private FirebaseFirestore db;
 
     private ImageButton backButton;
     private TextView titleView, dateView, locationView, categoryView, capacityView, regWindowView;
     private LinearLayout waitingListContainer;
-
     private String eventId;
     private String myEmail;
     private Button notifyWaitingBtn;
@@ -83,6 +81,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         loadEvent();
     }
 
+    /**
+     * Connects XML layout views to their Java variables.
+     */
     private void bindViews() {
         backButton = findViewById(R.id.btnBackEventDetails);
         titleView = findViewById(R.id.detailTitle);
@@ -95,6 +96,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         notifyWaitingBtn = findViewById(R.id.btnNotifyWaiting);
     }
 
+    /**
+     * Loads the event document from Firestore and passes it to populateUi().
+     */
     private void loadEvent() {
         db.collection("events").document(eventId)
                 .get()
@@ -105,6 +109,15 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Fills the screen with event details:
+     *   title, date, category, location
+     *   capacity
+     *   registration window
+     *   waiting list entries
+     *
+     * Also checks that the logged-in organizer is the creator of this event.
+     */
     private void populateUi(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
@@ -112,7 +125,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        // Double-check ownership: only creator can view details
         String creatorEmail = doc.getString("organizerEmail");
         if (myEmail == null || !myEmail.equalsIgnoreCase(creatorEmail)) {
             Toast.makeText(this, "You are not allowed to view this event.", Toast.LENGTH_SHORT).show();
@@ -134,7 +146,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         String category = doc.getString("category");
         if (category == null) category = "General";
 
-        // Capacity
         Long maxSpots = doc.getLong("maxSpots");
         if (maxSpots == null) {
             Object capObj = doc.get("capacity");
@@ -151,7 +162,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             }
         }
 
-        // Registration window
         String regStart = doc.getString("registrationStart");
         String regEnd = doc.getString("registrationEnd");
         String regWindow = (regStart == null && regEnd == null)
@@ -165,7 +175,6 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         capacityView.setText(String.valueOf(maxSpots));
         regWindowView.setText(regWindow);
 
-        // Waiting list
         waitingListContainer.removeAllViews();
 
         List<String> waitingList = (List<String>) doc.get("waitingList");
@@ -180,6 +189,9 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Builds a simple TextView row used to display one waiting-list entry.
+     */
     private TextView buildWaitingRow(String text) {
         TextView tv = new TextView(this);
         tv.setLayoutParams(new LinearLayout.LayoutParams(
@@ -190,6 +202,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         tv.setPadding(8, 4, 8, 4);
         return tv;
     }
+
+    /**
+     * Sends a notification to everyone in the event's waiting list.
+     * Uses FirestoreNotificationHelper to send one message per entrant.
+     */
     private void notifyWaitingList() {
 
         db.collection("events").document(eventId).get()

@@ -48,11 +48,11 @@ import java.util.Map;
  * ProfileFragment.java
  *
  * Fragment that displays and manages the entrant’s profile in the Aurora app.
- * - Loads user data (name, email, phone, role, stats) from Firestore.
- * - Allows editing and saving profile details with validation.
- * - Lets users toggle notification settings on or off.
- * - Supports deleting the account and returning to the login screen.
- * - Automatically creates a new profile if one does not exist.
+ * Loads user data (name, email, phone, role, stats) from Firestore.
+ * Allows editing and saving profile details with validation.
+ * Lets users toggle notification settings on or off.
+ * Supports deleting the account and returning to the login screen.
+ * Automatically creates a new profile if one does not exist.
  */
 
 
@@ -61,7 +61,6 @@ public class ProfileFragment extends Fragment {
 
     private FirebaseFirestore db;
     private DocumentReference userRef;
-
     private ImageView avatar;
     private TextView roleBadge, headerName, joinedCount, winsCount, editToggle;
     private EditText fullName, email, phone;
@@ -81,7 +80,6 @@ public class ProfileFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
 
-        avatar = v.findViewById(R.id.avatarCircle);
         roleBadge = v.findViewById(R.id.roleBadge);
         headerName = v.findViewById(R.id.headerName);
         joinedCount = v.findViewById(R.id.joinedCount);
@@ -105,13 +103,6 @@ public class ProfileFragment extends Fragment {
 
         btnNotifSettings.setOnClickListener(x -> toggleNotifications());
 
-        // Inside onViewCreated:
-        ImageButton btnEditPhoto = v.findViewById(R.id.btnEditPhoto);
-        btnEditPhoto.setOnClickListener(x -> {
-            Toast.makeText(getContext(), "Profile photo upload coming soon!", Toast.LENGTH_SHORT).show();
-            // Logic to open image picker would go here
-        });
-
         btnDelete.setOnClickListener(x -> {
             if (userRef == null) {
                 Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
@@ -130,7 +121,10 @@ public class ProfileFragment extends Fragment {
                             Toast.makeText(getContext(), "Error deleting account", Toast.LENGTH_SHORT).show());
         });
     }
-
+    /**
+     * Resolves the current logged-in user and loads or creates
+     * their Firestore profile document.
+     */
     private void resolveAndLoad() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -177,7 +171,9 @@ public class ProfileFragment extends Fragment {
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Error loading user", Toast.LENGTH_SHORT).show());
     }
-
+    /**
+     * Saves edited profile fields back to Firestore.
+     */
     private void loadProfile() {
         if (userRef == null) return;
 
@@ -206,6 +202,9 @@ public class ProfileFragment extends Fragment {
         });
     }
 
+    /**
+     * Saves edited profile fields back to Firestore.
+     */
     private void saveProfile() {
         if (userRef == null) return;
 
@@ -229,6 +228,9 @@ public class ProfileFragment extends Fragment {
                         Toast.makeText(getContext(), "Save failed", Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Toggles notification settings between enabled/disabled.
+     */
     private void toggleNotifications() {
         if (userRef == null) {
             Toast.makeText(getContext(), "Profile not loaded yet", Toast.LENGTH_SHORT).show();
@@ -251,7 +253,9 @@ public class ProfileFragment extends Fragment {
                             Toast.makeText(getContext(), "Failed to update setting", Toast.LENGTH_SHORT).show());
         });
     }
-
+    /**
+     * Enables or disables editing mode for the profile fields.
+     */
     private void setEditing(boolean editing) {
         fullName.setEnabled(editing);
         email.setEnabled(editing);

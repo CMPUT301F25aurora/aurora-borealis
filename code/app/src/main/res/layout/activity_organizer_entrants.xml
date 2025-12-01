@@ -39,10 +39,12 @@
                 android:id="@+id/tvEventTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:text="Lottery Management"
                 android:textColor="#fe7f2d"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-medium" />
+                android:textSize="24sp"
+                android:fontFamily="@font/titanone_regular"
+                android:letterSpacing="-0.01"/>
 
             <TextView
                 android:id="@+id/tvEventSubtitle"
@@ -311,6 +313,7 @@
             android:paddingVertical="8dp"
             android:text="Final"
             android:textColor="#FFFFFF" />
+
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

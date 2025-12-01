@@ -10,10 +10,23 @@ public class NotificationModel {
     private long createdAt;
     private String status;
 
-    // REQUIRED EMPTY CONSTRUCTOR for Firestore
+
     public NotificationModel() {}
 
-    // This matches your constructor call in OrganizerActivity
+    /**
+     * NotificationModel
+     *
+     * Data model representing a single notification in the Aurora app.
+     *
+     * This model is stored inside the "notifications" collection in Firestore.
+     * Each notification contains:
+     * a type (winner_selected, not_selected, reminder, etc.)
+     * a title and message for display
+     * the event ID it belongs to
+     * the user this notification is intended for
+     * the creation timestamp
+     * a status field (default: "pending") that organizers or users may update later
+     */
     public NotificationModel(String type, String title, String message,
                              String eventId, String userId, long createdAt) {
         this.type = type;

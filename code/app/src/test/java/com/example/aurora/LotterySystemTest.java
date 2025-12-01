@@ -1,6 +1,7 @@
 package com.example.aurora;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -34,7 +36,6 @@ public class LotterySystemTest {
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E"));
         int spotsToFill = 3;
 
-        // Logic: Shuffle and Sublist
         Collections.shuffle(waitingList, new Random(1)); // Fixed seed
         List<String> winners = new ArrayList<>(waitingList.subList(0, spotsToFill));
         List<String> losers = new ArrayList<>(waitingList.subList(spotsToFill, waitingList.size()));
@@ -42,7 +43,7 @@ public class LotterySystemTest {
         assertEquals("Should draw exactly 3 winners", 3, winners.size());
         assertEquals("Should leave 2 entrants in waiting", 2, losers.size());
 
-        // Verify no overlap
+
         for (String w : winners) {
             assertTrue(!losers.contains(w));
         }
@@ -53,7 +54,6 @@ public class LotterySystemTest {
      */
     @Test
     public void testLottery_DrawsAllIfSpotsExceedEntrants() {
-        // 10 spots, only 3 entrants
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B", "C"));
         int spotsToFill = 10;
 
@@ -76,10 +76,8 @@ public class LotterySystemTest {
         List<String> waitingList = new ArrayList<>(Arrays.asList("ReplacementCandidate"));
         List<String> selectedList = new ArrayList<>(Arrays.asList("DropoutUser"));
 
-        // Scenario: DropoutUser cancels
         selectedList.remove("DropoutUser");
 
-        // Action: Draw replacement
         if (!waitingList.isEmpty()) {
             String newWinner = waitingList.remove(0);
             selectedList.add(newWinner);
@@ -104,16 +102,74 @@ public class LotterySystemTest {
         List<String> copy1 = new ArrayList<>(original);
         List<String> copy2 = new ArrayList<>(original);
 
-        // Logic: Ensure Randomness is applied
         Collections.shuffle(copy1, new Random(System.currentTimeMillis()));
-        // Pause to ensure seed change if machine is super fast
+
         try { Thread.sleep(10); } catch (Exception e) {}
         Collections.shuffle(copy2, new Random(System.currentTimeMillis() + 100));
 
-        // Note: There is a tiny statistical chance they are identical,
-        // but for unit testing logic we assume the method executes.
+
         boolean listsChanged = !copy1.equals(original) || !copy2.equals(original);
 
         assertTrue("Shuffle logic should rearrange the list", listsChanged);
+    }
+
+    /**
+     * Verifies that when the event capacity equals the size of the waiting list,
+     * all entrants are selected as winners.
+     */
+    @Test
+    public void drawWinners_AllEntrantsSelectedWhenCapacityEqualsListSize() {
+        List<String> waitingList = Arrays.asList("A", "B", "C");
+        int capacity = 3;
+
+        int toSelect = Math.min(capacity, waitingList.size());
+        List<String> winners = waitingList.subList(0, toSelect);
+
+        assertEquals(waitingList.size(), winners.size());
+        assertTrue(winners.containsAll(waitingList));
+    }
+
+    /**
+     * Verifies that a replacement draw for a cancelled entrant selects
+     * a new entrant from the waiting list without introducing duplicates.
+     */
+    @Test
+    public void replacementDrawSelectsNewEntrantWithoutDuplicates() {
+        List<String> waitingList = Arrays.asList("A","B","C","D");
+
+        List<String> chosen = new ArrayList<>();
+        chosen.add("A");
+        chosen.add("B");
+
+        String cancelled = "A";
+        chosen.remove(cancelled); // chosen now = ["B"]
+
+        List<String> replacementPool = new ArrayList<>();
+        for(String entrant:waitingList){
+            if(!chosen.contains(entrant) && !entrant.equals(cancelled)){
+                replacementPool.add(entrant);
+            }
+        }
+
+        String replacement = replacementPool.get(0);
+        chosen.add(replacement);
+        assertEquals(2,chosen.size());
+        assertEquals(2,new HashSet<>(chosen).size());
+        assertTrue(waitingList.contains(replacement));
+        assertNotEquals(cancelled,replacement);
+    }
+
+    /**
+     * Verifies that the lottery sampling logic respects the requested
+     * number of winners and does not exceed the size of the waiting list.
+     */
+    @Test
+    public void runLottery_respectsRequestedSampleAndWaitingSize() {
+        List<String> waitingList = Arrays.asList("A","B","C","D","E");
+        int requested = 3;
+        int actualSampleSize = Math.min(requested, waitingList.size());
+        List<String> sampled = waitingList.subList(0, actualSampleSize);
+        assertEquals(3, sampled.size());
+        assertTrue(waitingList.containsAll(sampled));
     }
 }

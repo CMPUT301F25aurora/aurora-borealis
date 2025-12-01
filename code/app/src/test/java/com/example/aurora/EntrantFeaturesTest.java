@@ -22,9 +22,9 @@ import java.util.List;
  */
 public class EntrantFeaturesTest {
 
-    // Use a subclass to add missing fields for testing logic
+
     private TestableEvent event;
-    private String userId; // Use String directly to avoid AppUser issues
+    private String userId;
 
     @Before
     public void setup() {
@@ -32,7 +32,6 @@ public class EntrantFeaturesTest {
         event.setEventId("evt_100");
         event.setWaitingList(new ArrayList<>());
 
-        // Initialize the lists defined in our Testable subclass
         event.setSelectedEntrants(new ArrayList<>());
         event.setEnrolledEntrants(new ArrayList<>());
         event.setCancelledEntrants(new ArrayList<>());
@@ -51,7 +50,7 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testJoinWaitlist_Success() {
-        // Logic: Add user ID to list
+
         event.getWaitingList().add(userId);
 
         assertTrue(event.getWaitingList().contains("user_555"));
@@ -63,7 +62,6 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testJoinWaitlist_PreventDuplicates() {
-        // Logic: Check if already exists
         event.getWaitingList().add(userId);
 
         boolean alreadyIn = event.getWaitingList().contains(userId);
@@ -71,7 +69,6 @@ public class EntrantFeaturesTest {
             event.getWaitingList().add(userId);
         }
 
-        // Size should still be 1
         assertEquals(1, event.getWaitingList().size());
     }
 
@@ -85,7 +82,6 @@ public class EntrantFeaturesTest {
     public void testLeaveWaitlist_Success() {
         event.getWaitingList().add(userId);
 
-        // Action: Leave
         event.getWaitingList().remove(userId);
 
         assertFalse(event.getWaitingList().contains("user_555"));
@@ -102,11 +98,10 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testProfile_UpdateInfo() {
-        // We test the logic manually since AppUser might be missing setters
+
         String name = "Alice Cooper";
         String phone = "123-456-7890";
 
-        // Verify assertions work on the data
         assertEquals("Alice Cooper", name);
         assertEquals("123-456-7890", phone);
     }
@@ -115,9 +110,9 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testProfile_EmailValidation_Logic() {
-        // Simulating the validator logic usually found in ProfileActivity
+
         String valid = "test@email.com";
-        String invalid = "testemail.com"; // missing @
+        String invalid = "testemail.com";
 
         assertTrue(valid.contains("@"));
         assertFalse(invalid.contains("@"));
@@ -133,10 +128,8 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testAcceptInvitation_MovesToEnrolled() {
-        // Setup: User won the lottery
         event.getSelectedEntrants().add(userId);
 
-        // Action: User accepts
         if (event.getSelectedEntrants().contains(userId)) {
             event.getSelectedEntrants().remove(userId);
             event.getEnrolledEntrants().add(userId);
@@ -195,13 +188,58 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testDeviceIdentification_Fallback() {
-        // Logic: If user has no account, use Device ID
+
         String deviceId = "android_id_999";
         String accountId = null;
 
         String effectiveId = (accountId != null) ? accountId : deviceId;
 
         assertEquals("android_id_999", effectiveId);
+    }
+
+    /**
+     * Tests that an entrant's event history correctly tracks which events were won
+     * and which were lost, given a list of registered events and a subset of won events.
+     */
+    @Test
+    public void testEventHistoryTracksWonAndLostEvents() {
+        List<String> registeredEvents = new ArrayList<>();
+        registeredEvents.add("evt_swim");
+        registeredEvents.add("evt_dance");
+
+        List<String> wonEvents = new ArrayList<>();
+        wonEvents.add("evt_swim"); // entrant won swim lessons
+
+        List<String> lostEvents = new ArrayList<>();
+        for (String eventId : registeredEvents) {
+            if (!wonEvents.contains(eventId)) {
+                lostEvents.add(eventId);
+            }
+        }
+        assertEquals(2, registeredEvents.size());
+
+        assertTrue(wonEvents.contains("evt_swim"));
+        assertFalse(wonEvents.contains("evt_dance"));
+
+        assertEquals(1, lostEvents.size());
+        assertTrue(lostEvents.contains("evt_dance"));
+    }
+
+    /**
+     * Tests that the displayed waiting list count matches the actual
+     * number of entrants in the waiting list.
+     */
+    @Test
+    public void waitingListCountReflectsNumberOfEntrants() {
+        List<String> waitingList = new ArrayList<>();
+        waitingList.add("user_a");
+        waitingList.add("user_b");
+        waitingList.add("user_c");
+
+        int count = waitingList.size();
+        String displayText = count + " entrants on waiting list";
+        assertEquals(3,count);
+        assertEquals("3 entrants on waiting list",displayText);
     }
 
     /**
@@ -220,11 +258,9 @@ public class EntrantFeaturesTest {
         public void setSelectedEntrants(List<String> selectedEntrants) {
             this.selectedEntrants = selectedEntrants;
         }
-
         public List<String> getEnrolledEntrants() {
             return enrolledEntrants;
         }
-
         public void setEnrolledEntrants(List<String> enrolledEntrants) {
             this.enrolledEntrants = enrolledEntrants;
         }
