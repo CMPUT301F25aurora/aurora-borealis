@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.aurora"},{"l":"com.example.aurora.activities"},{"l":"com.example.aurora.adapters"},{"l":"com.example.aurora.map"},{"l":"com.example.aurora.models"},{"l":"com.example.aurora.notifications"},{"l":"com.example.aurora.utils"}];updateSearchResults();
