@@ -810,6 +810,14 @@ public class AdminActivity extends AppCompatActivity {
         return days + " days ago";
     }
 
+    /**
+     * Deletes every event created by a given organizer.
+     *
+     * Finds all events where `organizerEmail` matches the provided email,
+     * then deletes each one using {@link #deleteEventById(FirebaseFirestore, String)}.
+     *
+     * @param organizerEmail The organizer's email whose events should be removed.
+     */
     private void deleteAllEventsForOrganizer(String organizerEmail) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -822,6 +830,20 @@ public class AdminActivity extends AppCompatActivity {
                     }
                 });
     }
+    /**
+     * Deletes a single event and all its associated Firestore data.
+     *
+     * This performs a multi-step cleanup:
+     *  1. Deletes all documents in the event's "waitingLocations" subcollection.
+     *  2. Deletes all notification documents referencing this event (via eventId).
+     *  3. Finally deletes the event document itself from the "events" collection.
+     *
+     * The deletions are chained using success listeners to ensure ordering:
+     * subcollections → notifications → parent event.
+     *
+     * @param db       The Firestore instance to operate on.
+     * @param eventId  The ID of the event document to delete.
+     */
     private void deleteEventById(FirebaseFirestore db, String eventId) {
 
         db.collection("events")
