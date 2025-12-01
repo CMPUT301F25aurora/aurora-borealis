@@ -43,50 +43,77 @@ import java.util.Date;
  * (Covers pieces of US 03.04, 03.05, 03.08 where formatting / helpers are used.)
  */
 public class AdminUtilsTest {
-
+    /**
+     * Ensures {@link AdminUtils#nz(String)} returns an empty string when
+     * passed null, preventing NullPointerExceptions in admin UI screens.
+     */
     @Test
     public void nz_NullString_ReturnsEmpty() {
         assertEquals("", AdminUtils.nz(null));
     }
-
+    /**
+     * Verifies {@link AdminUtils#nz(String)} returns the original string
+     * when the argument is non-null and non-empty.
+     */
     @Test
     public void nz_ValidString_ReturnsString() {
         assertEquals("hello", AdminUtils.nz("hello"));
     }
-
+    /**
+     * Ensures that an empty input string remains empty, avoiding accidental
+     * conversion to null or placeholder text.
+     */
     @Test
     public void nz_EmptyString_ReturnsEmpty() {
         assertEquals("", AdminUtils.nz(""));
     }
 
     // --- Capitalization Tests ---
+    /**
+     * Ensures lowercase input is correctly capitalized (first letter uppercase,
+     * remaining letters lowercase) for profile role display.
+     */
     @Test
     public void capitalize_LowerCase_ReturnsCapitalized() {
         assertEquals("Admin", AdminUtils.capitalize("admin"));
     }
-
+    /**
+     * Ensures uppercase inputs are normalized into proper display form.
+     * The method lowercases the tail substring, so "ADMIN" becomes "Admin".
+     */
     @Test
     public void capitalize_UpperCase_ReturnsCapitalized() {
         // Your code uses toLowerCase() on the substring, so "ADMIN" becomes "Admin"
         assertEquals("Admin", AdminUtils.capitalize("ADMIN"));
     }
-
+    /**
+     * Ensures mixed-case roles or names are normalized for UI readability.
+     */
     @Test
     public void capitalize_MixedCase_ReturnsCapitalized() {
         assertEquals("Entrant", AdminUtils.capitalize("eNtRaNt"));
     }
-
+    /**
+     * Verifies that empty strings return empty output with no exceptions.
+     */
     @Test
     public void capitalize_Empty_ReturnsEmpty() {
         assertEquals("", AdminUtils.capitalize(""));
     }
-
+    /**
+     * Ensures null input is safely handled and returns an empty string,
+     * preventing crashes in RecyclerViews that display roles.
+     */
     @Test
     public void capitalize_Null_ReturnsEmpty() {
         assertEquals("", AdminUtils.capitalize(null));
     }
 
     // --- Relative Time Tests ---
+    /**
+     * Verifies that timestamps representing events 5 minutes ago are formatted
+     * correctly as "5 min ago". Supports Admin log viewing (US 03.08.01).
+     */
     @Test
     public void relativeTime_JustNow_ReturnsMinutes() {
         long now = 1000000000L;
@@ -96,7 +123,10 @@ public class AdminUtilsTest {
         // We pass 'now' into your util to make it deterministic
         assertEquals("5 min ago", AdminUtils.formatRelativeTime(d, now));
     }
-
+    /**
+     * Ensures values under one hour (e.g., 59 minutes) return a minutes-only
+     * string instead of switching prematurely to hours.
+     */
     @Test
     public void relativeTime_UnderOneHour_ReturnsMinutes() {
         long now = 1000000000L;
@@ -105,7 +135,10 @@ public class AdminUtilsTest {
 
         assertEquals("59 min ago", AdminUtils.formatRelativeTime(d, now));
     }
-
+    /**
+     * Ensures timestamps older than one hour are reported using hour units
+     * rather than raw minutes (e.g., “1 hours ago”).
+     */
     @Test
     public void relativeTime_OverOneHour_ReturnsHours() {
         long now = 1000000000L;
@@ -114,7 +147,10 @@ public class AdminUtilsTest {
 
         assertEquals("1 hours ago", AdminUtils.formatRelativeTime(d, now));
     }
-
+    /**
+     * Ensures timestamps older than 24 hours are displayed in whole days.
+     * For 25 hours difference, result should be "1 days ago".
+     */
     @Test
     public void relativeTime_OverOneDay_ReturnsDays() {
         long now = 1000000000L;

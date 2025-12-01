@@ -73,4 +73,91 @@ public class EventTest {
         assertEquals("aurora://event/e1", event.getDeepLink());
         assertEquals(2, event.getWaitingList().size());
     }
+
+    /**
+     * Tests that the event correctly stores waiting list values.
+     */
+    @Test
+    public void testSetWaitingListValues() {
+        List<String> ids = Arrays.asList("u1", "u2", "u3");
+        event.setWaitingList(ids);
+
+        assertEquals(3, event.getWaitingList().size());
+        assertEquals("u1", event.getWaitingList().get(0));
+    }
+
+    /**
+     * Tests that categories  work
+     */
+    @Test
+    public void testCategoryField() {
+        event.setCategory("Sports");
+        assertEquals("Sports", event.getCategory());
+    }
+
+
+
+    /**
+     * Tests registration start/end date fields.
+     */
+    @Test
+    public void testRegistrationPeriod() {
+        event.setRegistrationStart("2025-02-01");
+        event.setRegistrationEnd("2025-02-10");
+
+        assertEquals("2025-02-01", event.getRegistrationStart());
+        assertEquals("2025-02-10", event.getRegistrationEnd());
+    }
+    /**
+     * Verifies posterUrl is stored
+     */
+    @Test
+    public void testPosterUrl() {
+        event.setPosterUrl("https://example.com/poster.png");
+        assertEquals("https://example.com/poster.png", event.getPosterUrl());
+    }
+
+    /**
+     * Ensures geoRequired handles if true or false and returns false by default
+     */
+    @Test
+    public void testGeoRequired() {
+        Event e = new Event();
+        assertFalse(e.getGeoRequired());  // default is false
+
+        e.setGeoRequired(true);
+        assertTrue(e.getGeoRequired());
+
+        e.setGeoRequired(false);
+        assertFalse(e.getGeoRequired());
+    }
+    /**
+     * tests selected entrants list is working
+     */
+    @Test
+    public void testSelectedEntrantsList() {
+        assertNotNull(event.getSelectedEntrants());
+        event.setSelectedEntrants(Arrays.asList("u1", "u2"));
+        assertEquals(2, event.getSelectedEntrants().size());
+    }
+
+    /**
+     * Test final entrants list
+     */
+    @Test
+    public void testFinalEntrantsList() {
+        assertNotNull(event.getFinalEntrants());
+        event.setFinalEntrants(Arrays.asList("a", "b", "c"));
+        assertEquals(3, event.getFinalEntrants().size());
+    }
+
+    /**
+     * Tests that the maxSpots capacity is stored correctly.
+     */
+    @Test
+    public void testMaxSpotsField() {
+        event.setMaxSpots(50L);
+        assertEquals(Long.valueOf(50), event.getMaxSpots());
+    }
+
 }

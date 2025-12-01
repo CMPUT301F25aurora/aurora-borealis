@@ -23,6 +23,12 @@ public class LotterySystemTest {
     // ==================================================================
     // US 02.05.02: Sample N Attendees
     // ==================================================================
+
+    /**
+     * Ensures that the lottery draws exactly the number of winners
+     * specified by the organizer (spotsToFill), and the remaining
+     * entrants remain in the waiting list.
+     */
     @Test
     public void testLottery_DrawsCorrectNumber() {
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E"));
@@ -41,7 +47,10 @@ public class LotterySystemTest {
             assertTrue(!losers.contains(w));
         }
     }
-
+    /**
+     * Ensures the lottery gracefully handles cases where the number of
+     * available entrants is fewer than the number of required winners.
+     */
     @Test
     public void testLottery_DrawsAllIfSpotsExceedEntrants() {
         // 10 spots, only 3 entrants
@@ -57,6 +66,11 @@ public class LotterySystemTest {
     // ==================================================================
     // US 02.05.03: Replacement Draw
     // ==================================================================
+
+    /**
+     * Simulates a cancellation and verifies the next entrant in the
+     * waiting list is selected as a replacement.
+     */
     @Test
     public void testReplacement_DrawsFromWaitlist() {
         List<String> waitingList = new ArrayList<>(Arrays.asList("ReplacementCandidate"));
@@ -79,6 +93,11 @@ public class LotterySystemTest {
     // ==================================================================
     // US 01.05.01: Entrant Chance (Fairness)
     // ==================================================================
+
+    /**
+     * Ensures the shuffle operation produces different permutations,
+     * validating that the selection mechanism is randomized and fair.
+     */
     @Test
     public void testFairness_ShuffleLogic() {
         List<String> original = Arrays.asList("A", "B", "C", "D", "E");

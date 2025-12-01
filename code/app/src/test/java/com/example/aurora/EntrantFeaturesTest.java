@@ -43,7 +43,12 @@ public class EntrantFeaturesTest {
 
     // ==================================================================
     // US 01.01.01: Join Waiting List
-    // ==================================================================
+    // ================================================================\
+
+    /**
+     * Verifies that an entrant can successfully join an event's waiting list
+     * when not already subscribed.
+     */
     @Test
     public void testJoinWaitlist_Success() {
         // Logic: Add user ID to list
@@ -52,7 +57,10 @@ public class EntrantFeaturesTest {
         assertTrue(event.getWaitingList().contains("user_555"));
         assertEquals(1, event.getWaitingList().size());
     }
-
+    /**
+     * Ensures duplicate users are not added to the waiting list more than once,
+     * preventing inflated entrant counts.
+     */
     @Test
     public void testJoinWaitlist_PreventDuplicates() {
         // Logic: Check if already exists
@@ -70,6 +78,9 @@ public class EntrantFeaturesTest {
     // ==================================================================
     // US 01.01.02: Leave Waiting List
     // ==================================================================
+    /**
+     * Tests that an entrant can successfully remove themselves from an event’s waiting list.
+     */
     @Test
     public void testLeaveWaitlist_Success() {
         event.getWaitingList().add(userId);
@@ -84,6 +95,11 @@ public class EntrantFeaturesTest {
     // ==================================================================
     // US 01.02.01 & 01.02.02: Profile Data & Updates
     // ==================================================================
+
+    /**
+     * Tests basic profile editing logic used in the ProfileActivity for updating
+     * entrant information such as name and phone number.
+     */
     @Test
     public void testProfile_UpdateInfo() {
         // We test the logic manually since AppUser might be missing setters
@@ -94,7 +110,9 @@ public class EntrantFeaturesTest {
         assertEquals("Alice Cooper", name);
         assertEquals("123-456-7890", phone);
     }
-
+    /**
+     * Simulates email validation used during profile updates and signup processes.
+     */
     @Test
     public void testProfile_EmailValidation_Logic() {
         // Simulating the validator logic usually found in ProfileActivity
@@ -107,7 +125,12 @@ public class EntrantFeaturesTest {
 
     // ==================================================================
     // US 01.05.02: Accept Invitation (Win -> Enroll)
-    // ==================================================================
+    // =================================================================
+
+    /**
+     * When a user is selected in the lottery and accepts the invitation,
+     * they should be transferred from "selected" → "enrolled".
+     */
     @Test
     public void testAcceptInvitation_MovesToEnrolled() {
         // Setup: User won the lottery
@@ -126,6 +149,11 @@ public class EntrantFeaturesTest {
     // ==================================================================
     // US 01.05.03: Decline Invitation (Win -> Cancelled)
     // ==================================================================
+
+    /**
+     * When a selected entrant declines, they should be moved from
+     * "selected" → "cancelled".
+     */
     @Test
     public void testDeclineInvitation_MovesToCancelled() {
         event.getSelectedEntrants().add(userId);
@@ -143,6 +171,11 @@ public class EntrantFeaturesTest {
     // ==================================================================
     // US 01.05.04: View Entrant Count
     // ==================================================================
+
+    /**
+     * Confirms that the waiting list size correctly reflects the number of entrants,
+     * allowing the entrant to see how many people are competing for a spot.
+     */
     @Test
     public void testViewTotalEntrants_Logic() {
         event.getWaitingList().add("A");
@@ -156,6 +189,10 @@ public class EntrantFeaturesTest {
     // ==================================================================
     // US 01.07.01: Device Identification
     // ==================================================================
+    /**
+     * Verifies fallback logic used when an entrant uses device-only authentication.
+     * If no account exists, the system must use a stable device identifier.
+     */
     @Test
     public void testDeviceIdentification_Fallback() {
         // Logic: If user has no account, use Device ID

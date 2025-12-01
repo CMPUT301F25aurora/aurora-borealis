@@ -39,6 +39,11 @@ public class OrganizerFeaturesTest {
     // ==================================================================
     // US 02.01.01: Create Event & QR Code Logic
     // ==================================================================
+
+    /**
+     * Tests that QR code data generation correctly formats a valid
+     * event deep link based on the event ID.
+     */
     @Test
     public void testQRCode_DataStringGeneration() {
         // Logic: The QR code is usually the Event ID or a deep link
@@ -52,7 +57,11 @@ public class OrganizerFeaturesTest {
 
     // ==================================================================
     // US 02.01.04: Set Registration Period
-    // ==================================================================
+    // =================================================================
+    /**
+     * Ensures that registration periods are valid, meaning the
+     * start timestamp must always be earlier than the end timestamp.
+     */
     @Test
     public void testRegistrationPeriod_Validation() {
         // Start date must be before End date
@@ -66,6 +75,10 @@ public class OrganizerFeaturesTest {
     // ==================================================================
     // US 02.03.01: Limit Waiting List
     // ==================================================================
+    /**
+     * Verifies that an entrant can join the waiting list when the
+     * list size is below the event's maximum allowed capacity.
+     */
     @Test
     public void testWaitingList_CapacityCheck_Allowed() {
         event.setMaxSpots(2L); // Limit 2
@@ -76,7 +89,10 @@ public class OrganizerFeaturesTest {
 
         assertTrue(canJoin);
     }
-
+    /**
+     * Verifies that joining the waiting list is denied once the
+     * capacity limit has been reached.
+     */
     @Test
     public void testWaitingList_CapacityCheck_Denied() {
         event.setMaxSpots(1L); // Limit 1
@@ -91,6 +107,11 @@ public class OrganizerFeaturesTest {
     // ==================================================================
     // US 02.06.01 - 03: View Specific Lists
     // ==================================================================
+    /**
+     * Ensures that organizer-visible lists (waiting, selected, enrolled,
+     * cancelled) remain independent from one another and contain only
+     * the correct entrants.
+     */
     @Test
     public void testListFiltration_Logic() {
         // A robust event object has 4 lists. Organizer needs to see them separately.
@@ -106,6 +127,11 @@ public class OrganizerFeaturesTest {
     // ==================================================================
     // US 02.06.05: Export to CSV
     // ==================================================================
+    /**
+     * Verifies that exporting the list of enrolled entrants to CSV format
+     * creates properly structured rows, including a header and
+     * event/user relationships.
+     */
     @Test
     public void testCSVExport_Formatting() {
         // Logic: Convert list of enrolled users to Comma Separated String

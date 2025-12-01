@@ -10,6 +10,11 @@ import org.junit.Test;
 
 public class AdminModelTest {
 
+    /**
+     * Verifies that {@link AdminEventItem} correctly stores and returns values
+     * through its getter and setter methods.
+
+     */
     @Test
     public void testAdminEventItem_GettersSetters() {
         AdminEventItem item = new AdminEventItem();
@@ -24,6 +29,11 @@ public class AdminModelTest {
         assertEquals(10, item.getMaxSpots());
     }
 
+    /**
+     * Ensures the full constructor of {@link AdminImage} assigns all fields
+     * correctly. This is used by the Admin interface when viewing or deleting
+     * uploaded event posters.
+     */
     @Test
     public void testAdminImage_Constructor() {
         AdminImage img = new AdminImage("evt1", "Party", "org@test.com", "http://url.com");
@@ -33,7 +43,11 @@ public class AdminModelTest {
         assertEquals("org@test.com", img.organizerEmail);
         assertEquals("http://url.com", img.posterUrl);
     }
-
+    /**
+     * Ensures the empty constructor of {@link AdminImage} initializes an object
+     * without throwing errors, and fields default to null. The Admin UI may
+     * instantiate these before populating fields from Firestore.
+     */
     @Test
     public void testAdminImage_EmptyConstructor() {
         AdminImage img = new AdminImage();

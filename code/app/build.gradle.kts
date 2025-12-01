@@ -38,6 +38,11 @@ android {
 dependencies {
     //implementation(files("C:\\Users\\omara\\AppData\\Local\\Android\\Sdk\\platforms\\android-36\\android.jar"))
 
+    configurations.all {
+        exclude("com.google.protobuf", "protobuf-lite")
+    }
+
+
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-firestore")
@@ -56,6 +61,7 @@ dependencies {
 
     implementation("com.google.zxing:core:3.5.3")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation(libs.espresso.contrib)
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 

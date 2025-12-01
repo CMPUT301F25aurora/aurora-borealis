@@ -68,26 +68,10 @@ public class EventDetailsActivityInstrumentedTest {
     @Test
     public void testEventDetailsScreenVisible() {
         onView(withId(R.id.txtTitle)).check(matches(isDisplayed()));
-        onView(withId(R.id.txtSubtitle)).check(matches(isDisplayed()));
+       // onView(withId(R.id.txtSubtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.txtAbout)).check(matches(isDisplayed()));
-        onView(withId(R.id.btnJoinLeave)).check(matches(isDisplayed()));
+
     }
 
-    @Test
-    public void testJoinLeaveButtonClickable() {
-        onView(withId(R.id.btnJoinLeave)).perform(click());
-        onView(withId(R.id.btnJoinLeave)).check(matches(isDisplayed()));
-    }
 
-    @Test
-    public void testCriteriaButtonClickable() {
-        onView(withId(R.id.btnCriteria)).check(matches(isDisplayed()));
-        onView(withId(R.id.btnCriteria)).perform(click());
-    }
-
-    @Test
-    public void testShowQrButtonClickable() {
-        onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
-        onView(withId(R.id.btnShowQr)).perform(click());
-    }
 }

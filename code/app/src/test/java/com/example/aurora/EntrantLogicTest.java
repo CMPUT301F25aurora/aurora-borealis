@@ -24,7 +24,10 @@ public class EntrantLogicTest {
 
     @Mock
     Event mockEvent;
-
+    /**
+     * Ensures that when an entrant joins the waiting list,
+     * their ID is successfully added to the event’s stored list.
+     */
     @Test
     public void testJoinWaitlist_Success() {
         // Logic: Entrant joins, ID is added to list
@@ -36,7 +39,9 @@ public class EntrantLogicTest {
 
         assertTrue(mockEvent.getWaitingList().contains("user_123"));
     }
-
+    /**
+     * Verifies that duplicate entrants are detected and prevented.
+     */
     @Test
     public void testJoinWaitlist_DuplicatePrevention() {
         // Logic: Backend usually prevents doubles. We verify list logic here.
@@ -46,7 +51,9 @@ public class EntrantLogicTest {
         boolean isAlreadyIn = currentList.contains("user_123");
         assertTrue("Should detect user is already in list", isAlreadyIn);
     }
-
+    /**
+     * Tests basic geolocation distance logic used for geo-restricted events.
+     */
     @Test
     public void testGeolocation_DistanceLogic() {
         // Simple Haversine-like logic test if you have location checks
