@@ -1,17 +1,19 @@
 /*
- * References for this screen:
+ * source: Firebase docs — "Delete a user".
+ * url: https://firebase.google.com/docs/auth/android/manage-users#delete_a_user
+ * note: Used for user.delete() to remove the authentication record after deleting Firestore data.
  *
- * 1) source: Firebase docs — "Get data with Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/query-data/get-data
- *    Used for loading the current user's profile data.
+ * source: Firebase docs — "Get a document".
+ * url: https://firebase.google.com/docs/firestore/query-data/get-data#get_a_document
+ * note: Used to fetch the organizer's profile details (name, phone) for display.
  *
- * 2) source: Firebase docs — "Add data to Cloud Firestore"
- *    https://firebase.google.com/docs/firestore/manage-data/add-data
- *    Used for saving edits to the user's profile fields.
+ * source: Android Developers — "AlertDialog".
+ * url: https://developer.android.com/develop/ui/views/components/dialogs
+ * note: Used for the "Are you sure?" confirmation dialog before deleting the account.
  *
- * 3) author: Stack Overflow user — "How to get data from Firestore"
- *    https://stackoverflow.com/questions/72769031/how-to-retrieve-data-from-firestore
- *    Used as a reminder of the collection / document structure when reading profile info.
+ * source: Stack Overflow user — "How to clear activity stack".
+ * url: https://stackoverflow.com/questions/5794506/android-clear-the-back-stack
+ * note: Used Intent flags to ensure the user cannot return to the profile screen after account deletion.
  */
 
 
