@@ -46,12 +46,11 @@ public class AdminFeaturesTest {
     public void setup() {
     }
 
-    // ==================================================================
-    // US 03.04.01 & US 03.01.01: BROWSING & REMOVING EVENTS (10 Tests)
-    // ==================================================================
-
     /**
-     * tests waiting list size is counted correctly when browsing events
+     * Test: Waiting list count should reflect size of list.
+     *
+     * Verifies:
+     *  Correct count when list has 3 items
      */
     @Test
     public void testEvent_Browsing_CalculatesWaitingCount() {
@@ -62,7 +61,10 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * tests that selected entrants count is calculated correctly
+     * Test: Selected entrants count should equal list size.
+     *
+     * Verifies:
+     *  Selected list with one item returns 1
      */
     @Test
     public void testEvent_Browsing_CalculatesSelectedCount() {
@@ -73,9 +75,11 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * makes sure cancelled entrants list is counted properly
+     * Test: Cancelled entrants count is calculated correctly.
+     *
+     * Verifies:
+     *  List of size 2 returns count = 2
      */
-
     @Test
     public void testEvent_Browsing_CalculatesCancelledCount() {
         List<String> cancelledList = Arrays.asList("X", "Y");
@@ -85,7 +89,10 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * makes sure  browsing logic safely handles empty lists without crashing
+     * Test: Null waitingList should return count = 0.
+     *
+     * Verifies:
+     *  Null-safe handling for empty Firestore arrays
      */
     @Test
     public void testEvent_Browsing_HandlesNullLists() {
@@ -96,7 +103,10 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * makes sure event capacity logic defaults to "Unlimited" when maxSpots is not determined
+     * Test: Null capacity should display "Unlimited".
+     *
+     * Verifies:
+     *  maxSpots null → Unlimited
      */
     @Test
     public void testEvent_Browsing_CapacityUnlimited() {
@@ -107,9 +117,11 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * makes sure event capacity displays correctly when set
+     * Test: Capacity numeric value is displayed correctly.
+     *
+     * Verifies:
+     *  maxSpots = 50 → "50"
      */
-
     @Test
     public void testEvent_Browsing_CapacityLimited() {
         when(mockEventDoc.getLong("maxSpots")).thenReturn(50L);
@@ -119,7 +131,10 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * Ensures name "Unknown" is shown when organizer name is missing
+     * Test: Organizer fallback shows "Unknown" if missing.
+     *
+     * Verifies:
+     *  Empty organizerName → Unknown
      */
     @Test
     public void testEvent_Browsing_OrganizerFallback() {
@@ -130,9 +145,11 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * Ensures date fallback works when the main date field is missing.
+     * Test: Fallback to dateDisplay when date is missing.
+     *
+     * Verifies:
+     *  date == null → use dateDisplay
      */
-
     @Test
     public void testEvent_Browsing_DateFallback() {
         when(mockEventDoc.getString("date")).thenReturn(null);
@@ -145,7 +162,10 @@ public class AdminFeaturesTest {
     }
 
     /**
-     * Ensures the admin fallback title uses legacy "name" when "title" is missing.
+     * Test: Fallback to dateDisplay when date is missing.
+     *
+     * Verifies:
+     *  date == null → use dateDisplay
      */
     @Test
     public void testEvent_Removal_TitleFallback() {
@@ -157,8 +177,12 @@ public class AdminFeaturesTest {
 
         assertEquals("Legacy Name", title);
     }
+
     /**
-     * Ensures AdminEventItem model stores IDs correctly before deletion
+     * Test: AdminEventItem integrity.
+     *
+     * Verifies:
+     *  setId / getId works
      */
     @Test
     public void testEvent_Removal_ModelIntegrity() {
@@ -167,20 +191,23 @@ public class AdminFeaturesTest {
         assertEquals("evt_123", item.getId());
     }
 
-    // ==================================================================
-    // US 03.05.01 & US 03.02.01: BROWSING & REMOVING PROFILES (8 Tests)
-    // =================================================================
-
     /**
-     * Ensures role capitalization logic works (organizer → Organizer).
+     * Test: Role capitalization logic.
+     *
+     * Verifies:
+     *  organizer → Organizer
      */
     @Test
     public void testProfile_Browsing_CapitalizesRoles() {
         String rawRole = "organizer";
         assertEquals("Organizer", AdminUtils.capitalize(rawRole));
     }
+
     /**
-     * Ensures missing names are displayed as "Unnamed".
+     * Test: Missing name defaults to "Unnamed".
+     *
+     * Verifies:
+     *  name null → Unnamed
      */
     @Test
     public void testProfile_Browsing_HandlesMissingName() {
@@ -188,8 +215,12 @@ public class AdminFeaturesTest {
         String display = name.isEmpty() ? "Unnamed" : name;
         assertEquals("Unnamed", display);
     }
+
     /**
-     * Ensures missing phone numbers are handled safely
+     * Test: Null phone returns empty string.
+     *
+     * Verifies:
+     *  phone null → ""
      */
     @Test
     public void testProfile_Browsing_PhoneNull() {
@@ -197,8 +228,12 @@ public class AdminFeaturesTest {
         String phone = AdminUtils.nz(mockProfileDoc.getString("phone"));
         assertEquals("", phone);
     }
+
     /**
-     * Ensures phone numbers display correctly when present.
+     * Test: Phone field returns actual value.
+     *
+     * Verifies:
+     *  phone = "555-1234"
      */
     @Test
     public void testProfile_Browsing_PhoneExists() {
@@ -206,8 +241,12 @@ public class AdminFeaturesTest {
         String phone = AdminUtils.nz(mockProfileDoc.getString("phone"));
         assertEquals("555-1234", phone);
     }
+
     /**
-     * Ensures admins cannot delete admin accounts
+     * Test: Admin users cannot be removed.
+     *
+     * Verifies:
+     *  role = admin → protected
      */
     @Test
     public void testProfile_Removal_AdminProtection() {
@@ -215,8 +254,25 @@ public class AdminFeaturesTest {
         boolean isAdmin = "admin".equalsIgnoreCase(mockProfileDoc.getString("role"));
         assertTrue(isAdmin);
     }
+
     /**
-     * Ensures notifications default to ON when field is missing.
+     * Test: Admin detection is case-insensitive.
+     *
+     * Verifies:
+     *  ADMIN → admin
+     */
+    @Test
+    public void testProfile_Removal_AdminProtection_CaseInsensitive() {
+        when(mockProfileDoc.getString("role")).thenReturn("ADMIN");
+        boolean isAdmin = "admin".equalsIgnoreCase(mockProfileDoc.getString("role"));
+        assertTrue(isAdmin);
+    }
+
+    /**
+     * Test: Missing notificationsEnabled defaults to ON.
+     *
+     * Verifies:
+     *  null → true
      */
     @Test
     public void testProfile_Notifications_DefaultTrue() {
@@ -227,8 +283,12 @@ public class AdminFeaturesTest {
         boolean isOn = (notif == null || notif);
         assertTrue(isOn);
     }
+
     /**
-     * Ensures explicitly set "notificationsEnabled=false" works.
+     * Test: Explicit false should disable notifications.
+     *
+     * Verifies:
+     *  false → disabled
      */
     @Test
     public void testProfile_Notifications_ExplicitlyFalse() {
@@ -238,11 +298,12 @@ public class AdminFeaturesTest {
         assertFalse(isOn);
     }
 
-    // ==================================================================
-    // US 03.07.01: REMOVE ORGANIZERS (5 Tests)
-    // ==================================================================
+
     /**
-     * Ensures organizer privilege detection works when enabled.
+     * Test: Detect organizer privilege enabled.
+     *
+     * Verifies:
+     *  organizer_allowed = true
      */
     @Test
     public void testOrganizer_Revoke_DetectsActive() {
@@ -250,8 +311,12 @@ public class AdminFeaturesTest {
         boolean isOrg = Boolean.TRUE.equals(mockProfileDoc.getBoolean("organizer_allowed"));
         assertTrue(isOrg);
     }
+
     /**
-     * Ensures organizer privilege detection works when revoked.
+     * Test: Detect revoked organizer privilege.
+     *
+     * Verifies:
+     *  organizer_allowed = false
      */
     @Test
     public void testOrganizer_Revoke_DetectsRevoked() {
@@ -259,8 +324,12 @@ public class AdminFeaturesTest {
         boolean isOrg = Boolean.TRUE.equals(mockProfileDoc.getBoolean("organizer_allowed"));
         assertFalse(isOrg);
     }
+
     /**
-     * Ensures empty privileges default to false.
+     * Test: Null organizer_allowed defaults to false.
+     *
+     * Verifies:
+     *  null → false
      */
     @Test
     public void testOrganizer_Revoke_HandlesNull() {
@@ -268,8 +337,12 @@ public class AdminFeaturesTest {
         boolean isOrg = Boolean.TRUE.equals(mockProfileDoc.getBoolean("organizer_allowed"));
         assertFalse(isOrg);
     }
+
     /**
-     * Ensures toggling organizer privilege from ON → OFF works.
+     * Test: Organizer toggle flips true→false.
+     *
+     * Verifies:
+     *  current=true → next=false
      */
     @Test
     public void testOrganizer_Toggle_Logic() {
@@ -278,8 +351,12 @@ public class AdminFeaturesTest {
         boolean nextState = !current;
         assertFalse(nextState);
     }
+
     /**
-     * Ensures toggling organizer privilege from OFF → ON works.
+     * Test: Organizer toggle flips false→true.
+     *
+     * Verifies:
+     *  current=false → next=true
      */
     @Test
     public void testOrganizer_Toggle_Logic_Restore() {
@@ -288,19 +365,23 @@ public class AdminFeaturesTest {
         assertTrue(nextState);
     }
 
-    // ==================================================================
-    // US 03.06.01 & US 03.03.01: BROWSING & REMOVING IMAGES (4 Tests)
-    // ==================================================================
     /**
-     * Ensures AdminImage model stores IDs correctly.
+     * Test: AdminImage model stores correct id.
+     *
+     * Verifies:
+     *  eventId stored correctly
      */
     @Test
     public void testImage_Model_Integrity() {
         AdminImage img = new AdminImage("e1", "T", "o@g.com", "url");
         assertEquals("e1", img.eventId);
     }
+
     /**
-     * Ensures organizer fallback is "Unknown" when email is missing.
+     * Test: Missing organizer email should return "Unknown".
+     *
+     * Verifies:
+     *  organizerEmail null → Unknown
      */
     @Test
     public void testImage_Browsing_NoOrganizer() {
@@ -308,8 +389,12 @@ public class AdminFeaturesTest {
         String displayOrg = (img.organizerEmail == null ? "Unknown" : img.organizerEmail);
         assertEquals("Unknown", displayOrg);
     }
+
     /**
-     * Ensures empty poster URLs are treated as invalid.
+     * Test: Empty poster URL is invalid.
+     *
+     * Verifies:
+     *  url="" → invalid
      */
     @Test
     public void testImage_Browsing_EmptyUrl() {
@@ -317,8 +402,12 @@ public class AdminFeaturesTest {
         boolean valid = !url.isEmpty();
         assertFalse(valid);
     }
+
     /**
-     * Ensures an image has enough information to attempt deletion.
+     * Test: Delete logic requires URL + ID.
+     *
+     * Verifies:
+     *  posterUrl and eventId must be non-null
      */
     @Test
     public void testImage_Delete_Logic() {
@@ -328,11 +417,11 @@ public class AdminFeaturesTest {
         assertNotNull(img.eventId);
     }
 
-    // ==================================================================
-    // US 03.08.01: REVIEW LOGS (5 Tests)
-    // ==================================================================
     /**
-     * Ensures relative-time formatting returns minutes correctly.
+     * Test: FormatRelativeTime returns minutes correctly.
+     *
+     * Verifies:
+     *  5 minutes → "5 min ago"
      */
     @Test
     public void testLog_RelativeTime_Minutes() {
@@ -340,8 +429,12 @@ public class AdminFeaturesTest {
         Date d = new Date(now - (5 * 60 * 1000));
         assertEquals("5 min ago", AdminUtils.formatRelativeTime(d, now));
     }
+
     /**
-     * Ensures relative-time formatting returns hours correctly.
+     * Test: FormatRelativeTime returns hours correctly.
+     *
+     * Verifies:
+     *  2 hours → "2 hours ago"
      */
     @Test
     public void testLog_RelativeTime_Hours() {
@@ -349,8 +442,12 @@ public class AdminFeaturesTest {
         Date d = new Date(now - (2 * 60 * 60 * 1000));
         assertEquals("2 hours ago", AdminUtils.formatRelativeTime(d, now));
     }
+
     /**
-     * Ensures relative-time formatting returns days when > 24 hours.
+     * Test: 25 hours ago should result in days.
+     *
+     * Verifies:
+     *  25 hours → "1 days ago"
      */
     @Test
     public void testLog_RelativeTime_Days() {
@@ -358,8 +455,12 @@ public class AdminFeaturesTest {
         Date d = new Date(now - (25 * 60 * 60 * 1000)); // 25 hours
         assertEquals("1 days ago", AdminUtils.formatRelativeTime(d, now));
     }
+
     /**
-     * Ensures null log messages return empty strings.
+     * Test: Null message should return empty string using nz().
+     *
+     * Verifies:
+     *  message null → ""
      */
     @Test
     public void testLog_NullMessage() {
@@ -367,8 +468,12 @@ public class AdminFeaturesTest {
         String msg = AdminUtils.nz(mockLogDoc.getString("message"));
         assertEquals("", msg);
     }
+
     /**
-     * Ensures future timestamps are handled
+     * Test: Future timestamp should return "0 min ago".
+     *
+     * Verifies:
+     *  date > now → "0 min ago"
      */
     @Test
     public void testLog_FutureTimestamp() {

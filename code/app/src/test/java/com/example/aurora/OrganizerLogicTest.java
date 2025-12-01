@@ -20,11 +20,12 @@ import java.util.Random;
 public class OrganizerLogicTest {
 
     /**
-     * Tests that the lottery sampling algorithm:
-     *     Shuffles the waiting list deterministically when given a fixed seed,
-     *     Selects exactly N entrants based on available spots,
-     *     and does not select duplicate entrants
-
+     * Test: Lottery sampling should pick exactly N entrants after shuffling.
+     *
+     * Verifies:
+     *  correct number of entrants are selected
+     *  shuffle-based selection produces unique winners
+     *  deterministic behaviour when using fixed Random seed
      */
     @Test
     public void testLotterySampling_Logic() {
@@ -38,8 +39,11 @@ public class OrganizerLogicTest {
     }
 
     /**
-     * Tests that the lottery system gracefully handles cases where
-     * the number of available spots exceeds the size of the waiting list.
+     * Test: When spots exceed entrants, all entrants should be selected.
+     *
+     * Verifies:
+     *  selection count uses min(spotsAvailable, waitingListSize)
+     *  organizer cannot "over-select" more users than exist
      */
     @Test
     public void testLottery_NotEnoughEntrants() {
