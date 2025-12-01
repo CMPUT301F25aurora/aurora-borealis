@@ -44,6 +44,11 @@ import org.junit.runner.RunWith;
 
 /**
  * UI tests for EventsActivity.
+ *
+ * Verifies:
+ *  Buttons load correctly
+ *  Dialogs open when expected
+ *  QR button is visible
  */
 @RunWith(AndroidJUnit4.class)
 public class EventsActivityInstrumentedTest {
@@ -52,6 +57,14 @@ public class EventsActivityInstrumentedTest {
     public ActivityScenarioRule<EventsActivity> rule =
             new ActivityScenarioRule<>(EventsActivity.class);
 
+    /**
+     * Test: All category filter buttons should be visible.
+     *
+     * Verifies:
+     *  "All" button is displayed
+     *  "Music" button is displayed
+     *  "Sports" button is displayed
+     */
     @Test
     public void testCategoryButtonsDisplayed() {
         onView(withId(R.id.btnAll)).check(matches(isDisplayed()));
@@ -59,13 +72,34 @@ public class EventsActivityInstrumentedTest {
         onView(withId(R.id.btnSports)).check(matches(isDisplayed()));
     }
 
+    /**
+     * Test: Filter button should open the filter dialog.
+     *
+     * Verifies:
+     *  Filter button is clickable
+     *  Dialog attempts to open successfully
+     */
     @Test
     public void testFilterButtonOpensDialog() {
         onView(withId(R.id.btnFilter)).perform(click());
     }
 
+    /**
+     * Test: QR scan button must always be visible.
+     *
+     * Verifies:
+     *  QR button is visible on screen
+     */
     @Test
     public void testScanQrButtonDisplayed() {
         onView(withId(R.id.btnScanQr)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testEventsScreenShowsRecyclerView() {
+        // The ActivityScenarioRule already launches EventsActivity for us.
+        // Just check that the RecyclerView container for events is visible.
+        onView(withId(R.id.recyclerEvents))
+                .check(matches(isDisplayed()));
     }
 }

@@ -81,6 +81,15 @@ public class EventDetailsActivityInstrumentedTest {
         ActivityScenario.launch(intent);
     }
 
+    /**
+     * Test: Event details screen loads and critical views are visible.
+     *
+     * Verifies:
+     *  Title is visible
+     *  About text is visible
+     *  Criteria and QR buttons are visible
+     *  Sign Up button is GONE by default
+     */
     @Test
     public void testEventDetailsScreenVisible() throws Exception {
         launchEventDetailsScreen();
@@ -97,6 +106,12 @@ public class EventDetailsActivityInstrumentedTest {
                 )));
     }
 
+    /**
+     * Test: Sign Up button should always be hidden in this screen.
+     *
+     * Verifies:
+     *  Sign Up button visibility is GONE
+     */
     @Test
     public void testSignUpButtonIsHiddenByDefault() throws Exception {
         launchEventDetailsScreen();
@@ -107,6 +122,13 @@ public class EventDetailsActivityInstrumentedTest {
                 )));
     }
 
+    /**
+     * Test: Criteria button should be clickable.
+     *
+     * Verifies:
+     *  Button is visible
+     *  Button can be tapped
+     */
     @Test
     public void testCriteriaButtonClickable() throws Exception {
         launchEventDetailsScreen();
@@ -115,6 +137,13 @@ public class EventDetailsActivityInstrumentedTest {
         onView(withId(R.id.btnCriteria)).perform(click());
     }
 
+    /**
+     * Test: QR button should be clickable.
+     *
+     * Verifies:
+     *  Button is visible
+     *  Button responds to click action
+     */
     @Test
     public void testShowQrButtonClickable() throws Exception {
         launchEventDetailsScreen();
@@ -122,4 +151,24 @@ public class EventDetailsActivityInstrumentedTest {
         onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
         onView(withId(R.id.btnShowQr)).perform(click());
     }
+
+    @Test
+    public void testCriteriaDialogShowsGotItButton() throws Exception {
+        // Uses existing helper to:
+        // - set user_role=entrant
+        // - seed the test event in Firestore
+        // - launch EventDetailsActivity with TEST_EVENT_ID
+        launchEventDetailsScreen();
+
+        // Open the criteria dialog
+        onView(withId(R.id.btnCriteria))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Assert that the dialog from dialog_criteria.xml is visible
+        // by checking for the "Got It" button
+        onView(withId(R.id.btnGotIt))
+                .check(matches(isDisplayed()));
+    }
+
 }

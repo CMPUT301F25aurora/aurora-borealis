@@ -30,9 +30,13 @@ import static org.junit.Assert.*;
 import com.example.aurora.models.Event;
 
 /**
-
- Unit tests for Event.java data model.
- Adapted to the actual Event class (which uses setters, not constructors).*/
+ * Unit tests for Event.java model.
+ *
+ * Verifies:
+ *  correct default values
+ *  all getters and setters work properly
+ *  waitingList returns a non-null list
+ */
 public class EventTest {
 
     private Event event;
@@ -47,6 +51,15 @@ public class EventTest {
         event.setPosterUrl("poster.png");
     }
 
+    /**
+     * Test: Event defaults should be initialized properly.
+     *
+     * Verifies:
+     *  eventId is stored correctly
+     *  title matches
+     *  waitingList is non-null
+     *  waitingList starts empty
+     */
     @Test
     public void testConstructorAndDefaults() {
         assertEquals("e1", event.getEventId());
@@ -55,6 +68,13 @@ public class EventTest {
         assertTrue(event.getWaitingList().isEmpty());
     }
 
+    /**
+     * Test: All setters should update fields correctly.
+     *
+     * Verifies:
+     *  description, location, start/end dates, deepLink set properly
+     *  waitingList accepts provided list
+     */
     @Test
     public void testGettersAndSetters() {
         event.setDescription("A cool event");

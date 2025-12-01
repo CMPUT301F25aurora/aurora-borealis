@@ -170,7 +170,7 @@ public class AdminActivityInstrumentedTest {
 
         onView(withIndex(withId(R.id.adminProfileRemoveButton), 0)).perform(click());
 
-        // Verify the confirmation dialog appears
+
         onView(withText("Remove Profile")).check(matches(isDisplayed()));
         onView(withText("Remove")).check(matches(isDisplayed()));
         onView(withText("Cancel")).check(matches(isDisplayed()));
@@ -181,7 +181,7 @@ public class AdminActivityInstrumentedTest {
 
     @Test
     public void testAdminTabsSwitchBetweenSections() {
-        // Events tab should be visible and clickable
+
         onView(withId(R.id.tabEvents)).check(matches(isDisplayed()));
         onView(withId(R.id.tabEvents)).perform(click());
 

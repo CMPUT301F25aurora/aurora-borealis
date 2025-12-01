@@ -512,7 +512,7 @@ public class AdminActivity extends AppCompatActivity {
 
     /**
      * Renders a poster card showing thumbnail, event name, organizer
-     * and delete button (removes Storage image & clears posterUrl in Firestore).
+     * and delete button (removes Storage image and clears posterUrl in Firestore).
      *
      * @param img AdminImage containing metadata for display.
      */
