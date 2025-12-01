@@ -70,6 +70,5 @@ public class AdminModelTest {
     public void testAdminImage_EmptyConstructor() {
         AdminImage img = new AdminImage();
         assertNull(img.eventId);
-        // Ensure it doesn't crash on null access if fields are public
     }
 }

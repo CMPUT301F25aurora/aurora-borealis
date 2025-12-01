@@ -57,7 +57,6 @@ public class LotterySystemTest {
      */
     @Test
     public void testLottery_DrawsAllIfSpotsExceedEntrants() {
-        // 10 spots, only 3 entrants
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B", "C"));
         int spotsToFill = 10;
 
@@ -80,10 +79,8 @@ public class LotterySystemTest {
         List<String> waitingList = new ArrayList<>(Arrays.asList("ReplacementCandidate"));
         List<String> selectedList = new ArrayList<>(Arrays.asList("DropoutUser"));
 
-        // Scenario: DropoutUser cancels
         selectedList.remove("DropoutUser");
 
-        // Action: Draw replacement
         if (!waitingList.isEmpty()) {
             String newWinner = waitingList.remove(0);
             selectedList.add(newWinner);
@@ -118,40 +115,37 @@ public class LotterySystemTest {
         assertTrue("Shuffle logic should rearrange the list", listsChanged);
     }
 
-    // ============================================================
-    // Capacity rule: if spots == entrants, everyone is selected
-    // ============================================================
+    /**
+     * Verifies that when the event capacity equals the size of the waiting list,
+     * all entrants are selected as winners.
+     */
     @Test
     public void drawWinners_AllEntrantsSelectedWhenCapacityEqualsListSize() {
         List<String> waitingList = Arrays.asList("A", "B", "C");
         int capacity = 3;
 
-        // Logic: number to select is min(capacity, waitingList.size())
         int toSelect = Math.min(capacity, waitingList.size());
         List<String> winners = waitingList.subList(0, toSelect);
 
-        // All entrants should be selected
         assertEquals(waitingList.size(), winners.size());
         assertTrue(winners.containsAll(waitingList));
     }
 
-    // ============================================================
-    // Replacement draw: pick new entrant, avoid duplicates
-    // ============================================================
+    /**
+     * Verifies that a replacement draw for a cancelled entrant selects
+     * a new entrant from the waiting list without introducing duplicates.
+     */
     @Test
     public void replacementDrawSelectsNewEntrantWithoutDuplicates() {
         List<String> waitingList = Arrays.asList("A","B","C","D");
 
-        // Entrants already chosen in the first draw
         List<String> chosen = new ArrayList<>();
         chosen.add("A");
         chosen.add("B");
 
-        // Simulate one chosen entrant cancelling
         String cancelled = "A";
         chosen.remove(cancelled); // chosen now = ["B"]
 
-        // Replacement pool = waiting list minus already-chosen AND minus cancelled
         List<String> replacementPool = new ArrayList<>();
         for(String entrant:waitingList){
             if(!chosen.contains(entrant) && !entrant.equals(cancelled)){
@@ -159,40 +153,25 @@ public class LotterySystemTest {
             }
         }
 
-        // Pick the first available replacement (deterministic for the test)
         String replacement = replacementPool.get(0);
         chosen.add(replacement);
-
-        // 1) We still have 2 chosen entrants after replacement
         assertEquals(2,chosen.size());
-
-        // 2) No duplicates in chosen list
         assertEquals(2,new HashSet<>(chosen).size());
-
-        // 3) Replacement came from waiting list and was not the cancelled entrant
         assertTrue(waitingList.contains(replacement));
         assertNotEquals(cancelled,replacement);
     }
 
-    // ============================================================
-    // Run lottery: respect requested sample size and waiting size
-    // ============================================================
+    /**
+     * Verifies that the lottery sampling logic respects the requested
+     * number of winners and does not exceed the size of the waiting list.
+     */
     @Test
     public void runLottery_respectsRequestedSampleAndWaitingSize() {
         List<String> waitingList = Arrays.asList("A","B","C","D","E");
-
-        // Organizer requests to sample 3 attendees
         int requested = 3;
-
-        // But we can never select more than waitingList.size()
         int actualSampleSize = Math.min(requested, waitingList.size());
         List<String> sampled = waitingList.subList(0, actualSampleSize);
-
-        // 1) We sampled exactly min(requested, waitingList.size())
         assertEquals(3, sampled.size());
-
-        // 2) Every sampled entrant came from waitingList
         assertTrue(waitingList.containsAll(sampled));
     }
-
 }

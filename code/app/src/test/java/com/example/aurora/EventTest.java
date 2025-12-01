@@ -41,6 +41,10 @@ public class EventTest {
 
     private Event event;
 
+    /**
+     * Sets up a default Event instance used by the tests.
+     * Runs before each test method in this class.
+     */
     @Before
     public void setUp() {
         event = new Event();
@@ -64,7 +68,7 @@ public class EventTest {
     public void testConstructorAndDefaults() {
         assertEquals("e1", event.getEventId());
         assertEquals("Aurora Night", event.getTitle());
-        assertNotNull(event.getWaitingList());  // must return non-null (auto-initialized)
+        assertNotNull(event.getWaitingList());
         assertTrue(event.getWaitingList().isEmpty());
     }
 
