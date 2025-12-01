@@ -125,9 +125,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     }
 
 
-    // ============================================================
-    // JOIN WAITING LIST
-    // ============================================================
     private void joinWaitingList(Event e, Button button) {
 
         String eventId = e.getEventId();
