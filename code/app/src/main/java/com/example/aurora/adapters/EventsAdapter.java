@@ -1,3 +1,31 @@
+/*
+ * source: Android Developers — "Request location permissions".
+ * url: https://developer.android.com/training/location/permissions
+ * note: Used in joinWaitingList() to check if the user has granted fine/coarse location access.
+ *
+ * source: Android Developers — "Settings.Secure ANDROID_ID".
+ * url: https://developer.android.com/reference/android/provider/Settings.Secure#ANDROID_ID
+ * note: Used as a fallback user identifier if the email is not present in shared preferences.
+ *
+ * source: Firebase docs — "Listen to a document".
+ * url: https://firebase.google.com/docs/firestore/query-data/listen
+ * note: Used for the live snapshot listener on each event card to update the "Join/Leave" button text in real-time.
+ *
+ * source: Stack Overflow user — "How to open Android Location Settings programmatically?".
+ * url: https://stackoverflow.com/questions/10311834/how-to-check-if-location-services-are-enabled
+ * note: Used to redirect the user to the system location settings if GPS is disabled (Settings.ACTION_LOCATION_SOURCE_SETTINGS).
+ *
+ * source: Firebase docs — "Subcollections".
+ * url: https://firebase.google.com/docs/firestore/data-model#subcollections
+ * note: Used for storing geolocation data in a separate "waitingLocations" subcollection under each event.
+ *
+ * source: Glide Documentation — "Placeholders and Errors".
+ * url: https://bumptech.github.io/glide/doc/placeholders.html
+ * note: Used to show a default background image while the event poster is loading.
+ */
+
+
+
 package com.example.aurora.adapters;
 
 import android.content.Context;
