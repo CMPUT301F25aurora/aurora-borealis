@@ -22,14 +22,13 @@ import java.util.Random;
  */
 public class LotterySystemTest {
 
-    // ==================================================================
-    // US 02.05.02: Sample N Attendees
-    // ==================================================================
-
     /**
-     * Ensures that the lottery draws exactly the number of winners
-     * specified by the organizer (spotsToFill), and the remaining
-     * entrants remain in the waiting list.
+     * Test: Lottery should draw the correct number of winners.
+     *
+     * Verifies:
+     *  exactly N entrants are selected
+     *  leftover entrants remain in waiting list
+     *  winners are not duplicated in losers list
      */
     @Test
     public void testLottery_DrawsCorrectNumber() {
@@ -48,9 +47,13 @@ public class LotterySystemTest {
             assertTrue(!losers.contains(w));
         }
     }
+
     /**
-     * Ensures the lottery gracefully handles cases where the number of
-     * available entrants is fewer than the number of required winners.
+     * Test: If capacity exceeds entrant count, draw everyone.
+     *
+     * Verifies:
+     *  min(spots, entrants) logic works correctly
+     *  no IndexOutOfBounds errors occur
      */
     @Test
     public void testLottery_DrawsAllIfSpotsExceedEntrants() {
@@ -63,13 +66,13 @@ public class LotterySystemTest {
         assertEquals("Should draw all 3 entrants", 3, winners.size());
     }
 
-    // ==================================================================
-    // US 02.05.03: Replacement Draw
-    // ==================================================================
-
     /**
-     * Simulates a cancellation and verifies the next entrant in the
-     * waiting list is selected as a replacement.
+     * Test: Replacement logic pulls from waitlist correctly.
+     *
+     * Verifies:
+     *  cancelled entrant is removed
+     *  next waitlisted entrant is promoted
+     *  waitlist updates as expected
      */
     @Test
     public void testReplacement_DrawsFromWaitlist() {
@@ -88,13 +91,12 @@ public class LotterySystemTest {
         assertTrue("Waitlist should be empty", waitingList.isEmpty());
     }
 
-    // ==================================================================
-    // US 01.05.01: Entrant Chance (Fairness)
-    // ==================================================================
-
     /**
-     * Ensures the shuffle operation produces different permutations,
-     * validating that the selection mechanism is randomized and fair.
+     * Test: Shuffling produces different orderings.
+     *
+     * Verifies:
+     *  shuffled lists differ from original order
+     *  shuffle randomness works using different seeds
      */
     @Test
     public void testFairness_ShuffleLogic() {

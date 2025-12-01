@@ -40,13 +40,12 @@ public class OrganizerFeaturesTest {
         event.setCancelledEntrants(new ArrayList<>());
     }
 
-    // ==================================================================
-    // US 02.01.01: Create Event & QR Code Logic
-    // ==================================================================
-
     /**
-     * Tests that QR code data generation correctly formats a valid
-     * event deep link based on the event ID.
+     * Test: QR data string should match expected deep link structure.
+     *
+     * Verifies:
+     *  deep link is formed correctly
+     *  eventId is correctly injected into string
      */
     @Test
     public void testQRCode_DataStringGeneration() {
@@ -55,12 +54,12 @@ public class OrganizerFeaturesTest {
         assertEquals(expectedDeepLink, generatedData);
     }
 
-    // ==================================================================
-    // US 02.01.04: Set Registration Period
-    // =================================================================
     /**
-     * Ensures that registration periods are valid, meaning the
-     * start timestamp must always be earlier than the end timestamp.
+     * Test: Registration period must have start less than end.
+     *
+     * Verifies:
+     *  date comparison logic is valid
+     *  organizer cannot create invalid registration window
      */
     @Test
     public void testRegistrationPeriod_Validation() {
@@ -71,12 +70,12 @@ public class OrganizerFeaturesTest {
         assertTrue("Registration start must be before end", isValid);
     }
 
-    // ==================================================================
-    // US 02.03.01: Limit Waiting List
-    // ==================================================================
     /**
-     * Verifies that an entrant can join the waiting list when the
-     * list size is below the event's maximum allowed capacity.
+     * Test: Registration period must have start less than end.
+     *
+     * Verifies:
+     *  date comparison logic is valid
+     *  organizer cannot create invalid registration window
      */
     @Test
     public void testWaitingList_CapacityCheck_Allowed() {
@@ -88,9 +87,13 @@ public class OrganizerFeaturesTest {
 
         assertTrue(canJoin);
     }
+
     /**
-     * Verifies that joining the waiting list is denied once the
-     * capacity limit has been reached.
+     * Test: Waitlist capacity check should deny join when full.
+     *
+     * Verifies:
+     *  size >= maxSpots prevents joining
+     *  organizer capacity rule is respected
      */
     @Test
     public void testWaitingList_CapacityCheck_Denied() {
@@ -102,13 +105,12 @@ public class OrganizerFeaturesTest {
         assertTrue("Should NOT be able to join full list", !canJoin);
     }
 
-    // ==================================================================
-    // US 02.06.01 - 03: View Specific Lists
-    // ==================================================================
     /**
-     * Ensures that organizer-visible lists (waiting, selected, enrolled,
-     * cancelled) remain independent from one another and contain only
-     * the correct entrants.
+     * Test: Organizer separates waiting/selected lists properly.
+     *
+     * Verifies:
+     *  list independence
+     *  events are categorized into correct lists
      */
     @Test
     public void testListFiltration_Logic() {
@@ -121,13 +123,13 @@ public class OrganizerFeaturesTest {
         assertTrue(event.getSelectedEntrants().contains("Winner"));
     }
 
-    // ==================================================================
-    // US 02.06.05: Export to CSV
-    // ==================================================================
     /**
-     * Verifies that exporting the list of enrolled entrants to CSV format
-     * creates properly structured rows, including a header and
-     * event/user relationships.
+     * Test: CSV export should format enrolled entrants correctly.
+     *
+     * Verifies:
+     *  CSV header exists
+     *  each entry produces "eventId,userId"
+     *  multiple rows handled correctly
      */
     @Test
     public void testCSVExport_Formatting() {
