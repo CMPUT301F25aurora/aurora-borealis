@@ -158,7 +158,8 @@ public class AlertsActivity extends AppCompatActivity {
 
             btnAccept.setVisibility(View.GONE);
             btnDecline.setVisibility(View.GONE);
-            btnDismiss.setVisibility(View.GONE);
+            btnDismiss.setVisibility(View.VISIBLE);
+            btnDismiss.setOnClickListener(v -> deleteNotification(notifId));
 
         }
         else if ("custom_message".equals(notifType)) {
