@@ -29,4 +29,6 @@ AuroraChance is a mobile application designed to streamline event registration a
 
 - Event Poster Uploads: Organizers can upload custom event posters to make their event pages more engaging and visually distinct.
   
-- Optional Geolocation Verification: When enabled by organizers, entrants’ join locations are captured from the device to verify authenticity and support location-based event rules.  
+- Optional Geolocation Verification: When enabled by organizers, entrants’ join locations are captured from the device to verify authenticity and support location-based event rules.
+
+- Dedicated Organizer Map Console: A specialized map interface available exclusively to event creators. Organizers can set, validate, and manage precise event coordinates using an integrated place-picker, ensuring accurate location data for geolocation rules and event logistics.
