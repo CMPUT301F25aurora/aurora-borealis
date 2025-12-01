@@ -59,7 +59,7 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
     }
     private void loadNotifications() {
         // Fetch organizer notifications from Firestore
-        db.collection("notificationLogs")
+        db.collection("notifications")
                 .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -74,20 +74,12 @@ public class OrganizerNotificationsActivity extends AppCompatActivity {
                         Object timeObj = doc.get("timestamp");
 
                         String timeText = "";
-                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault());
+                        if (timeObj != null) {
+                            SimpleDateFormat sdf = new SimpleDateFormat("MMM d, h:mm a", Locale.getDefault());
 
-                        if (timeObj instanceof com.google.firebase.Timestamp) {
-                            // Proper Firestore timestamp
+
                             timeText = sdf.format(((com.google.firebase.Timestamp) timeObj).toDate());
                         }
-                        else if (timeObj instanceof Long) {
-                            // Old notifications stored as long (System.currentTimeMillis)
-                            timeText = sdf.format(new java.util.Date((Long) timeObj));
-                        }
-
-
-                        addNotificationCard(title, message, timeText);
-                    }
                 });
     }
     private void addNotificationCard(String title, String message, String time) {
