@@ -304,6 +304,4 @@ public class FirestoreNotificationHelper {
         log.put("notificationType", "organizer_enabled");
         db.collection("notificationLogs").add(log);
     }
-
-
 }

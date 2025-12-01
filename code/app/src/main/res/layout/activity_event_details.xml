@@ -132,7 +132,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sign Up"
-                android:backgroundTint="#7E57C2"
+                android:backgroundTint="#fe7f2d"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="12dp"
                 android:visibility="gone"/>
