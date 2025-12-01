@@ -1,6 +1,7 @@
 package com.example.aurora;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -115,4 +117,62 @@ public class LotterySystemTest {
 
         assertTrue("Shuffle logic should rearrange the list", listsChanged);
     }
+
+    // ============================================================
+    // Capacity rule: if spots == entrants, everyone is selected
+    // ============================================================
+    @Test
+    public void drawWinners_AllEntrantsSelectedWhenCapacityEqualsListSize() {
+        List<String> waitingList = Arrays.asList("A", "B", "C");
+        int capacity = 3;
+
+        // Logic: number to select is min(capacity, waitingList.size())
+        int toSelect = Math.min(capacity, waitingList.size());
+        List<String> winners = waitingList.subList(0, toSelect);
+
+        // All entrants should be selected
+        assertEquals(waitingList.size(), winners.size());
+        assertTrue(winners.containsAll(waitingList));
+    }
+
+    // ============================================================
+    // Replacement draw: pick new entrant, avoid duplicates
+    // ============================================================
+    @Test
+    public void replacementDrawSelectsNewEntrantWithoutDuplicates() {
+        List<String> waitingList = Arrays.asList("A","B","C","D");
+
+        // Entrants already chosen in the first draw
+        List<String> chosen = new ArrayList<>();
+        chosen.add("A");
+        chosen.add("B");
+
+        // Simulate one chosen entrant cancelling
+        String cancelled = "A";
+        chosen.remove(cancelled); // chosen now = ["B"]
+
+        // Replacement pool = waiting list minus already-chosen AND minus cancelled
+        List<String> replacementPool = new ArrayList<>();
+        for(String entrant:waitingList){
+            if(!chosen.contains(entrant) && !entrant.equals(cancelled)){
+                replacementPool.add(entrant);
+            }
+        }
+
+        // Pick the first available replacement (deterministic for the test)
+        String replacement = replacementPool.get(0);
+        chosen.add(replacement);
+
+        // 1) We still have 2 chosen entrants after replacement
+        assertEquals(2,chosen.size());
+
+        // 2) No duplicates in chosen list
+        assertEquals(2,new HashSet<>(chosen).size());
+
+        // 3) Replacement came from waiting list and was not the cancelled entrant
+        assertTrue(waitingList.contains(replacement));
+        assertNotEquals(cancelled,replacement);
+    }
+
+
 }

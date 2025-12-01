@@ -151,4 +151,24 @@ public class EventDetailsActivityInstrumentedTest {
         onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
         onView(withId(R.id.btnShowQr)).perform(click());
     }
+
+    @Test
+    public void testCriteriaDialogShowsGotItButton() throws Exception {
+        // Uses existing helper to:
+        // - set user_role=entrant
+        // - seed the test event in Firestore
+        // - launch EventDetailsActivity with TEST_EVENT_ID
+        launchEventDetailsScreen();
+
+        // Open the criteria dialog
+        onView(withId(R.id.btnCriteria))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Assert that the dialog from dialog_criteria.xml is visible
+        // by checking for the "Got It" button
+        onView(withId(R.id.btnGotIt))
+                .check(matches(isDisplayed()));
+    }
+
 }

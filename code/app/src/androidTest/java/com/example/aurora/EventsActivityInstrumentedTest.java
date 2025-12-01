@@ -94,4 +94,12 @@ public class EventsActivityInstrumentedTest {
     public void testScanQrButtonDisplayed() {
         onView(withId(R.id.btnScanQr)).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testEventsScreenShowsRecyclerView() {
+        // The ActivityScenarioRule already launches EventsActivity for us.
+        // Just check that the RecyclerView container for events is visible.
+        onView(withId(R.id.recyclerEvents))
+                .check(matches(isDisplayed()));
+    }
 }

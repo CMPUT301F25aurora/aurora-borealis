@@ -13,6 +13,16 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
+      <SelectionState runConfigName="EventDetailsLayoutInstrumentedTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="EventDetailsActivityInstrumentedTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="EventsActivityInstrumentedTest">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="AlertsLayoutInstrumentedTest">
       <SelectionState runConfigName="EntrantProfileInstrumentedTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
