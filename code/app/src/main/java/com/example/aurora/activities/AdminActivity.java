@@ -92,13 +92,19 @@ import java.util.List;
 
 /**
  * The main dashboard for administrators in the Aurora app.
- *
  * Provides access to monitor and manage events, user profiles, logs, and images.
  * Includes a top back button for returning to the login screen (with session logout).
  */
 
 
-
+/**
+ * Administrative display modes for the dashboard.
+ *
+ * EVENTS   — displays all events with status, entrants count, and organizer.
+ * PROFILES — displays all users with roles, emails, and privilege controls.
+ * IMAGES   — displays event posters stored in Firebase Storage.
+ * LOGS     — displays notification history sorted by timestamp.
+ */
 public class AdminActivity extends AppCompatActivity {
 
     private TextView countEvents, countUsers, countImages, countLogs;
@@ -177,10 +183,13 @@ public class AdminActivity extends AppCompatActivity {
         switchMode(currentMode);
     }
 
-    // =========================================================
-    // MODES
-    // =========================================================
 
+    /**
+     * Switches the admin dashboard into the selected mode.
+     * Updates UI highlighting and triggers the appropriate Firestore query.
+     *
+     * @param mode One of the four dashboard modes: EVENTS, PROFILES, IMAGES, LOGS.
+     */
     private void switchMode(Mode mode) {
         currentMode = mode;
         updateTabHighlight();
@@ -213,12 +222,21 @@ public class AdminActivity extends AppCompatActivity {
         tabLogs.setAlpha(currentMode == Mode.LOGS ? on : off);
     }
 
+
+    /**
+     * Reloads the top-level dashboard counters for:
+     *   Total events
+     *   Total users
+     *   Total images (events with posterUrl)
+     *   Total notification log entries
+     *
+     * Uses lightweight collection reads without ordering to minimize cost.
+     */
     private void refreshCounts() {
         db.collection("events").get().addOnSuccessListener(snap -> countEvents.setText(String.valueOf(snap.size())));
         db.collection("users").get().addOnSuccessListener(snap -> countUsers.setText(String.valueOf(snap.size())));
         db.collection("notificationLogs").get().addOnSuccessListener(snap -> countLogs.setText(String.valueOf(snap.size())));
 
-        // FIX: Count images by checking how many events have a posterUrl
         db.collection("events").get().addOnSuccessListener(snap -> {
             int imgCount = 0;
             for(DocumentSnapshot doc : snap) {
@@ -229,10 +247,11 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    // =========================================================
-    // EVENTS
-    // =========================================================
 
+    /**
+     * Fetches all events sorted by date and displays them as event cards.
+     * Each card shows title, date, organizer, waiting count, and a remove button.
+     */
     private void loadEvents() {
         db.collection("events").orderBy("date", Query.Direction.ASCENDING).get()
                 .addOnSuccessListener(querySnapshot -> {
@@ -241,6 +260,13 @@ public class AdminActivity extends AppCompatActivity {
                 });
     }
 
+
+    /**
+     * Renders a list of event Firestore documents into UI card components.
+     * If the list is empty, displays a placeholder message.
+     *
+     * @param docs List of DocumentSnapshot objects representing events.
+     */
     private void renderEventList(List<DocumentSnapshot> docs) {
         listContainer.removeAllViews();
         if (docs == null || docs.isEmpty()) {
@@ -253,6 +279,14 @@ public class AdminActivity extends AppCompatActivity {
         for (DocumentSnapshot doc : docs) addEventCard(doc);
     }
 
+
+    /**
+     * Builds a single event card from Firestore data and adds it into listContainer.
+     * Handles organizer name resolution through multiple fallbacks:
+     *    organizerName → organizer user ID → organizerEmail
+     *
+     * @param doc Firestore document containing event data.
+     */
     private void addEventCard(DocumentSnapshot doc) {
         View card = getLayoutInflater().inflate(R.layout.item_admin_event, listContainer, false);
 
@@ -263,7 +297,6 @@ public class AdminActivity extends AppCompatActivity {
         TextView entrantsView  = card.findViewById(R.id.adminEventEntrants);
         Button   removeButton  = card.findViewById(R.id.adminEventRemoveButton);
 
-        // 1. Basic Event Data
         String title = nz(doc.getString("title"));
         if (title.isEmpty()) title = nz(doc.getString("name"));
 
@@ -278,31 +311,25 @@ public class AdminActivity extends AppCompatActivity {
         entrantsView.setText(String.valueOf(entrants));
         statusView.setText("Active");
 
-        // ---------------------------------------------------
-        // FIX: BETTER ORGANIZER NAME LOADING
-        // ---------------------------------------------------
 
-        // Step 1: Check if "organizerName" is stored directly in the event
         String storedName = doc.getString("organizerName");
 
         if (storedName != null && !storedName.isEmpty()) {
             organizerView.setText(storedName);
         }
         else {
-            // Step 2: If name is missing, look for the Organizer ID (usually field 'organizer')
+
             String organizerId = doc.getString("organizer");
 
             if (organizerId != null && !organizerId.isEmpty()) {
-                organizerView.setText("Loading..."); // Temporary text while fetching
+                organizerView.setText("Loading...");
 
-                // Fetch the User Profile to get the real name
                 db.collection("users").document(organizerId).get()
                         .addOnSuccessListener(userSnap -> {
                             String realName = userSnap.getString("name");
                             if (realName != null && !realName.isEmpty()) {
                                 organizerView.setText(realName);
                             } else {
-                                // If user profile has no name, try email
                                 String userEmail = userSnap.getString("email");
                                 organizerView.setText(userEmail != null ? userEmail : "Unknown User");
                             }
@@ -310,13 +337,10 @@ public class AdminActivity extends AppCompatActivity {
                         .addOnFailureListener(e -> organizerView.setText("Unknown"));
             }
             else {
-                // Step 3: Fallback to 'organizerEmail' if no ID is found (Since we know this exists from loadImages)
                 String fallbackEmail = doc.getString("organizerEmail");
                 organizerView.setText(fallbackEmail != null && !fallbackEmail.isEmpty() ? fallbackEmail : "Unknown");
             }
         }
-
-        // ---------------------------------------------------
 
         String finalTitle = title;
         removeButton.setOnClickListener(v ->
@@ -339,10 +363,11 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    // =========================================================
-    // PROFILES
-    // =========================================================
 
+    /**
+     * Loads all user profiles ordered alphabetically by name.
+     * Results are stored for searching and rendered as profile cards.
+     */
     private void loadProfiles() {
         db.collection("users").orderBy("name", Query.Direction.ASCENDING).get()
                 .addOnSuccessListener(snapshot -> {
@@ -351,6 +376,10 @@ public class AdminActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Converts profile Firestore documents into UI cards for display.
+     * Each card shows user name, email, role, and privilege controls.
+     */
     private void renderProfileList(List<DocumentSnapshot> docs) {
         listContainer.removeAllViews();
         if (docs == null || docs.isEmpty()) {
@@ -363,6 +392,16 @@ public class AdminActivity extends AppCompatActivity {
         for (DocumentSnapshot doc : docs) addProfileCard(doc);
     }
 
+
+    /**
+     * Builds an admin profile card with:
+     *  - Display name and email
+     *  - Current role (Entrant / Organizer / Admin)
+     *  - Organizer privilege toggle
+     *  - Remove user action
+     *
+     * @param doc Firestore user document.
+     */
     private void addProfileCard(DocumentSnapshot doc) {
         View card = getLayoutInflater().inflate(R.layout.item_admin_profile, listContainer, false);
 
@@ -373,9 +412,6 @@ public class AdminActivity extends AppCompatActivity {
         Button removeBtn         = card.findViewById(R.id.adminProfileRemoveButton);
         Button toggleOrganizerBtn = card.findViewById(R.id.adminToggleOrganizerBtn);
 
-        // -------------------------
-        // READ USER FIELDS
-        // -------------------------
         String name  = nz(doc.getString("name"));
         String email = nz(doc.getString("email"));
         String role  = nz(doc.getString("role"));
@@ -384,14 +420,10 @@ public class AdminActivity extends AppCompatActivity {
         emailView.setText(email);
         roleView.setText(role.isEmpty() ? "Entrant" : capitalize(role));
 
-        // If user is ADMIN → hide organizer privilege button
         if ("admin".equalsIgnoreCase(role)) {
             toggleOrganizerBtn.setVisibility(View.GONE);
         }
         else {
-            // -------------------------
-            // ENTRANT USER → SHOW BUTTON
-            // -------------------------
             toggleOrganizerBtn.setVisibility(View.VISIBLE);
 
             Boolean orgAllowed = doc.getBoolean("organizer_allowed");
@@ -403,9 +435,6 @@ public class AdminActivity extends AppCompatActivity {
                             : "Restore Organizer Privileges"
             );
 
-            // -------------------------
-            // PRIVILEGE TOGGLE HANDLER
-            // -------------------------
             toggleOrganizerBtn.setOnClickListener(v -> {
 
                 boolean currentVal = doc.getBoolean("organizer_allowed") != null &&
@@ -417,22 +446,17 @@ public class AdminActivity extends AppCompatActivity {
                         .update("organizer_allowed", newVal)
                         .addOnSuccessListener(x -> {
 
-                            // LOG IN notificationLogs (not device notifications)
                             if (!newVal) {
                                 FirestoreNotificationHelper.sendOrganizerRevokedNotification(db, email);
                             } else {
                                 FirestoreNotificationHelper.sendOrganizerEnabledNotification(db, email);
                             }
 
-                            // Refresh list so button text updates
                             loadProfiles();
                         });
             });
         }
 
-        // -------------------------
-        // REMOVE USER BUTTON
-        // -------------------------
         removeBtn.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Remove Profile")
@@ -445,9 +469,6 @@ public class AdminActivity extends AppCompatActivity {
         listContainer.addView(card);
     }
 
-
-
-
     private void deleteProfile(String docId, String email) {
         db.collection("users").document(docId).delete().addOnSuccessListener(v -> {
             Toast.makeText(this, "Profile removed", Toast.LENGTH_SHORT).show();
@@ -457,10 +478,12 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    // =========================================================
-    // IMAGES
-    // =========================================================
 
+
+    /**
+     * Loads all event posters by scanning the events collection for non-null posterUrl fields.
+     * The result is turned into AdminImage objects and rendered as image cards.
+     */
     private void loadImages() {
         listContainer.removeAllViews();
         db.collection("events").get().addOnSuccessListener(query -> {
@@ -484,6 +507,14 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
+
+
+    /**
+     * Renders a poster card showing thumbnail, event name, organizer
+     * and delete button (removes Storage image & clears posterUrl in Firestore).
+     *
+     * @param img AdminImage containing metadata for display.
+     */
     private void addImageCard(AdminImage img) {
         View card = getLayoutInflater().inflate(R.layout.item_admin_image, listContainer, false);
         ImageView thumb = card.findViewById(R.id.adminPosterThumb);
@@ -509,10 +540,11 @@ public class AdminActivity extends AppCompatActivity {
         );
     }
 
-    // =========================================================
-    // LOGS
-    // =========================================================
 
+    /**
+     * Loads the notification logs in descending chronological order.
+     * Each log entry contains: event name, type, message, timestamp.
+     */
     private void loadLogs() {
         listContainer.removeAllViews();
         db.collection("notificationLogs").orderBy("timestamp", Query.Direction.DESCENDING).get()
@@ -529,6 +561,13 @@ public class AdminActivity extends AppCompatActivity {
                 });
     }
 
+
+    /**
+     * Converts a single log Firestore document into a card showing message summary.
+     * Timestamp formats into a human-readable "X minutes ago".
+     *
+     * @param doc Firestore log entry.
+     */
     private void addLogCard(DocumentSnapshot doc) {
         View card = getLayoutInflater().inflate(R.layout.item_admin_log, listContainer, false);
         TextView titleView = card.findViewById(R.id.adminLogTitle);
@@ -543,42 +582,38 @@ public class AdminActivity extends AppCompatActivity {
         subtitleView.setText(message);
 
 
-        // 1. Get as generic Object to avoid ClassCastException
         Object rawTime = doc.get("timestamp");
         Date finalDate = null;
 
         if (rawTime instanceof com.google.firebase.Timestamp) {
-            // Case A: It is a proper Firestore Timestamp
+
             finalDate = ((com.google.firebase.Timestamp) rawTime).toDate();
         } else if (rawTime instanceof Date) {
-            // Case B: It is a legacy java.util.Date
             finalDate = (Date) rawTime;
         } else if (rawTime instanceof Long) {
-            // Case C: It is a timestamp in milliseconds (Long)
             finalDate = new Date((Long) rawTime);
         }
 
-        // 2. Display result
         if (finalDate != null) {
             timeView.setText(formatRelativeTime(finalDate));
         } else {
             timeView.setText("Unknown time");
         }
-        // ---------------------------------------
+
 
         listContainer.addView(card);
     }
 
-    // =========================================================
-    // SUPER SEARCH
-    // =========================================================
 
+    /**
+     * Displays a custom rounded-corner search dialog for administrators.
+     * The dialog allows searching users or events by name, email, or title.
+     */
     private void showSearchDialog() {
-        // Use the new Custom Layout
+
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_admin_search, null);
         AlertDialog dialog = new AlertDialog.Builder(this).setView(dialogView).create();
 
-        // Make background transparent so rounded corners show
         if (dialog.getWindow() != null) {
             dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
@@ -599,10 +634,18 @@ public class AdminActivity extends AppCompatActivity {
         dialog.show();
     }
 
+
+    /**
+     * Executes a two-step search:
+     *  1) Attempts to match a user by email or name.
+     *  2) If not a user, attempts to match an event by title.
+     *
+     * @param query Raw search input entered by the admin.
+     */
     private void performSuperSearch(String query) {
         Toast.makeText(this, "Searching...", Toast.LENGTH_SHORT).show();
 
-        // 1. Search Users (Email or Name)
+
         db.collection("users").whereEqualTo("email", query).get().addOnSuccessListener(snap -> {
             if (!snap.isEmpty()) {
                 buildUserDossier(snap.getDocuments().get(0));
@@ -611,7 +654,6 @@ public class AdminActivity extends AppCompatActivity {
                     if (!snap2.isEmpty()) {
                         buildUserDossier(snap2.getDocuments().get(0));
                     } else {
-                        // 2. Not a user? Search Events (Title)
                         searchEvents(query);
                     }
                 });
@@ -630,8 +672,19 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Builds a detailed popup (dossier) for a user.
+     * Shows name, email, role, phone, and notification settings.
+     * Also lists:
+     *  Events where the user is on the waiting list
+     *  Events the user has been selected for
+     *
+     * Uses arrayContains queries on events collection.
+     *
+     * @param userDoc Firestore document of the user.
+     */
     private void buildUserDossier(DocumentSnapshot userDoc) {
-        String userId = userDoc.getId(); // This ID must be what's stored in events
+        String userId = userDoc.getId();
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_user_dossier, null);
         AlertDialog dossierDialog = new AlertDialog.Builder(this).setView(dialogView).create();
         if (dossierDialog.getWindow() != null) {
@@ -643,7 +696,6 @@ public class AdminActivity extends AppCompatActivity {
         ((TextView) dialogView.findViewById(R.id.dossierEmail)).setText("Email: " + nz(userDoc.getString("email")));
         ((TextView) dialogView.findViewById(R.id.dossierRole)).setText("Role: " + nz(userDoc.getString("role")));
 
-        // NEW FIELDS
         ((TextView) dialogView.findViewById(R.id.dossierPhone)).setText("Phone: " + nz(userDoc.getString("phone")));
         Boolean notif = userDoc.getBoolean("notificationsEnabled");
         ((TextView) dialogView.findViewById(R.id.dossierNotif)).setText("Notifications: " + (notif != null && notif ? "On" : "Off"));
@@ -652,7 +704,6 @@ public class AdminActivity extends AppCompatActivity {
         TextView tvWaiting = dialogView.findViewById(R.id.dossierWaitingList);
         dialogView.findViewById(R.id.btnCloseDossier).setOnClickListener(v -> dossierDialog.dismiss());
 
-        // Find Events (using ArrayContains on the User ID)
         db.collection("events").whereArrayContains("waitingList", userId).get().addOnSuccessListener(snap -> {
             if (snap.isEmpty()) tvWaiting.setText("No active waiting lists.");
             else {
@@ -674,20 +725,26 @@ public class AdminActivity extends AppCompatActivity {
         dossierDialog.show();
     }
 
+
+    /**
+     * Builds a detailed popup showing metadata about a specific event:
+     * title, location, waiting count, selected count, cancelled count, capacity.
+     *
+     * Reuses the same layout as the User Dossier for visual consistency.
+     *
+     * @param eventDoc Firestore event document.
+     */
     private void buildEventDossier(DocumentSnapshot eventDoc) {
-        // Reuse the dossier layout for Event Details
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_user_dossier, null);
         AlertDialog dossierDialog = new AlertDialog.Builder(this).setView(dialogView).create();
         if (dossierDialog.getWindow() != null) {
             dossierDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        // Hide User Fields
         dialogView.findViewById(R.id.dossierPhone).setVisibility(View.GONE);
         dialogView.findViewById(R.id.dossierNotif).setVisibility(View.GONE);
         dialogView.findViewById(R.id.dossierRole).setVisibility(View.GONE);
 
-        // Rename Fields
         ((TextView) dialogView.findViewById(R.id.dossierHeader)).setText("Event Details");
         ((TextView) dialogView.findViewById(R.id.dossierName)).setText("Event: " + nz(eventDoc.getString("title")));
         ((TextView) dialogView.findViewById(R.id.dossierEmail)).setText("Loc: " + nz(eventDoc.getString("location")));
@@ -715,7 +772,6 @@ public class AdminActivity extends AppCompatActivity {
                         "Capacity: " + (max != null ? max : "Unlimited")
         );
 
-        // Hide the second block
         labelWaiting.setVisibility(View.GONE);
         valWaiting.setVisibility(View.GONE);
 
@@ -723,14 +779,26 @@ public class AdminActivity extends AppCompatActivity {
         dossierDialog.show();
     }
 
-    // =========================================================
-    // UTIL
-    // =========================================================
+
+    /**
+     * Utility: Null-safety for string fields.
+     */
     private static String nz(String s) { return s == null ? "" : s; }
+
+    /**
+     * Utility: Capitalizes role names for display.
+     */
     private static String capitalize(String s) {
         if (s == null || s.isEmpty()) return "";
         return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
+
+    /**
+     * Utility: Converts a Date into a relative time string.
+     * Example: "5 min ago", "3 hours ago", "2 days ago".
+     *
+     * @param date Firestore timestamp converted to java.util.Date
+     */
     private String formatRelativeTime(Date date) {
         long diff = System.currentTimeMillis() - date.getTime();
         long minutes = diff / (60 * 1000);

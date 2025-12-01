@@ -1,3 +1,12 @@
+/**
+ * EntrantNavigationActivity.java
+ *
+ * Entry point for entrant users. Handles:
+ * - Validating active session
+ * - Routing to Events, Profile, and Alerts screens
+ * - Displaying a role-switch button if the user has organizer privileges
+ */
+
 package com.example.aurora.activities;
 
 import android.content.Intent;
@@ -10,6 +19,15 @@ import com.example.aurora.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * EntrantNavigationActivity
+ *
+ * Main navigation hub for entrant users.
+ * Handles:
+ *  - session check
+ *  - navigation to Events, Profile, and Alerts screens
+ *  - showing role-switch FAB if the user is allowed to be an organizer
+ */
 public class EntrantNavigationActivity extends AppCompatActivity {
 
     private Button navEvents, navProfile, navAlerts;
@@ -20,9 +38,7 @@ public class EntrantNavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant_navigation_pager);
 
-        // -------------------------------------------------
-        // CHECK SESSION
-        // -------------------------------------------------
+
         String userDocId = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getString("user_doc_id", null);
 
@@ -32,23 +48,14 @@ public class EntrantNavigationActivity extends AppCompatActivity {
             return;
         }
 
-        // -------------------------------------------------
-        // UI HOOKS
-        // -------------------------------------------------
         navEvents = findViewById(R.id.navEvents);
         navProfile = findViewById(R.id.navProfile);
         navAlerts = findViewById(R.id.navAlerts);
         fab = findViewById(R.id.roleSwitchFab);
 
-        // -------------------------------------------------
-        // LOAD DEFAULT SCREEN (EventsActivity)
-        // -------------------------------------------------
         startActivity(new Intent(this, EventsActivity.class));
         overridePendingTransition(0,0);
 
-        // -------------------------------------------------
-        // BOTTOM NAVIGATION
-        // -------------------------------------------------
         navEvents.setOnClickListener(v -> {
             startActivity(new Intent(this, EventsActivity.class));
             overridePendingTransition(0,0);
@@ -64,9 +71,6 @@ public class EntrantNavigationActivity extends AppCompatActivity {
             overridePendingTransition(0,0);
         });
 
-        // -------------------------------------------------
-        // ROLE SWITCH FAB
-        // -------------------------------------------------
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(userDocId)

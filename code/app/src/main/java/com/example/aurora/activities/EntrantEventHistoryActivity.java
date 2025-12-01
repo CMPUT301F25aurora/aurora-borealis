@@ -1,3 +1,19 @@
+/**
+ * EntrantEventHistoryActivity
+ *
+ * Shows the user's full history with all events they interacted with.
+ * It checks every event and displays:
+ *  events where the user was on the waiting list
+ *  events where the user was selected
+ *  events they declined
+ *  events they accepted (final entrants)
+ *  events where they were not selected
+ *
+ * Reads lists directly from Firestore ("waitingList", "selectedEntrants",
+ * "cancelledEntrants", "finalEntrants", "losersEntrants") and builds
+ * a card for each matching event.
+ */
+
 package com.example.aurora.activities;
 
 import android.os.Bundle;
@@ -32,7 +48,6 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         historyContainer = findViewById(R.id.historyContainer);
 
-        // get email from SharedPreferences
         userEmail = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getString("user_email", null);
 
@@ -45,6 +60,11 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
         loadEventHistory();
     }
 
+    /**
+     * Loads all events from Firestore,
+     * checks which ones the user interacted with,
+     * determines their status, and displays a card for each.
+     */
     private void loadEventHistory() {
         db.collection("events")
                 .get()
@@ -61,21 +81,18 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
 
                     for (QueryDocumentSnapshot doc : snap) {
 
-                        // Safely read all lists
                         List<?> waiting = (List<?>) doc.get("waitingList");
                         List<?> selected = (List<?>) doc.get("selectedEntrants");
                         List<?> cancelled = (List<?>) doc.get("cancelledEntrants");
                         List<?> finalEntrants = (List<?>) doc.get("finalEntrants");
-                        List<?> losers = (List<?>) doc.get("losersEntrants"); // ⭐ NEW
+                        List<?> losers = (List<?>) doc.get("losersEntrants");
 
-                        // Determine membership
                         boolean inWaiting = listContainsUser(waiting, userEmail);
                         boolean inSelected = listContainsUser(selected, userEmail);
                         boolean inCancelled = listContainsUser(cancelled, userEmail);
                         boolean inFinal = listContainsUser(finalEntrants, userEmail);
                         boolean inLosers = listContainsUser(losers, userEmail);
 
-                        // If the user never interacted with this event, skip
                         if (!inWaiting && !inSelected && !inCancelled && !inFinal && !inLosers)
                             continue;
 
@@ -87,7 +104,6 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
                         String date = doc.getString("date");
                         if (date == null) date = "";
 
-                        // Determine status
                         String status;
 
                         if (inLosers) {
@@ -103,10 +119,8 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
                         } else {
                             status = "";
                         }
-
                         addCard(title, date, status);
                     }
-
                     if (!found) {
                         addCard("No event history yet", "", "");
                     }
@@ -116,6 +130,13 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Checks if a Firestore List contains the user's email.
+     *
+     * @param list  the Firestore list (waiting, selected, etc.)
+     * @param email the user's email
+     * @return true if the email is found
+     */
     private boolean listContainsUser(List<?> list, String email) {
         if (list == null) return false;
         for (Object o : list) {
@@ -125,6 +146,13 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
         return false;
     }
 
+    /**
+     * Adds a single event history card to the screen.
+     *
+     * @param title  event title
+     * @param date   event date
+     * @param status user's status for the event
+     */
     private void addCard(String title, String date, String status) {
         View view = LayoutInflater.from(this)
                 .inflate(R.layout.item_history_card, historyContainer, false);
@@ -132,7 +160,6 @@ public class EntrantEventHistoryActivity extends AppCompatActivity {
         ((TextView) view.findViewById(R.id.historyTitle)).setText(title);
         ((TextView) view.findViewById(R.id.historyDate)).setText(date);
         ((TextView) view.findViewById(R.id.historyStatus)).setText(status);
-
         historyContainer.addView(view);
     }
 }
