@@ -51,10 +51,8 @@ public class OrganizerEventDetailsActivityInstrumentedTest {
         data.put("registrationStart", "2025-01-01");
         data.put("registrationEnd", "2025-01-10");
         data.put("organizerEmail", organizerEmail);
-        // Explicitly empty waiting list
         data.put("waitingList", new java.util.ArrayList<String>());
 
-        // Ensure the doc exists before launching the Activity
         Tasks.await(
                 db.collection("events").document(TEST_EVENT_ID).set(data),
                 5,
@@ -62,11 +60,26 @@ public class OrganizerEventDetailsActivityInstrumentedTest {
         );
     }
 
+    /**
+     * Verifies the organizer event details screen when there are no entrants
+     * on the waiting list.
+     * <p>
+     * This test logs in as an organizer, seeds Firestore with an event owned
+     * by that organizer and an empty {@code waitingList}, then launches
+     * {@link OrganizerEventDetailsActivity} for that event. It asserts that:
+     * <ul>
+     *     <li>The waiting list container is visible,</li>
+     *     <li>The "• No one on the waiting list yet." empty-state message
+     *         is displayed, and</li>
+     *     <li>The "Notify Waiting List" button is visible.</li>
+     * </ul>
+     * Together, these checks confirm that organizers can see the waiting-list
+     * section and relevant controls even before any entrants have joined.
+     */
     @Test
     public void organizerEventDetails_showsEmptyWaitingListMessageAndNotifyButton() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
 
-        // Pretend logged in as this organizer
         String organizerEmail = "organizer-test@example.com";
         SharedPreferences sp =
                 context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
@@ -75,19 +88,15 @@ public class OrganizerEventDetailsActivityInstrumentedTest {
                 .putString("user_email", organizerEmail)
                 .apply();
 
-        // Seed the event owned by this organizer with an empty waiting list
         seedOrganizerEvent(organizerEmail);
 
-        // Launch OrganizerEventDetailsActivity for this event
         Intent intent = new Intent(context, OrganizerEventDetailsActivity.class);
         intent.putExtra("eventId", TEST_EVENT_ID);
         ActivityScenario.launch(intent);
 
-        // 1) Waiting list container should exist
         onView(withId(R.id.waitingListContainer))
                 .check(matches(isDisplayed()));
 
-        // 2) Because waitingList is empty, the special "no one" row should appear
         onView(withText("• No one on the waiting list yet."))
                 .check(matches(isDisplayed()));
 

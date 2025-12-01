@@ -45,13 +45,11 @@ public class EventDetailsActivityInstrumentedTest {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Map<String, Object> data = new HashMap<>();
-        // You can add more fields if your UI expects them, but it's not required
         data.put("title", "Test Event");
         data.put("about", "Test about text shown in details.");
         data.put("description", "Test description");
         data.put("capacity", 10L);
 
-        // Write and wait for completion so the doc definitely exists
         Tasks.await(
                 db.collection("events").document(TEST_EVENT_ID).set(data),
                 5,
@@ -65,14 +63,12 @@ public class EventDetailsActivityInstrumentedTest {
     private void launchEventDetailsScreen() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
 
-        // Pretend we are already logged in as entrant (avoid Welcome redirect)
         SharedPreferences sp =
                 context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
         sp.edit()
                 .putString("user_role", "entrant")
                 .apply();
 
-        // Make sure the test event document exists
         seedTestEvent();
 
         Intent intent = new Intent(context, EventDetailsActivity.class);
@@ -99,7 +95,6 @@ public class EventDetailsActivityInstrumentedTest {
         onView(withId(R.id.btnCriteria)).check(matches(isDisplayed()));
         onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
 
-        // Sign Up button exists in the layout but is GONE by default
         onView(withId(R.id.btnSignUp))
                 .check(matches(withEffectiveVisibility(
                         androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
@@ -152,35 +147,45 @@ public class EventDetailsActivityInstrumentedTest {
         onView(withId(R.id.btnShowQr)).perform(click());
     }
 
+    /**
+     * Verifies that the criteria dialog for an event is wired correctly.
+     * <p>
+     * The test launches {@code EventDetailsActivity}, taps the "Criteria"
+     * button, and asserts that the dialog containing the {@code btnGotIt}
+     * button is displayed. This confirms that entrants can access the
+     * lottery criteria / guidelines from the event details screen.
+     */
     @Test
     public void testCriteriaDialogShowsGotItButton() throws Exception {
-        // Uses existing helper to:
-        // - set user_role=entrant
-        // - seed the test event in Firestore
-        // - launch EventDetailsActivity with TEST_EVENT_ID
         launchEventDetailsScreen();
 
-        // Open the criteria dialog
         onView(withId(R.id.btnCriteria))
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // Assert that the dialog from dialog_criteria.xml is visible
-        // by checking for the "Got It" button
         onView(withId(R.id.btnGotIt))
                 .check(matches(isDisplayed()));
     }
 
+    /**
+     * Ensures that an entrant who has been accepted for an event can see
+     * and use the "Sign Up" button on the event details screen.
+     * <p>
+     * This test seeds Firestore with an event document where the test
+     * user's email appears in {@code acceptedEntrants}, configures the
+     * shared preferences to log in as that entrant, then launches
+     * {@code EventDetailsActivity} for the seeded event. It asserts that
+     * {@code btnSignUp} is visible and can be clicked without errors,
+     * validating the core sign-up flow for selected entrants.
+     */
     @Test
     public void testSignUpVisibleForAcceptedEntrantAndClickable() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // This will be the "identity" of the entrant in the event doc
         String testEmail = "entrant-signup-test@example.com";
         String acceptedEventId = "test-event-accepted-123";
 
-        // Pretend we are logged in as an entrant with this email
         SharedPreferences sp =
                 context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
         sp.edit()
@@ -188,7 +193,6 @@ public class EventDetailsActivityInstrumentedTest {
                 .putString("user_email", testEmail)
                 .apply();
 
-        // Seed the event so that this user is in acceptedEntrants
         Map<String,Object> data = new HashMap<>();
         data.put("title", "Accepted Event");
         data.put("about", "You have been selected and can now sign up.");
@@ -199,31 +203,25 @@ public class EventDetailsActivityInstrumentedTest {
         accepted.add(testEmail);
         data.put("acceptedEntrants", accepted);
 
-        // Optional: also include them in waitingList to mirror real data shape
         java.util.List<String> waiting = new java.util.ArrayList<>();
         waiting.add(testEmail);
         data.put("waitingList", waiting);
 
-        // Write and wait for completion so the doc definitely exists
         Tasks.await(
                 db.collection("events").document(acceptedEventId).set(data),
                 5,
                 java.util.concurrent.TimeUnit.SECONDS
         );
 
-        // Launch EventDetailsActivity for this accepted event
         Intent intent = new Intent(context, com.example.aurora.activities.EventDetailsActivity.class);
         intent.putExtra("eventId", acceptedEventId);
         ActivityScenario.launch(intent);
 
-        // Because this user is in acceptedEntrants, the Sign Up button
-        // should be visible (not GONE) on the details screen.
         onView(withId(R.id.btnSignUp))
                 .check(matches(withEffectiveVisibility(
                         androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE
                 )));
 
-        // And tapping it should not crash the app
         onView(withId(R.id.btnSignUp))
                 .perform(click());
     }
