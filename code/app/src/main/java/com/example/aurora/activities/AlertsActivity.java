@@ -198,14 +198,13 @@ public class AlertsActivity extends AppCompatActivity {
 
         db.collection("events").document(eventId)
                 .update(
-                        "acceptedEntrants", FieldValue.arrayUnion(userEmail),
-                        "selectedEntrants", FieldValue.arrayRemove(userEmail)
+                        "acceptedEntrants", FieldValue.arrayUnion(userEmail)
                 )
                 .addOnSuccessListener(v -> {
 
                     deleteNotification(notifId);
                     Toast.makeText(this,
-                            "You've accepted your spot! Open the event to finish sign up.",
+                            "You've accepted your spot! Tap Sign Up on the event.",
                             Toast.LENGTH_SHORT
                     ).show();
                 })
@@ -215,6 +214,7 @@ public class AlertsActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT
                 ).show());
     }
+
 
 
     private void declineEvent(String eventId, String notifId) {
