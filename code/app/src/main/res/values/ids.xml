@@ -4,4 +4,5 @@
     <item name="tvStatus" type="id" />
     <item name="btnJoinLeave" type="id" />
     <item name="txtSubtitle" type="id" />
+    <item name="btnScanQr" type="id" />
 </resources>
