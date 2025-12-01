@@ -279,10 +279,10 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     // Join / leave waiting list  (stores EMAIL or fallback key and lat/lng)
+    // Join / leave waiting list  (stores EMAIL or fallback key and lat/lng)
     private void toggleJoin() {
         if (eventId == null) return;
 
-        // Fix for lambda: make effectively final copies
         final String finalEventId = eventId;
         final String finalUserId = userId;
 
@@ -296,9 +296,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // ---- FIX: make geoRequired final ----
+                    // ---- read geoRequired safely ----
                     Boolean tmpGeo = doc.getBoolean("geoRequired");
                     final boolean geoRequiredFinal = (tmpGeo != null && tmpGeo);
+
+                    // You can also recompute join here if you prefer:
+                    // List<String> waiting = (List<String>) doc.get("waitingList");
+                    // isJoined = waiting != null && waiting.contains(finalUserId);
 
                     // --------------------------
                     // LEAVE WAITING LIST
@@ -308,6 +312,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 .document(finalEventId)
                                 .update("waitingList", FieldValue.arrayRemove(finalUserId))
                                 .addOnSuccessListener(v -> {
+                                    // Only matters if we ever stored a location
                                     removeUserLocation(finalEventId, finalUserId);
                                     isJoined = false;
                                     Toast.makeText(this, "Left waiting list", Toast.LENGTH_SHORT).show();
@@ -318,47 +323,61 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // --------------------------
                     // JOIN WAITING LIST
                     // --------------------------
-                    if (geoRequiredFinal) {
 
-                        // Permission check
-                        if (!LocationUtils.isLocationPermissionGranted(this)) {
-                            Toast.makeText(this,
-                                    "This event requires location to join.",
-                                    Toast.LENGTH_LONG).show();
-                            LocationUtils.requestLocationPermission(this);
-                            return;
-                        }
+                    // ✅ CASE 1: geoRequired == false
+                    // → NO location permission, NO GPS, NO getUserLocation()
+                    if (!geoRequiredFinal) {
 
-                        // GPS setting check
-                        if (!LocationUtils.isGpsEnabled(this)) {
-                            Toast.makeText(this,
-                                    "Please enable GPS to join this event.",
-                                    Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                            return;
-                        }
+                        db.collection("events")
+                                .document(finalEventId)
+                                .update("waitingList", FieldValue.arrayUnion(finalUserId))
+                                .addOnSuccessListener(v -> {
+                                    isJoined = true;
+                                    Toast.makeText(this, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                });
+
+                        return;
                     }
 
-                    // --------------------------
-                    // Fetch actual location
-                    // --------------------------
+                    // ✅ CASE 2: geoRequired == true
+                    // → enforce permission + GPS + real coordinates
+
+                    // 1) Permission check
+                    if (!LocationUtils.isLocationPermissionGranted(this)) {
+                        Toast.makeText(this,
+                                "This event requires your location to join.",
+                                Toast.LENGTH_LONG).show();
+                        LocationUtils.requestLocationPermission(this);
+                        return;
+                    }
+
+                    // 2) GPS setting check
+                    if (!LocationUtils.isGpsEnabled(this)) {
+                        Toast.makeText(this,
+                                "Please enable GPS to join this event.",
+                                Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        return;
+                    }
+
+                    // 3) Fetch actual location ONLY when geoRequired = true
                     LocationUtils.getUserLocation(this, (lat, lng) -> {
 
-                        if (geoRequiredFinal && (Double.isNaN(lat) || Double.isNaN(lng))) {
+                        if (Double.isNaN(lat) || Double.isNaN(lng)) {
                             Toast.makeText(this,
                                     "Unable to get your location. Make sure GPS is enabled.",
                                     Toast.LENGTH_LONG).show();
                             return;
                         }
 
-                        // Save location for entrant
+                        // 4) Save location for entrant
                         db.collection("events")
                                 .document(finalEventId)
                                 .collection("waitingLocations")
                                 .add(new JoinLocation(finalUserId, lat, lng))
                                 .addOnSuccessListener(s -> {
 
-                                    // Add to waiting list
+                                    // 5) Add to waiting list
                                     db.collection("events")
                                             .document(finalEventId)
                                             .update("waitingList", FieldValue.arrayUnion(finalUserId))
@@ -368,8 +387,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                                             });
                                 });
                     });
+
                 });
     }
+
+
 
 
     private void removeUserLocation(String eventId, String userId) {

@@ -140,25 +140,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                     Boolean geoRequired = doc.getBoolean("geoRequired");
                     if (geoRequired == null) geoRequired = false;
 
-                    if (geoRequired) {
-                        if (!LocationUtils.isLocationPermissionGranted(context)) {
-                            Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
-                            LocationUtils.requestLocationPermission(context);
-                            return;
-                        }
-
-                        if (!LocationUtils.isGpsEnabled(context)) {
-                            Toast.makeText(context,
-                                    "Please enable GPS to join this event.",
-                                    Toast.LENGTH_LONG).show();
-
-                            context.startActivity(
-                                    new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                            );
-                            return;
-                        }
-                    }
-
                     List<String> list = (List<String>) doc.get("waitingList");
                     if (list == null) list = new ArrayList<>();
 
@@ -173,7 +154,45 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    // FETCH USER LOCATION
+                    // -----------------------------------------------------
+                    // CASE A: geoRequired == FALSE
+                    // → skip location permission
+                    // → skip GPS
+                    // → skip getUserLocation()
+                    // -----------------------------------------------------
+                    if (!geoRequired) {
+
+                        db.collection("events")
+                                .document(eventId)
+                                .update("waitingList", FieldValue.arrayUnion(userKey))
+                                .addOnSuccessListener(v -> {
+                                    Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                    updateJoinButton(button, "waiting");
+                                });
+
+                        return;
+                    }
+
+                    // -----------------------------------------------------
+                    // CASE B: geoRequired == TRUE
+                    // → must enforce location + GPS + real coordinates
+                    // -----------------------------------------------------
+
+                    if (!LocationUtils.isLocationPermissionGranted(context)) {
+                        Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
+                        LocationUtils.requestLocationPermission(context);
+                        return;
+                    }
+
+                    if (!LocationUtils.isGpsEnabled(context)) {
+                        Toast.makeText(context,
+                                "Please enable GPS to join this event.",
+                                Toast.LENGTH_LONG).show();
+                        context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        return;
+                    }
+
+                    // Only fetch the location when geoRequired = true
                     LocationUtils.getUserLocation(context, (lat, lng) -> {
 
                         if (Double.isNaN(lat) || Double.isNaN(lng)) {
@@ -183,7 +202,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                             return;
                         }
 
-                        // SAVE LOCATION + JOIN
+                        // Save location
                         db.collection("events")
                                 .document(eventId)
                                 .collection("waitingLocations")
@@ -194,14 +213,15 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                                             .document(eventId)
                                             .update("waitingList", FieldValue.arrayUnion(userKey))
                                             .addOnSuccessListener(x -> {
-
                                                 Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
                                                 updateJoinButton(button, "waiting");
                                             });
+
                                 });
                     });
                 });
     }
+
 
     // ============================================================
     // LEAVE WAITING LIST
