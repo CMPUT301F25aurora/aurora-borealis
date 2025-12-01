@@ -69,7 +69,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     // Buttons
 
     private Button btnNotify;
-    private Button btnReplace;
+
     // Tabs
     private TextView tabWaiting;
     private TextView tabSelected;
@@ -148,7 +148,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
 
         btnNotify = findViewById(R.id.btnNotify);
-        btnReplace = findViewById(R.id.btnReplace);
+
 
         tabWaiting = findViewById(R.id.tabWaiting);
         tabSelected = findViewById(R.id.tabSelected);
@@ -374,32 +374,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 btnNotify.setText("Notify Selected (" + selected.size() + ")");
             }
         }
-    }
-
-
-
-    private void setupButtons() {
-
-        // Only replace button stays here
-        btnReplace.setOnClickListener(v -> {
-            List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
-
-            if (currentTab != Tab.SELECTED) {
-                Toast.makeText(this,
-                        "Switch to the Selected tab to cancel entrants.",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (selected.isEmpty()) {
-                Toast.makeText(this,
-                        "Select at least one entrant to cancel.",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            cancelUnconfirmedEntrants(selected);
-        });
     }
 
 

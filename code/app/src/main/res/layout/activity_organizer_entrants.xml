@@ -244,18 +244,7 @@
             app:autoSizeStepGranularity="1sp"
             android:maxLines="1" />
 
-        <Button
-            android:id="@+id/btnReplace"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_input_sharp"
-            android:backgroundTint="#2f4858"
-            android:text="Replace"
-            android:textAllCaps="false"
-            android:textColor="#fe7f2d"
-            android:textSize="12sp" />
+
 
         <Button
             android:id="@+id/btnExportCsv"
