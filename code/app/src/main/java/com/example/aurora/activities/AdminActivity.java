@@ -448,6 +448,7 @@ public class AdminActivity extends AppCompatActivity {
 
                             if (!newVal) {
                                 FirestoreNotificationHelper.sendOrganizerRevokedNotification(db, email);
+                                deleteAllEventsForOrganizer(email);
                             } else {
                                 FirestoreNotificationHelper.sendOrganizerEnabledNotification(db, email);
                             }
@@ -808,5 +809,46 @@ public class AdminActivity extends AppCompatActivity {
         long days = hours / 24;
         return days + " days ago";
     }
+
+    private void deleteAllEventsForOrganizer(String organizerEmail) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("events")
+                .whereEqualTo("organizerEmail", organizerEmail)
+                .get()
+                .addOnSuccessListener(query -> {
+                    for (DocumentSnapshot doc : query) {
+                        deleteEventById(db, doc.getId());
+                    }
+                });
+    }
+    private void deleteEventById(FirebaseFirestore db, String eventId) {
+
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingLocations")
+                .get()
+                .addOnSuccessListener(waitSnap -> {
+
+                    for (DocumentSnapshot d : waitSnap.getDocuments()) {
+                        d.getReference().delete();
+                    }
+
+                    db.collection("notifications")
+                            .whereEqualTo("eventId", eventId)
+                            .get()
+                            .addOnSuccessListener(notifSnap -> {
+
+                                for (DocumentSnapshot d : notifSnap.getDocuments()) {
+                                    d.getReference().delete();
+                                }
+
+                                db.collection("events").document(eventId)
+                                        .delete();
+                            });
+                });
+    }
+
+
 }
 
