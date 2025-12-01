@@ -20,8 +20,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Instrumented test for ActivityLogger Firestore logging.
- * Verifies that Firestore receives a new document when a log method is called.
+ * Instrumented test suite for verifying Firestore logging behavior inside ActivityLogger.
+ *
+ * This class ensures that:
+ *  Logging an event creation inserts a new Firestore document with correct fields.
+ *  Logging a profile removal produces a valid Firestore entry.
+ *
+ * Each test performs a Firestore write using ActivityLogger and then queries Firestore
+ * with Tasks.await() to synchronously verify the result.
  */
 /*
  * Citations:
@@ -43,19 +49,25 @@ public class ActivityLoggerInstrumentedTest {
         logsCollection = db.collection("logs");
     }
 
+    /**
+     * Verifies that calling ActivityLogger.logEventCreated(...)
+     * writes a Firestore log document with:
+     *  type = "event_created"
+     *  eventTitle equal to the test value
+     *  a message that includes the event title
+     *
+     * @throws Exception if Firestore query fails or times out
+     */
     @Test
     public void testLogEventCreatedWritesToFirestore() throws Exception {
-        // Create a unique event log
+
         String testEventTitle = "Test Event " + System.currentTimeMillis();
         String testEventId = "event_" + System.currentTimeMillis();
 
-        // Log it using the real logger
         ActivityLogger.logEventCreated(testEventId, testEventTitle);
 
-        // Wait briefly for Firestore to update
         Thread.sleep(2000);
 
-        // Query the "logs" collection for a matching entry
         QuerySnapshot snapshot = Tasks.await(
                 logsCollection
                         .whereEqualTo("eventTitle", testEventTitle)
@@ -75,6 +87,12 @@ public class ActivityLoggerInstrumentedTest {
                 logDoc.getString("message").contains(testEventTitle));
     }
 
+    /**
+     * Verifies that calling ActivityLogger.logProfileRemoved(...)
+     * writes a Firestore log document with:
+     * type = "profile_removed"
+     * userEmail equal to the test value
+     */
     @Test
     public void testLogProfileRemovedWritesToFirestore() throws Exception {
         String email = "testuser" + System.currentTimeMillis() + "@example.com";
