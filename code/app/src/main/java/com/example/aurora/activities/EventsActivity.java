@@ -61,26 +61,16 @@ public class EventsActivity extends AppCompatActivity {
     private ImageButton logoutButton;
     private RecyclerView recyclerEvents;
     private EventsAdapter adapter;
-
-    // NEW CATEGORY BUTTONS (layouts)
     private LinearLayout btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology, btnCommunity;
-
-    // NEW CATEGORY ICONS
     private ImageView iconMusic, iconSports, iconEducation, iconArts, iconTech, iconCommunity;
-
-    // NEW CATEGORY TEXTS
     private TextView textAll, textMusic, textSports, textEducation, textArts, textTech, textCommunity;
-
     private LinearLayout navEvents, navProfile, navAlerts;
     private ImageButton btnFilter;
-
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private final List<Event> baseEvents = new ArrayList<>();
     private final List<Event> eventList = new ArrayList<>();
-
     private String currentCategory = null;
-
     private final boolean[] daySelected = new boolean[7];
     private boolean slotMorning = false;
     private boolean slotAfternoon = false;
@@ -104,7 +94,6 @@ public class EventsActivity extends AppCompatActivity {
 
         btnFilter = findViewById(R.id.btnFilter);
 
-        // --- Category layouts ---
         btnMusic = findViewById(R.id.btnMusic);
         btnSports = findViewById(R.id.btnSports);
         btnEducation = findViewById(R.id.btnEducation);
@@ -130,7 +119,6 @@ public class EventsActivity extends AppCompatActivity {
             highlightSelectedNoIcon(btnAll, textAll);
             loadEvents(null);
         });
-
 
         btnMusic.setOnClickListener(v -> {
             highlightSelected(btnMusic, iconMusic, textMusic);
@@ -572,7 +560,6 @@ public class EventsActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to handle QR: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
-    // ------- CATEGORY HIGHLIGHT VISUALS ONLY -------
 
     private void highlightSelected(LinearLayout layout, ImageView icon, TextView text) {
         resetAllCategoryHighlights();
@@ -581,22 +568,52 @@ public class EventsActivity extends AppCompatActivity {
         text.setTextColor(Color.parseColor("#233D4D"));
     }
 
+    /**
+     * Resets a category button that includes an icon.
+     * Applies the unselected background, orange icon tint, and orange text color.
+     *
+     * @param layout The category layout container.
+     * @param icon   The ImageView icon inside the category button.
+     * @param text   The TextView label of the category button.
+     */
     private void resetHighlight(LinearLayout layout, ImageView icon, TextView text) {
         layout.setBackgroundResource(R.drawable.bg_category_unselected);
         icon.setColorFilter(Color.parseColor("#fe7f2d")); // orange instead of white
         text.setTextColor(Color.parseColor("#fe7f2d"));
     }
+
+    /**
+     * Highlights the selected category button that does NOT have an icon.
+     * Clears all other highlights first, then applies the selected background
+     * and dark text color for readability.
+     *
+     * @param layout The category layout container.
+     * @param text   The TextView label of the selected category.
+     */
     private void highlightSelectedNoIcon(LinearLayout layout, TextView text) {
         resetAllCategoryHighlights();
         layout.setBackgroundResource(R.drawable.bg_category_selected);
         text.setTextColor(Color.parseColor("#233D4D")); // dark text
     }
+
+    /**
+     * Resets a category button that does NOT have an icon.
+     * Applies the unselected background and orange text color.
+     *
+     * @param layout The category layout container.
+     * @param text   The TextView label of the category button.
+     */
     private void resetHighlightNoIcon(LinearLayout layout, TextView text) {
         layout.setBackgroundResource(R.drawable.bg_category_unselected);
         text.setTextColor(Color.parseColor("#fe7f2d"));
     }
 
-
+    /**
+     * Resets the highlight state of ALL category buttons.
+     * Ensures only one category can appear selected at a time.
+     * Applies the proper reset method depending on whether the
+     * category button contains an icon or not.
+     */
     private void resetAllCategoryHighlights() {
         resetHighlightNoIcon(btnAll, textAll);
         resetHighlight(btnMusic, iconMusic, textMusic);
