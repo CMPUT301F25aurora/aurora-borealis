@@ -44,7 +44,6 @@ public class AdminFeaturesTest {
 
     @Before
     public void setup() {
-        // Common setup if needed
     }
 
     /**
@@ -97,7 +96,6 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testEvent_Browsing_HandlesNullLists() {
-
         when(mockEventDoc.get("waitingList")).thenReturn(null);
         List<String> waiting = (List<String>) mockEventDoc.get("waitingList");
         int entrants = waiting == null ? 0 : waiting.size();
@@ -112,7 +110,6 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testEvent_Browsing_CapacityUnlimited() {
-
         when(mockEventDoc.getLong("maxSpots")).thenReturn(null);
         Long max = mockEventDoc.getLong("maxSpots");
         String display = (max != null ? String.valueOf(max) : "Unlimited");
@@ -141,7 +138,6 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testEvent_Browsing_OrganizerFallback() {
-        // Logic: If organizerName is missing, show "Unknown"
         when(mockEventDoc.getString("organizerName")).thenReturn(null);
         String org = AdminUtils.nz(mockEventDoc.getString("organizerName"));
         String display = org.isEmpty() ? "Unknown" : org;
@@ -156,7 +152,6 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testEvent_Browsing_DateFallback() {
-        // Logic: specific date field vs display string
         when(mockEventDoc.getString("date")).thenReturn(null);
         when(mockEventDoc.getString("dateDisplay")).thenReturn("Jan 1st");
 
@@ -352,8 +347,8 @@ public class AdminFeaturesTest {
     @Test
     public void testOrganizer_Toggle_Logic() {
 
-        boolean current = true; // currently allowed
-        boolean nextState = !current; // revoke
+        boolean current = true;
+        boolean nextState = !current;
         assertFalse(nextState);
     }
 
@@ -365,11 +360,10 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testOrganizer_Toggle_Logic_Restore() {
-        boolean current = false; // currently revoked
-        boolean nextState = !current; // restore
+        boolean current = false;
+        boolean nextState = !current;
         assertTrue(nextState);
     }
-
 
     /**
      * Test: AdminImage model stores correct id.
@@ -391,7 +385,6 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testImage_Browsing_NoOrganizer() {
-        // Image might exist but organizer deleted their account
         AdminImage img = new AdminImage("e1", "T", null, "url");
         String displayOrg = (img.organizerEmail == null ? "Unknown" : img.organizerEmail);
         assertEquals("Unknown", displayOrg);
@@ -423,7 +416,6 @@ public class AdminFeaturesTest {
         assertNotNull(img.posterUrl);
         assertNotNull(img.eventId);
     }
-
 
     /**
      * Test: FormatRelativeTime returns minutes correctly.
@@ -485,14 +477,8 @@ public class AdminFeaturesTest {
      */
     @Test
     public void testLog_FutureTimestamp() {
-        // Edge case: Server clock skew resulted in a future time
         long now = 1000000000L;
-        Date futureDate = new Date(now + 5000); // 5 seconds in future
-
-        // The formula is: now - date.
-        // 1000 - 1005 = -5.
-        // -5 / 60000 = 0.
-        // "0 min ago" is the mathematically expected result for logic stability
+        Date futureDate = new Date(now + 5000);
         assertEquals("0 min ago", AdminUtils.formatRelativeTime(futureDate, now));
     }
 }

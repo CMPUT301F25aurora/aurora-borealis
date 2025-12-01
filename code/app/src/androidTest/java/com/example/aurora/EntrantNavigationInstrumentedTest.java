@@ -65,7 +65,6 @@ public class EntrantNavigationInstrumentedTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // It may stay on the same screen (e.g., if backend rejects login in test env).
         onView(withId(R.id.loginDeviceButton)).check(matches(isDisplayed()));
     }
 }

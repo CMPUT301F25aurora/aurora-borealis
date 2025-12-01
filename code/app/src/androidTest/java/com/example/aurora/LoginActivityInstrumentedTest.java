@@ -23,9 +23,6 @@
  * note: Helped with ideas on which login flows to assert (for example, valid login,
  *       invalid login, and navigation to the next screen), not the Espresso API usage.
  */
-
-
-
 package com.example.aurora;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -83,7 +80,6 @@ public class LoginActivityInstrumentedTest {
         onView(withId(R.id.loginEmail)).perform(typeText("fake@example.com"), closeSoftKeyboard());
         onView(withId(R.id.loginPassword)).perform(typeText("wrongpass"), closeSoftKeyboard());
         onView(withId(R.id.loginButton)).perform(click());
-        // Verify that the login screen is still visible (no crash or change)
         onView(withId(R.id.loginButton)).check(matches(isDisplayed()));
     }
 }
