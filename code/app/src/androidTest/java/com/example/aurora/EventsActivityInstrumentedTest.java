@@ -92,7 +92,8 @@ public class EventsActivityInstrumentedTest {
      */
     @Test
     public void testScanQrButtonDisplayed() {
-        onView(withId(R.id.btnScanQr)).check(matches(isDisplayed()));
+        onView(withId(R.id.iconQr))
+                .check(matches(isDisplayed()));
     }
 
     @Test
