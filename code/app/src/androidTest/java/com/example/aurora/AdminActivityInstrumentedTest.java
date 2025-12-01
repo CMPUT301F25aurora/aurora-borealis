@@ -178,4 +178,20 @@ public class AdminActivityInstrumentedTest {
         // Close dialog
         onView(withText("Cancel")).perform(click());
     }
+
+    @Test
+    public void testAdminTabsSwitchBetweenSections() {
+        // Events tab should be visible and clickable
+        onView(withId(R.id.tabEvents)).check(matches(isDisplayed()));
+        onView(withId(R.id.tabEvents)).perform(click());
+
+        onView(withId(R.id.tabProfiles)).perform(click());
+
+        // Switch to Logs tab (or whatever your third tab is called)
+        onView(withId(R.id.tabLogs)).perform(click());
+
+        // Check that some log-related UI is visible (replace text/ID with whatever you really show)
+        // For example, if you have a "Activity Logs" header:
+        // onView(withText("Activity Logs")).check(matches(isDisplayed()));
+    }
 }

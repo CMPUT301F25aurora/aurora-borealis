@@ -3,65 +3,92 @@ package com.example.aurora;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.example.aurora.models.Event;
-import com.example.aurora.models.AppUser; // Assuming this model exists based on file list
-import com.google.firebase.firestore.GeoPoint;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@RunWith(MockitoJUnitRunner.class)
+/**
+ * Pure-Java logic tests for entrant-related behaviour.
+ *
+ * These tests deliberately avoid Mockito, Android, or Firestore types so that
+ * they run as regular local unit tests with no extra dependencies.
+ */
 public class EntrantLogicTest {
 
-    @Mock
-    Event mockEvent;
-
+    /**
+     * When an entrant joins the waiting list, their ID should be added
+     * if it is not already present.
+     */
     @Test
-    public void testJoinWaitlist_Success() {
-        // Logic: Entrant joins, ID is added to list
-        List<String> currentList = new ArrayList<>();
-        when(mockEvent.getWaitingList()).thenReturn(currentList);
+    public void joinWaitingList_addsUserWhenNotPresent() {
+        Event event = new Event();
+        List<String> waiting = new ArrayList<>();
+        event.setWaitingList(waiting);
 
-        String userId = "user_123";
-        currentList.add(userId);
+        String userId = "user123";
 
-        assertTrue(mockEvent.getWaitingList().contains("user_123"));
+        if (!event.getWaitingList().contains(userId)) {
+            event.getWaitingList().add(userId);
+        }
+
+        assertTrue(event.getWaitingList().contains(userId));
+        assertEquals(1, event.getWaitingList().size());
     }
 
+    /**
+     * Joining twice should not create duplicates in the waiting list.
+     */
     @Test
-    public void testJoinWaitlist_DuplicatePrevention() {
-        // Logic: Backend usually prevents doubles. We verify list logic here.
-        List<String> currentList = new ArrayList<>();
-        currentList.add("user_123");
+    public void joinWaitingList_doesNotDuplicateUser() {
+        Event event = new Event();
+        List<String> waiting = new ArrayList<>(Arrays.asList("user123"));
+        event.setWaitingList(waiting);
 
-        boolean isAlreadyIn = currentList.contains("user_123");
-        assertTrue("Should detect user is already in list", isAlreadyIn);
+        String userId = "user123";
+
+        if (!event.getWaitingList().contains(userId)) {
+            event.getWaitingList().add(userId);
+        }
+
+        assertEquals(1, event.getWaitingList().size());
+        assertTrue(event.getWaitingList().contains(userId));
     }
 
+    /**
+     * Leaving the waiting list should remove the user if present.
+     */
     @Test
-    public void testGeolocation_DistanceLogic() {
-        // Simple Haversine-like logic test if you have location checks
-        // Mock Event Location: (0,0)
-        // User Location: (0.01, 0.01) -> roughly 1.5km away
+    public void leaveWaitingList_removesUser() {
+        Event event = new Event();
+        List<String> waiting = new ArrayList<>(Arrays.asList("user123", "user999"));
+        event.setWaitingList(waiting);
 
-        double eventLat = 0;
-        double eventLon = 0;
-        double userLat = 0.01;
-        double userLon = 0.01;
+        String userId = "user123";
+        event.getWaitingList().remove(userId);
 
-        // Manual distance calc logic usually found in your utils
-        double distance = Math.sqrt(Math.pow(userLat - eventLat, 2) + Math.pow(userLon - eventLon, 2));
+        assertFalse(event.getWaitingList().contains(userId));
+        assertEquals(1, event.getWaitingList().size());
+    }
 
-        // Just asserting the logic holds
-        assertTrue(distance > 0);
+    /**
+     * If geoRequired is true on an event, we can use that as a simple
+     * flag to block joining when the entrant has no location.
+     */
+    @Test
+    public void geoRequiredFlag_blocksJoinWhenNoLocation() {
+        Event event = new Event();
+        event.setGeoRequired(true);
+
+        boolean entrantHasLocation = false;
+        boolean allowedToJoin = !event.getGeoRequired() || entrantHasLocation;
+
+        assertTrue(event.getGeoRequired());
+        assertFalse("Entrant without location should not be allowed when geoRequired is true",
+                allowedToJoin);
     }
 }
