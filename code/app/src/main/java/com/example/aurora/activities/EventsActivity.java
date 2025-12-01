@@ -1,3 +1,33 @@
+/*
+ * source: Android Developers - "Create a Notification".
+ * url: https://developer.android.com/develop/ui/views/notifications/build-notification
+ * note: Used in showLocalNotification() to trigger a system tray notification when a new Firestore alert arrives.
+ *
+ * source: Oracle Java Docs - "SimpleDateFormat".
+ * url: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+ * note: Used in parseDateBestEffort() to handle various date string formats for the availability filter.
+ *
+ * source: Stack Overflow user - "Filtering a RecyclerView with a SearchView".
+ * url: https://stackoverflow.com/questions/30398247/how-to-filter-a-recyclerview-with-a-searchview
+ * note: Logic adapted for applyFiltersAndRefresh() to filter the local event list based on the search query and selected chips.
+ *
+ * source: Android Developers - "ExtendedFloatingActionButton".
+ * url: https://developer.android.com/reference/com/google/android/material/floatingactionbutton/ExtendedFloatingActionButton
+ * note: Reference for the "Entrant Mode" FAB that expands/collapses or handles role switching.
+ *
+ * source: Android Developers - "Dialogs".
+ * url: https://developer.android.com/develop/ui/views/components/dialogs
+ * note: Used for building the custom filter dialog (showFilterDialog) with checkboxes.
+ *
+ * source: Android Developers - "TextWatcher".
+ * url: https://developer.android.com/reference/android/text/TextWatcher
+ * note: Used to trigger real-time filtering updates as the user types in the search bar.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names and overall code format to look readable
+ */
+
+
 package com.example.aurora.activities;
 
 import android.app.PendingIntent;
