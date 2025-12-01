@@ -1,3 +1,25 @@
+/*
+ * source: Firebase docs — "Get data with Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/get-data#get_all_documents_in_a_collection
+ * note: Used for db.collection("events").get() to retrieve all event documents before filtering them client-side.
+ *
+ * source: Stack Overflow user — "Check if a value exists in an ArrayList".
+ * url: https://stackoverflow.com/questions/1128723/in-java-how-can-i-test-if-an-array-contains-a-certain-value
+ * note: Logic adapted for listContainsUser() to check if the user's email exists in the raw generic Lists returned by Firestore.
+ *
+ * source: Android Developers — "LayoutInflater".
+ * url: https://developer.android.com/reference/android/view/LayoutInflater
+ * note: Used for inflating the "item_history_card" layout dynamically inside the loop.
+ *
+ * source: Firebase docs — "QueryDocumentSnapshot".
+ * url: https://firebase.google.com/docs/reference/android/com/google/firebase/firestore/QueryDocumentSnapshot
+ * note: Used to access specific fields (like "waitingList") safely from the document snapshot.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names and overall code format to look readable
+ */
+
+
 /**
  * EntrantEventHistoryActivity
  *
