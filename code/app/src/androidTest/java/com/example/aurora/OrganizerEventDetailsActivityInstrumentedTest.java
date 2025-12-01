@@ -91,7 +91,6 @@ public class OrganizerEventDetailsActivityInstrumentedTest {
         onView(withText("• No one on the waiting list yet."))
                 .check(matches(isDisplayed()));
 
-        // 3) The "Notify Waiting List" button should be visible for the organizer
         onView(withId(R.id.btnNotifyWaiting))
                 .check(matches(isDisplayed()));
     }
