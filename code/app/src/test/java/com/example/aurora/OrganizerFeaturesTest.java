@@ -19,7 +19,7 @@ import java.util.List;
  * Covers:
  * US 02.01.xx (Event Management)
  * US 02.03.xx (Capacity Limits)
- * US 02.06.xx (List Views & Exports)
+ * US 02.06.xx (List Views and Exports)
  */
 public class OrganizerFeaturesTest {
 
@@ -57,7 +57,7 @@ public class OrganizerFeaturesTest {
     }
 
     /**
-     * Test: Registration period must have start < end.
+     * Test: Registration period must have start less than end.
      *
      * Verifies:
      *  date comparison logic is valid
@@ -74,7 +74,7 @@ public class OrganizerFeaturesTest {
     }
 
     /**
-     * Test: Registration period must have start < end.
+     * Test: Registration period must have start less than end.
      *
      * Verifies:
      *  date comparison logic is valid
