@@ -10,6 +10,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -57,7 +58,7 @@ public class EventsActivity extends AppCompatActivity {
     private EventsAdapter adapter;
 
     private Button btnAll, btnMusic, btnSports, btnEducation, btnArts, btnTechnology;
-    private Button navEvents, navProfile, navAlerts;
+    private TextView navEvents, navProfile, navAlerts;
     private Button btnScanQr;
     private Button btnFilter;
 

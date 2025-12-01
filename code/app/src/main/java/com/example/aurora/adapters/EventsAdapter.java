@@ -125,9 +125,6 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
     }
 
 
-    // ============================================================
-    // JOIN WAITING LIST
-    // ============================================================
     private void joinWaitingList(Event e, Button button) {
 
         String eventId = e.getEventId();
@@ -154,51 +151,93 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                         return;
                     }
 
-                    // -----------------------------------------------------
-                    // CASE A: geoRequired == FALSE
-                    // → skip location permission
-                    // → skip GPS
-                    // → skip getUserLocation()
-                    // -----------------------------------------------------
+                    // ============================================================
+                    // CASE A: geoRequired = FALSE
+                    // ============================================================
                     if (!geoRequired) {
 
-                        db.collection("events")
-                                .document(eventId)
-                                .update("waitingList", FieldValue.arrayUnion(userKey))
-                                .addOnSuccessListener(v -> {
-                                    Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
-                                    updateJoinButton(button, "waiting");
-                                });
+                        boolean hasPermission = LocationUtils.isLocationPermissionGranted(context);
+                        boolean gpsOn = LocationUtils.isGpsEnabled(context);
+
+                        // ---- SUBCASE A1: GPS OFF OR NO PERMISSION ----
+                        // join list WITHOUT storing a location
+                        if (!hasPermission || !gpsOn) {
+
+                            db.collection("events")
+                                    .document(eventId)
+                                    .update("waitingList", FieldValue.arrayUnion(userKey))
+                                    .addOnSuccessListener(v -> {
+                                        Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                        updateJoinButton(button, "waiting");
+                                    });
+
+                            return;
+                        }
+
+                        // ---- SUBCASE A2: GPS ON + permission granted ----
+                        // join normally AND store location
+                        LocationUtils.getUserLocation(context, (lat, lng) -> {
+
+                            if (Double.isNaN(lat) || Double.isNaN(lng)) {
+                                // fallback: join without location
+                                db.collection("events")
+                                        .document(eventId)
+                                        .update("waitingList", FieldValue.arrayUnion(userKey))
+                                        .addOnSuccessListener(v -> {
+                                            Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                            updateJoinButton(button, "waiting");
+                                        });
+                                return;
+                            }
+
+                            // Save location
+                            db.collection("events")
+                                    .document(eventId)
+                                    .collection("waitingLocations")
+                                    .add(new JoinLocation(userKey, lat, lng))
+                                    .addOnSuccessListener(s -> {
+
+                                        db.collection("events")
+                                                .document(eventId)
+                                                .update("waitingList", FieldValue.arrayUnion(userKey))
+                                                .addOnSuccessListener(x -> {
+                                                    Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
+                                                    updateJoinButton(button, "waiting");
+                                                });
+                                    });
+                        });
 
                         return;
                     }
 
-                    // -----------------------------------------------------
-                    // CASE B: geoRequired == TRUE
-                    // → must enforce location + GPS + real coordinates
-                    // -----------------------------------------------------
+                    // ============================================================
+                    // CASE B: geoRequired = TRUE
+                    // ============================================================
 
-                    if (!LocationUtils.isLocationPermissionGranted(context)) {
+                    boolean hasPermission = LocationUtils.isLocationPermissionGranted(context);
+                    boolean gpsOn = LocationUtils.isGpsEnabled(context);
+
+                    // ---- SUBCASE B1: missing permission or GPS ----
+                    if (!hasPermission) {
                         Toast.makeText(context, "This event requires location to join.", Toast.LENGTH_LONG).show();
                         LocationUtils.requestLocationPermission(context);
                         return;
                     }
 
-                    if (!LocationUtils.isGpsEnabled(context)) {
+                    if (!gpsOn) {
                         Toast.makeText(context,
                                 "Please enable GPS to join this event.",
                                 Toast.LENGTH_LONG).show();
+
                         context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                         return;
                     }
 
-                    // Only fetch the location when geoRequired = true
+                    // ---- SUBCASE B2: everything ON → fetch location ----
                     LocationUtils.getUserLocation(context, (lat, lng) -> {
 
                         if (Double.isNaN(lat) || Double.isNaN(lng)) {
-                            Toast.makeText(context,
-                                    "Unable to fetch your location. Ensure GPS is ON.",
-                                    Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, "Unable to fetch location. Ensure GPS is ON.", Toast.LENGTH_LONG).show();
                             return;
                         }
 
@@ -216,11 +255,11 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.EventViewH
                                                 Toast.makeText(context, "Joined waiting list", Toast.LENGTH_SHORT).show();
                                                 updateJoinButton(button, "waiting");
                                             });
-
                                 });
                     });
                 });
     }
+
 
 
     // ============================================================

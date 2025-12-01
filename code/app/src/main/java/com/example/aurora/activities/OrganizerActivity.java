@@ -186,6 +186,8 @@ public class OrganizerActivity extends AppCompatActivity {
         Button btnManage = eventView.findViewById(R.id.btnManage);
         Button btnLottery = eventView.findViewById(R.id.btnLottery);
         Button btnMap = eventView.findViewById(R.id.btnMap);
+        ImageButton btnDelete = eventView.findViewById(R.id.btnDeleteEvent);
+
 
         List<String> selected = (List<String>) doc.get("selectedEntrants");
         if (selected != null && !selected.isEmpty()) {
@@ -233,6 +235,8 @@ public class OrganizerActivity extends AppCompatActivity {
         });
 
         btnLottery.setOnClickListener(v -> runLotteryDialog(eventId));
+        btnDelete.setOnClickListener(v -> confirmDelete(eventId));
+
 
         eventListContainer.addView(eventView);
     }
@@ -438,4 +442,53 @@ public class OrganizerActivity extends AppCompatActivity {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void confirmDelete(String eventId) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Delete Event?")
+                .setMessage("Are you sure you want to delete this event? This will permanently remove all entrants, waiting lists, and lottery data.")
+                .setPositiveButton("Delete", (dialog, which) -> deleteEvent(eventId))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deleteEvent(String eventId) {
+
+        // 1) DELETE SUBCOLLECTION: waitingLocations
+        db.collection("events")
+                .document(eventId)
+                .collection("waitingLocations")
+                .get()
+                .addOnSuccessListener(waitSnap -> {
+
+                    for (DocumentSnapshot d : waitSnap.getDocuments()) {
+                        d.getReference().delete();
+                    }
+
+                    // 2) DELETE USER NOTIFICATIONS (but keep notificationLogs!)
+                    db.collection("notifications")
+                            .whereEqualTo("eventId", eventId)
+                            .get()
+                            .addOnSuccessListener(notifSnap -> {
+
+                                for (DocumentSnapshot d : notifSnap.getDocuments()) {
+                                    d.getReference().delete();
+                                }
+
+                                // 3) DELETE EVENT ITSELF
+                                db.collection("events").document(eventId)
+                                        .delete()
+                                        .addOnSuccessListener(v -> {
+                                            Toast.makeText(this, "Event deleted.", Toast.LENGTH_SHORT).show();
+                                            loadEventsFromFirebase(); // refresh UI
+                                        })
+                                        .addOnFailureListener(e ->
+                                                Toast.makeText(this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            });
+                });
+    }
+
+
+
+
 }
