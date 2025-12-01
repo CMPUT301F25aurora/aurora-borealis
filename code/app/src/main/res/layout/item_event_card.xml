@@ -22,15 +22,14 @@
 
             <TextView
                 android:id="@+id/eventTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Event Title"
+                android:textSize="24sp"
+                android:fontFamily="@font/luckiestguy_regular"
+                android:letterSpacing="-0.01"
                 android:textColor="#fe7f2d"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:layout_alignParentStart="true"/>
+                android:text="Sample Event Title" />
+
 
             <ImageButton
                 android:id="@+id/btnDeleteEvent"
