@@ -45,57 +45,82 @@ import java.util.Date;
 public class AdminUtilsTest {
 
     @Test
-    public void nz_returnsEmptyStringForNull() {
+    public void nz_NullString_ReturnsEmpty() {
         assertEquals("", AdminUtils.nz(null));
     }
 
     @Test
-    public void nz_returnsSameStringForNonNull() {
+    public void nz_ValidString_ReturnsString() {
         assertEquals("hello", AdminUtils.nz("hello"));
     }
 
     @Test
-    public void capitalize_handlesNullAndEmpty() {
-        assertEquals("", AdminUtils.capitalize(null));
+    public void nz_EmptyString_ReturnsEmpty() {
+        assertEquals("", AdminUtils.nz(""));
+    }
+
+    // --- Capitalization Tests ---
+    @Test
+    public void capitalize_LowerCase_ReturnsCapitalized() {
+        assertEquals("Admin", AdminUtils.capitalize("admin"));
+    }
+
+    @Test
+    public void capitalize_UpperCase_ReturnsCapitalized() {
+        // Your code uses toLowerCase() on the substring, so "ADMIN" becomes "Admin"
+        assertEquals("Admin", AdminUtils.capitalize("ADMIN"));
+    }
+
+    @Test
+    public void capitalize_MixedCase_ReturnsCapitalized() {
+        assertEquals("Entrant", AdminUtils.capitalize("eNtRaNt"));
+    }
+
+    @Test
+    public void capitalize_Empty_ReturnsEmpty() {
         assertEquals("", AdminUtils.capitalize(""));
     }
 
     @Test
-    public void capitalize_capitalizesFirstLetterAndLowercasesRest() {
-        assertEquals("Admin", AdminUtils.capitalize("admin"));
-        assertEquals("Admin", AdminUtils.capitalize("ADMIN"));
-        assertEquals("Admin", AdminUtils.capitalize("aDmIn"));
+    public void capitalize_Null_ReturnsEmpty() {
+        assertEquals("", AdminUtils.capitalize(null));
+    }
+
+    // --- Relative Time Tests ---
+    @Test
+    public void relativeTime_JustNow_ReturnsMinutes() {
+        long now = 1000000000L;
+        long eventTime = now - (5 * 60 * 1000); // 5 mins ago
+        Date d = new Date(eventTime);
+
+        // We pass 'now' into your util to make it deterministic
+        assertEquals("5 min ago", AdminUtils.formatRelativeTime(d, now));
     }
 
     @Test
-    public void formatRelativeTime_underOneHour_showsMinutes() {
-        long now = System.currentTimeMillis();
-        // 15 minutes ago
-        Date fifteenMinutesAgo = new Date(now - 15L * 60L * 1000L);
-        String result = AdminUtils.formatRelativeTime(fifteenMinutesAgo, now);
-        assertEquals("15 min ago", result);
+    public void relativeTime_UnderOneHour_ReturnsMinutes() {
+        long now = 1000000000L;
+        long eventTime = now - (59 * 60 * 1000); // 59 mins ago
+        Date d = new Date(eventTime);
+
+        assertEquals("59 min ago", AdminUtils.formatRelativeTime(d, now));
     }
 
     @Test
-    public void formatRelativeTime_underOneDay_showsHours() {
-        long now = System.currentTimeMillis();
-        // 5 hours ago
-        Date fiveHoursAgo = new Date(now - 5L * 60L * 60L * 1000L);
-        String result = AdminUtils.formatRelativeTime(fiveHoursAgo, now);
-        assertEquals("5 hours ago", result);
+    public void relativeTime_OverOneHour_ReturnsHours() {
+        long now = 1000000000L;
+        long eventTime = now - (61 * 60 * 1000); // 1 hr 1 min
+        Date d = new Date(eventTime);
+
+        assertEquals("1 hours ago", AdminUtils.formatRelativeTime(d, now));
     }
 
     @Test
-    public void formatRelativeTime_overOneDay_showsDays() {
-        // Pick a fixed "now" so test is deterministic
-        Calendar cal = Calendar.getInstance();
-        cal.set(2025, Calendar.JANUARY, 10, 12, 0, 0);
-        long now = cal.getTimeInMillis();
+    public void relativeTime_OverOneDay_ReturnsDays() {
+        long now = 1000000000L;
+        long eventTime = now - (25 * 60 * 60 * 1000); // 25 hours
+        Date d = new Date(eventTime);
 
-        // 3 days earlier
-        Date threeDaysAgo = new Date(now - 3L * 24L * 60L * 60L * 1000L);
-
-        String result = AdminUtils.formatRelativeTime(threeDaysAgo, now);
-        assertEquals("3 days ago", result);
+        assertEquals("1 days ago", AdminUtils.formatRelativeTime(d, now));
     }
 }

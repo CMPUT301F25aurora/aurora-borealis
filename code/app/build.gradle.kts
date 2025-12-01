@@ -34,7 +34,7 @@ android {
         isCoreLibraryDesugaringEnabled = true
     }
 }
-
+//
 dependencies {
     //implementation(files("C:\\Users\\omara\\AppData\\Local\\Android\\Sdk\\platforms\\android-36\\android.jar"))
 
@@ -70,5 +70,5 @@ dependencies {
     androidTestImplementation("androidx.fragment:fragment-testing:1.6.2")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
-
+    testImplementation("org.mockito:mockito-core:5.10.0")
 }

@@ -263,25 +263,62 @@ public class AdminActivity extends AppCompatActivity {
         TextView entrantsView  = card.findViewById(R.id.adminEventEntrants);
         Button   removeButton  = card.findViewById(R.id.adminEventRemoveButton);
 
+        // 1. Basic Event Data
         String title = nz(doc.getString("title"));
         if (title.isEmpty()) title = nz(doc.getString("name"));
+
         String date = nz(doc.getString("date"));
         if (date.isEmpty()) date = nz(doc.getString("dateDisplay"));
-        String organizer = nz(doc.getString("organizerName"));
 
         List<String> waiting = (List<String>) doc.get("waitingList");
         int entrants = waiting == null ? 0 : waiting.size();
 
         titleView.setText(title);
         dateView.setText(date);
-        organizerView.setText(organizer.isEmpty() ? "Unknown" : organizer);
         entrantsView.setText(String.valueOf(entrants));
         statusView.setText("Active");
 
-        // --- FIX: Create a final variable for the lambda ---
-        String finalTitle = title;
+        // ---------------------------------------------------
+        // FIX: BETTER ORGANIZER NAME LOADING
         // ---------------------------------------------------
 
+        // Step 1: Check if "organizerName" is stored directly in the event
+        String storedName = doc.getString("organizerName");
+
+        if (storedName != null && !storedName.isEmpty()) {
+            organizerView.setText(storedName);
+        }
+        else {
+            // Step 2: If name is missing, look for the Organizer ID (usually field 'organizer')
+            String organizerId = doc.getString("organizer");
+
+            if (organizerId != null && !organizerId.isEmpty()) {
+                organizerView.setText("Loading..."); // Temporary text while fetching
+
+                // Fetch the User Profile to get the real name
+                db.collection("users").document(organizerId).get()
+                        .addOnSuccessListener(userSnap -> {
+                            String realName = userSnap.getString("name");
+                            if (realName != null && !realName.isEmpty()) {
+                                organizerView.setText(realName);
+                            } else {
+                                // If user profile has no name, try email
+                                String userEmail = userSnap.getString("email");
+                                organizerView.setText(userEmail != null ? userEmail : "Unknown User");
+                            }
+                        })
+                        .addOnFailureListener(e -> organizerView.setText("Unknown"));
+            }
+            else {
+                // Step 3: Fallback to 'organizerEmail' if no ID is found (Since we know this exists from loadImages)
+                String fallbackEmail = doc.getString("organizerEmail");
+                organizerView.setText(fallbackEmail != null && !fallbackEmail.isEmpty() ? fallbackEmail : "Unknown");
+            }
+        }
+
+        // ---------------------------------------------------
+
+        String finalTitle = title;
         removeButton.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Remove Event")
@@ -505,12 +542,30 @@ public class AdminActivity extends AppCompatActivity {
         titleView.setText(eventName + " (" + type + ")");
         subtitleView.setText(message);
 
-        Object t = doc.get("timestamp");
-        if (t instanceof com.google.firebase.Timestamp) {
-            timeView.setText(formatRelativeTime(((com.google.firebase.Timestamp) t).toDate()));
+
+        // 1. Get as generic Object to avoid ClassCastException
+        Object rawTime = doc.get("timestamp");
+        Date finalDate = null;
+
+        if (rawTime instanceof com.google.firebase.Timestamp) {
+            // Case A: It is a proper Firestore Timestamp
+            finalDate = ((com.google.firebase.Timestamp) rawTime).toDate();
+        } else if (rawTime instanceof Date) {
+            // Case B: It is a legacy java.util.Date
+            finalDate = (Date) rawTime;
+        } else if (rawTime instanceof Long) {
+            // Case C: It is a timestamp in milliseconds (Long)
+            finalDate = new Date((Long) rawTime);
+        }
+
+        // 2. Display result
+        if (finalDate != null) {
+            timeView.setText(formatRelativeTime(finalDate));
         } else {
             timeView.setText("Unknown time");
         }
+        // ---------------------------------------
+
         listContainer.addView(card);
     }
 
@@ -686,3 +741,4 @@ public class AdminActivity extends AppCompatActivity {
         return days + " days ago";
     }
 }
+
