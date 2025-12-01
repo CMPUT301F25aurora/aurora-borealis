@@ -1,3 +1,25 @@
+/*
+ * source: Firebase docs — "Perform simple and compound queries in Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/queries
+ * note: Used for the login logic: db.collection("users").whereEqualTo("email", input).
+ *
+ * source: Android Developers — "Save key-value data".
+ * url: https://developer.android.com/training/data-storage/shared-preferences
+ * note: Used for SharedPreferences.Editor to store the user's session (role, email, name) after a successful login.
+ *
+ * source: Stack Overflow user — "Show/Hide password in EditText".
+ * url: https://stackoverflow.com/questions/9307680/show-hide-password-in-edittext
+ * note: Used for the PasswordTransformationMethod logic in setupPasswordToggle().
+ *
+ * source: Android Developers — "Start an Activity".
+ * url: https://developer.android.com/guide/components/activities/recents
+ * note: Used for Intent flags (FLAG_ACTIVITY_CLEAR_TOP) to ensure login clears previous back-stack history.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names and overall code format to look readable
+ *
+ */
+
 
 /**
  * LoginActivity
