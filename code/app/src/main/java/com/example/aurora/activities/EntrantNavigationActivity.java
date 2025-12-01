@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.aurora.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.example.aurora.activities.EntrantNavigationActivity;
+
 
 public class EntrantNavigationActivity extends AppCompatActivity {
 

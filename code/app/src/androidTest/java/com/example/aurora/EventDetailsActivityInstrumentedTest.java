@@ -1,92 +1,124 @@
-/*
- * References for EventDetailsActivityInstrumentedTest:
- *
- * source: Android Developers — "Espresso"
- * url: https://developer.android.com/training/testing/espresso
- * note: Used for checking that text fields, buttons, and other views in the
- *       event details screen are displayed and clickable.
- *
- * source: Android Developers — "Espresso recipes"
- * url: https://developer.android.com/training/testing/espresso/recipes
- * note: Used for examples of matching text, view visibility, and simple assertions.
- *
- * source: Android Developers — "Test your app's activities"
- * url: https://developer.android.com/guide/components/activities/testing
- * note: Used for using ActivityScenario or ActivityScenarioRule to test EventDetailsActivity.
- *
- * author: Stack Overflow user — "How to assert inside a RecyclerView in Espresso?"
- * url: https://stackoverflow.com/questions/31394569/how-to-assert-inside-a-recyclerview-in-espresso
- * note: Used if the event details screen shows lists (for example, entrants) in a RecyclerView
- *       and the test needs to assert on a specific row.
- *
- * source: ChatGPT (OpenAI assistant)
- * note: Helped refine the ideas for what UI states are worth checking in this test,
- *       such as making sure QR or deep link related views appear when expected.
- */
-
-
 package com.example.aurora;
-
-import android.content.Intent;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import com.example.aurora.activities.EventDetailsActivity;
+import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
- * Very simple UI tests for EventDetailsActivity.
+ * UI tests for EventDetailsActivity that work with the real behaviour:
+ * - bindEvent(...) calls finish() when the event doc does NOT exist.
  *
- * Note for Testing:
- * In EventDetailsActivity.java, comment out the "finish();" line
- * inside bindEvent(DocumentSnapshot doc) before running this test.
- * Otherwise, the test will close the screen right away and fail.
- *
- * Uses a dummy eventId so Firestore does not crash.
+ * We avoid that branch by seeding a dummy event in Firestore before launching.
  */
 @RunWith(AndroidJUnit4.class)
 public class EventDetailsActivityInstrumentedTest {
 
-    @Rule
-    public ActivityScenarioRule<EventDetailsActivity> rule =
-            new ActivityScenarioRule<>(
-                    new Intent(
-                            ApplicationProvider.getApplicationContext(),
-                            EventDetailsActivity.class
-                    ).putExtra("eventId", "dummyEvent123")
-            );
+    private static final String TEST_EVENT_ID = "test-event-details-123";
+
+    /**
+     * Create a minimal Firestore event doc so that doc.exists() == true
+     * inside EventDetailsActivity.bindEvent(...).
+     */
+    private void seedTestEvent() throws Exception {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> data = new HashMap<>();
+        // You can add more fields if your UI expects them, but it's not required
+        data.put("title", "Test Event");
+        data.put("about", "Test about text shown in details.");
+        data.put("description", "Test description");
+        data.put("capacity", 10L);
+
+        // Write and wait for completion so the doc definitely exists
+        Tasks.await(
+                db.collection("events").document(TEST_EVENT_ID).set(data),
+                5,
+                TimeUnit.SECONDS
+        );
+    }
+
+    /**
+     * Sets user_role and seeds the event before launching the activity.
+     */
+    private void launchEventDetailsScreen() throws Exception {
+        Context context = ApplicationProvider.getApplicationContext();
+
+        // Pretend we are already logged in as entrant (avoid Welcome redirect)
+        SharedPreferences sp =
+                context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE);
+        sp.edit()
+                .putString("user_role", "entrant")
+                .apply();
+
+        // Make sure the test event document exists
+        seedTestEvent();
+
+        Intent intent = new Intent(context, EventDetailsActivity.class);
+        intent.putExtra("eventId", TEST_EVENT_ID);
+
+        ActivityScenario.launch(intent);
+    }
 
     @Test
-    public void testEventDetailsScreenVisible() {
+    public void testEventDetailsScreenVisible() throws Exception {
+        launchEventDetailsScreen();
+
         onView(withId(R.id.txtTitle)).check(matches(isDisplayed()));
-        onView(withId(R.id.txtSubtitle)).check(matches(isDisplayed()));
         onView(withId(R.id.txtAbout)).check(matches(isDisplayed()));
-        onView(withId(R.id.btnJoinLeave)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnCriteria)).check(matches(isDisplayed()));
+        onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
+
+        // Sign Up button exists in the layout but is GONE by default
+        onView(withId(R.id.btnSignUp))
+                .check(matches(withEffectiveVisibility(
+                        androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+                )));
     }
 
     @Test
-    public void testJoinLeaveButtonClickable() {
-        onView(withId(R.id.btnJoinLeave)).perform(click());
-        onView(withId(R.id.btnJoinLeave)).check(matches(isDisplayed()));
+    public void testSignUpButtonIsHiddenByDefault() throws Exception {
+        launchEventDetailsScreen();
+
+        onView(withId(R.id.btnSignUp))
+                .check(matches(withEffectiveVisibility(
+                        androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE
+                )));
     }
 
     @Test
-    public void testCriteriaButtonClickable() {
+    public void testCriteriaButtonClickable() throws Exception {
+        launchEventDetailsScreen();
+
         onView(withId(R.id.btnCriteria)).check(matches(isDisplayed()));
         onView(withId(R.id.btnCriteria)).perform(click());
     }
 
     @Test
-    public void testShowQrButtonClickable() {
+    public void testShowQrButtonClickable() throws Exception {
+        launchEventDetailsScreen();
+
         onView(withId(R.id.btnShowQr)).check(matches(isDisplayed()));
         onView(withId(R.id.btnShowQr)).perform(click());
     }
