@@ -1,3 +1,38 @@
+/*
+ * source: Stack Overflow user - "How to generate a QR Code for an Android application?".
+ * url: https://stackoverflow.com/questions/8800919/how-to-generate-a-qr-code-for-an-android-application
+ * note: Used for the QRCodeWriter and BitMatrix logic to generate the event QR bitmap.
+ *
+ * source: Firebase docs - "Delete data from Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/manage-data/delete-data#collections
+ * note: Referenced for the logic in deleteEvent(), specifically manually deleting documents within subcollections (waitingLocations) before deleting the parent.
+ *
+ * source: Java Documentation - "Collections.shuffle".
+ * url: https://docs.oracle.com/javase/8/docs/api/java/util/Collections.html#shuffle-java.util.List-
+ * note: Used in runLottery() to randomize the list of entrants before selecting winners.
+ *
+ * source: Firebase docs - "Perform simple and compound queries in Cloud Firestore".
+ * url: https://firebase.google.com/docs/firestore/query-data/queries
+ * note: Used for loading events where "organizerEmail" matches the current user.
+ *
+ * source: Firebase docs - "Update elements in an array".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+ * note: Used in runLottery() to move users between "waitingList", "selectedEntrants", and "losersEntrants" using FieldValue.arrayUnion/Remove.
+ *
+ * source: Stack Overflow user - "FLAG_ACTIVITY_NEW_TASK clarification needed".
+ * url: https://stackoverflow.com/questions/9772927/flag-activity-new-task-clarification-needed
+ * note: Used in logoutUser() to clear the activity stack so the user cannot press "back" to return to the organizer screen.
+ *
+ * source: Android Developers - "AlertDialog".
+ * url: https://developer.android.com/develop/ui/views/components/dialogs
+ * note: Used for creating the "Run Lottery" input dialog and the "Delete Confirmation" dialog.
+ *
+ * source: ChatGPT (OpenAI assistant).
+ * note: Helped tighten up JavaDoc wording, method names and overall code format to look readable
+ */
+
+
+
 /**
  * OrganizerActivity
  *
