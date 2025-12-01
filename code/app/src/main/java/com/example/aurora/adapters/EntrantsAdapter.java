@@ -1,3 +1,13 @@
+/*
+ * source: Android Developers — "Create a List with RecyclerView".
+ * url: https://developer.android.com/develop/ui/views/layout/recyclerview
+ * note: Standard implementation of RecyclerView.Adapter and ViewHolder patterns.
+ *
+ * source: Stack Overflow user — "RecyclerView Checkbox issue".
+ * url: https://stackoverflow.com/questions/3245193/checkbox-in-listview-listener-issue
+ * note: Logic used to remove the listener before setting the checked state (setOnCheckedChangeListener(null)) to prevent recycling bugs.
+ */
+
 package com.example.aurora.adapters;
 
 import android.content.Context;
