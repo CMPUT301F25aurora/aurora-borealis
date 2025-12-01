@@ -92,12 +92,12 @@ public class EntrantLogicTest {
                 allowedToJoin);
     }
 
-    // ============================================================
-    // US 01.01.04: Filter events by availability (open vs closed)
-    // ============================================================
+    /**
+     * Verifies that filtering by availability only keeps events
+     * that are marked as open and excludes closed events.
+     */
     @Test
     public void filterEventsByAvailability_onlyShowsOpenEvents() {
-        // Simple local "event" representation for this logic test
         class SimpleEvent {
             String id;
             boolean isOpen;
@@ -115,7 +115,6 @@ public class EntrantLogicTest {
                 new SimpleEvent("anotherFutureOpen", true)
         );
 
-        // Logic: entrant wants to see only events that are currently open
         List<SimpleEvent> visibleEvents = new ArrayList<>();
         for (SimpleEvent e : allEvents) {
             if (e.isOpen) {
@@ -123,15 +122,16 @@ public class EntrantLogicTest {
             }
         }
 
-        // We should only see the open events
         assertEquals(2, visibleEvents.size());
         assertEquals("futureOpen", visibleEvents.get(0).id);
         assertEquals("anotherFutureOpen", visibleEvents.get(1).id);
     }
 
-    // ============================================================
-    // Geo requirement: block join when entrant has no location
-    // ============================================================
+    /**
+     * Verifies that when an event requires geolocation, an entrant
+     * with no location cannot join, but can still join events where
+     * geolocation is optional.
+     */
     @Test
     public void geoRequired_preventsJoinWhenEntrantHasNoLocation() {
         class SimpleEvent {
@@ -149,16 +149,13 @@ public class EntrantLogicTest {
 
         boolean entrantHasLocation = false;
 
-        // Joining geo-required event with no location → not allowed
         boolean canJoinGeoRequired =
                 !geoRequiredEvent.geoRequired || entrantHasLocation;
 
-        // Joining geo-optional event with no location → allowed
         boolean canJoinGeoOptional =
                 !geoOptionalEvent.geoRequired || entrantHasLocation;
 
         assertFalse(canJoinGeoRequired);
         assertTrue(canJoinGeoOptional);
     }
-
 }

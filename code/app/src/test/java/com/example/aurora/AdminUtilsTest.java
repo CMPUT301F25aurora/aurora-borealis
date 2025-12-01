@@ -144,7 +144,7 @@ public class AdminUtilsTest {
     @Test
     public void relativeTime_JustNow_ReturnsMinutes() {
         long now = 1000000000L;
-        long eventTime = now - (5 * 60 * 1000); // 5 mins ago
+        long eventTime = now - (5 * 60 * 1000);
         Date d = new Date(eventTime);
 
         assertEquals("5 min ago", AdminUtils.formatRelativeTime(d, now));
@@ -159,7 +159,7 @@ public class AdminUtilsTest {
     @Test
     public void relativeTime_UnderOneHour_ReturnsMinutes() {
         long now = 1000000000L;
-        long eventTime = now - (59 * 60 * 1000); // 59 mins ago
+        long eventTime = now - (59 * 60 * 1000);
         Date d = new Date(eventTime);
 
         assertEquals("59 min ago", AdminUtils.formatRelativeTime(d, now));
