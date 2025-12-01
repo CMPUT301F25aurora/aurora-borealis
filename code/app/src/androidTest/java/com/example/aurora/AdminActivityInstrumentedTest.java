@@ -179,19 +179,54 @@ public class AdminActivityInstrumentedTest {
         onView(withText("Cancel")).perform(click());
     }
 
+    /**
+     * Verifies that the admin tab bar responds to user interaction.
+     * <p>
+     * This test checks that the Events tab is visible on launch and that
+     * the user can tap the Events, Profiles, and Logs tabs in sequence
+     * without the app crashing. It indirectly validates that the tab
+     * click listeners are wired correctly.
+     */
     @Test
     public void testAdminTabsSwitchBetweenSections() {
 
         onView(withId(R.id.tabEvents)).check(matches(isDisplayed()));
         onView(withId(R.id.tabEvents)).perform(click());
-
         onView(withId(R.id.tabProfiles)).perform(click());
-
-        // Switch to Logs tab (or whatever your third tab is called)
         onView(withId(R.id.tabLogs)).perform(click());
+    }
 
-        // Check that some log-related UI is visible (replace text/ID with whatever you really show)
-        // For example, if you have a "Activity Logs" header:
-        // onView(withText("Activity Logs")).check(matches(isDisplayed()));
+    /**
+     * Ensures that the core UI elements of the admin dashboard are visible
+     * when {@code AdminActivity} launches.
+     * <p>
+     * This includes the main scroll container, the admin tab bar (Events,
+     * Profiles, Images, Logs), the section title, and the list container
+     * that displays the current section's content. Together these checks
+     * confirm that the admin overview screen is rendered and ready for use.
+     */
+    @Test
+    public void adminActivity_showsHeaderAndTabsOnLaunch() {
+        // Scroll container
+        onView(withId(R.id.adminScroll))
+                .check(matches(isDisplayed()));
+
+        // Tab bar and its tabs
+        onView(withId(R.id.adminTabBar))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabEvents))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabProfiles))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabImages))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabLogs))
+                .check(matches(isDisplayed()));
+
+        // Section title + list container
+        onView(withId(R.id.textSectionTitle))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.adminListContainer))
+                .check(matches(isDisplayed()));
     }
 }

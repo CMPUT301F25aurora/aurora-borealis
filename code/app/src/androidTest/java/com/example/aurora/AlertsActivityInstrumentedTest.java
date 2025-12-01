@@ -28,9 +28,16 @@ public class AlertsActivityInstrumentedTest {
     public ActivityScenarioRule<AlertsActivity> rule =
             new ActivityScenarioRule<>(AlertsActivity.class);
 
+    /**
+     * Clears any previously stored user email before each test run.
+     * <p>
+     * This method simulates a state where no user is logged in by writing
+     * an empty string into the {@code aurora_prefs} {@code user_email}
+     * entry. Using {@code @Before} ensures that each test in this class
+     * starts from a clean, predictable authentication state.
+     */
     @Before
     public void clearUserEmail() {
-        // Simulate a user who is not logged in / no email stored
         Context context = ApplicationProvider.getApplicationContext();
         context.getSharedPreferences("aurora_prefs", Context.MODE_PRIVATE)
                 .edit()

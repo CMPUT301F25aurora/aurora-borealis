@@ -25,14 +25,16 @@ public class OrganizerFeaturesTest {
 
     private TestableEvent event;
 
+    /**
+     * Sets up a TestableEvent instance with empty entrant lists
+     * before each test runs.
+     */
     @Before
     public void setup() {
         event = new TestableEvent();
         event.setEventId("evt_org_1");
         event.setTitle("Mega Conference");
         event.setWaitingList(new ArrayList<>());
-
-        // Initialize other lists
         event.setSelectedEntrants(new ArrayList<>());
         event.setEnrolledEntrants(new ArrayList<>());
         event.setCancelledEntrants(new ArrayList<>());
@@ -47,12 +49,8 @@ public class OrganizerFeaturesTest {
      */
     @Test
     public void testQRCode_DataStringGeneration() {
-        // Logic: The QR code is usually the Event ID or a deep link
         String expectedDeepLink = "aurora://event/evt_org_1";
-
-        // Simulate generation logic
         String generatedData = "aurora://event/" + event.getEventId();
-
         assertEquals(expectedDeepLink, generatedData);
     }
 
@@ -65,7 +63,6 @@ public class OrganizerFeaturesTest {
      */
     @Test
     public void testRegistrationPeriod_Validation() {
-        // Start date must be before End date
         long start = 1700000000L;
         long end = 1800000000L;
 
@@ -82,7 +79,7 @@ public class OrganizerFeaturesTest {
      */
     @Test
     public void testWaitingList_CapacityCheck_Allowed() {
-        event.setMaxSpots(2L); // Limit 2
+        event.setMaxSpots(2L);
         event.getWaitingList().add("User1");
 
 
@@ -100,9 +97,8 @@ public class OrganizerFeaturesTest {
      */
     @Test
     public void testWaitingList_CapacityCheck_Denied() {
-        event.setMaxSpots(1L); // Limit 1
-        event.getWaitingList().add("User1"); // List size is now 1
-
+        event.setMaxSpots(1L);
+        event.getWaitingList().add("User1");
 
         boolean canJoin = event.getWaitingList().size() < event.getMaxSpots();
 
@@ -153,9 +149,10 @@ public class OrganizerFeaturesTest {
         assertTrue(result.startsWith("EventID,UserID"));
     }
 
-    // ============================================================
-    // US 02.06.05: Export final enrolled entrants in CSV format
-    // ============================================================
+    /**
+     * Verifies that the CSV export includes the header row and
+     * one data row for each enrolled entrant, with all fields present.
+     */
     @Test
     public void exportCsv_includesHeaderAndAllEnrolledEntrants() {
         class SimpleEntrant {
@@ -185,22 +182,20 @@ public class OrganizerFeaturesTest {
         }
         String csv = csvBuilder.toString();
 
-        // Header must be correct
         String firstLine = csv.split("\n")[0];
         assertEquals("Name,Email,Phone",firstLine);
 
-        // There should be 1 header line + 2 data lines = 3 lines total
         String[] lines = csv.split("\n");
         assertEquals(3,lines.length);
 
-        // CSV should contain each enrolled entrant's data
         assertTrue(csv.contains("Alice,alice@example.com,111-1111"));
         assertTrue(csv.contains("Bob,bob@example.com,222-2222"));
     }
 
-    // ============================================================
-    // US 01.04.03: Opt out of notifications from organizers/admins
-    // ============================================================
+    /**
+     * Verifies that notification preferences correctly prevent alerts
+     * when disabled and allow all alerts when enabled.
+     */
     @Test
     public void notificationPreferenceBlocksOrAllowsAlerts() {
         boolean notificationsEnabled = false;
@@ -212,7 +207,6 @@ public class OrganizerFeaturesTest {
 
         List<String> queuedNotifications = new ArrayList<>();
 
-        // When notifications are disabled, nothing should be queued
         for(String eventId:eventsNeedingNotification){
             if(notificationsEnabled){
                 queuedNotifications.add(eventId);
@@ -220,7 +214,6 @@ public class OrganizerFeaturesTest {
         }
         assertTrue(queuedNotifications.isEmpty());
 
-        // Turn notifications ON and recompute
         notificationsEnabled = true;
         queuedNotifications.clear();
 
@@ -230,14 +223,14 @@ public class OrganizerFeaturesTest {
             }
         }
 
-        // Now all events should be queued
         assertEquals(eventsNeedingNotification.size(),queuedNotifications.size());
         assertTrue(queuedNotifications.containsAll(eventsNeedingNotification));
     }
 
-    // ============================================================
-    // US 03.07.01: Admin removes organizers that violate policy
-    // ============================================================
+    /**
+     * Verifies that removing an organizer by ID only removes the
+     * targeted organizer and leaves all other organizers unchanged.
+     */
     @Test
     public void removeOrganizer_removesOnlyTargetOrganizer() {
         class SimpleOrganizer {
@@ -257,7 +250,6 @@ public class OrganizerFeaturesTest {
 
         String targetId = "org2";
 
-        // Remove the organizer that violated policy
         Iterator<SimpleOrganizer> it = organizers.iterator();
         while(it.hasNext()){
             SimpleOrganizer o = it.next();
@@ -265,16 +257,12 @@ public class OrganizerFeaturesTest {
                 it.remove();
             }
         }
-
-        // 1) Size should now be 2
         assertEquals(2,organizers.size());
 
-        // 2) Remaining IDs should not contain the removed one
         for(SimpleOrganizer o:organizers){
             assertNotEquals(targetId,o.id);
         }
 
-        // 3) The other organizers are still present
         List<String> remainingIds = new ArrayList<>();
         for(SimpleOrganizer o:organizers){
             remainingIds.add(o.id);

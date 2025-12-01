@@ -38,16 +38,19 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
+                    <!-- Admin Panel Title (keep font from main) -->
                     <TextView
                         android:id="@+id/adminTitle"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:text="Admin Panel"
-                        android:textSize="28sp"
-                        android:fontFamily="sans-serif-medium"
-                        android:textColor="#fe7f2d" />
+                        android:textColor="#fe7f2d"
+                        android:textSize="43sp"
+                        android:fontFamily="@font/titanone_regular"
+                        android:letterSpacing="-0.01" />
 
+                    <!-- Logout Icon -->
                     <ImageView
                         android:id="@+id/btnLogoutAdmin"
                         android:layout_width="30dp"
@@ -60,6 +63,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:tint="#fe7f2d"/>
                 </LinearLayout>
+
 
                 <!-- Subtitle -->
                 <TextView
@@ -91,8 +95,9 @@
 
                     <TextView
                         android:text="Events"
-                        android:textSize="14sp"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/comicrelief_regular"
+                        android:textSize="16sp"
+                        android:letterSpacing="-0.01"
                         android:textColor="#fe7f2d"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -120,8 +125,9 @@
 
                     <TextView
                         android:text="Users"
-                        android:textSize="14sp"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/comicrelief_regular"
+                        android:textSize="16sp"
+                        android:letterSpacing="-0.01"
                         android:textColor="#fe7f2d"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -156,8 +162,9 @@
 
                     <TextView
                         android:text="Images"
-                        android:textSize="14sp"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/comicrelief_regular"
+                        android:textSize="16sp"
+                        android:letterSpacing="-0.01"
                         android:textColor="#fe7f2d"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -185,8 +192,9 @@
 
                     <TextView
                         android:text="Logs"
-                        android:textSize="14sp"
-                        android:fontFamily="sans-serif-medium"
+                        android:fontFamily="@font/comicrelief_regular"
+                        android:textSize="16sp"
+                        android:letterSpacing="-0.01"
                         android:textColor="#fe7f2d"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"/>
@@ -291,9 +299,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
                 android:text="Browse Events"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-medium"
-                android:textColor="#fe7f2d" />
+                android:textColor="#fe7f2d"
+                android:textSize="26sp"
+                android:fontFamily="@font/luckiestguy_regular"
+                android:letterSpacing="-0.01"/>
+
 
             <LinearLayout
                 android:id="@+id/adminListContainer"

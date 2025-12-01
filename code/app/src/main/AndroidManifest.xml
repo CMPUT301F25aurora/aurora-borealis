@@ -72,6 +72,7 @@
         <activity android:name=".activities.OrganizerProfileActivity" android:exported="false" />
         <activity android:name=".activities.OrganizerNotificationsActivity" android:exported="false" />
         <activity android:name=".activities.OrganizerEntrantsActivity" />
+        <activity android:name=".activities.OrganizerEventDetailsActivity" android:exported="false" />
         <activity android:name=".map.MapPickerActivity" />
         <activity
             android:name=".map.EventMapActivity"

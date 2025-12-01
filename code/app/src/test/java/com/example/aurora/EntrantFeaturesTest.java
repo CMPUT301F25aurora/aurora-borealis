@@ -65,7 +65,6 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testJoinWaitlist_PreventDuplicates() {
-        // Logic: Check if already exists
         event.getWaitingList().add(userId);
 
         boolean alreadyIn = event.getWaitingList().contains(userId);
@@ -87,7 +86,6 @@ public class EntrantFeaturesTest {
     public void testLeaveWaitlist_Success() {
         event.getWaitingList().add(userId);
 
-        // Action: Leave
         event.getWaitingList().remove(userId);
 
         assertFalse(event.getWaitingList().contains("user_555"));
@@ -137,7 +135,6 @@ public class EntrantFeaturesTest {
      */
     @Test
     public void testAcceptInvitation_MovesToEnrolled() {
-        // Setup: User won the lottery
         event.getSelectedEntrants().add(userId);
 
         if (event.getSelectedEntrants().contains(userId)) {
@@ -203,44 +200,38 @@ public class EntrantFeaturesTest {
         assertEquals("android_id_999", effectiveId);
     }
 
-    // ==================================================================
-    // US 01.02.03: History of events (won vs not selected)
-    // ==================================================================
+    /**
+     * Tests that an entrant's event history correctly tracks which events were won
+     * and which were lost, given a list of registered events and a subset of won events.
+     */
     @Test
     public void testEventHistoryTracksWonAndLostEvents() {
-        // Events the entrant registered for
         List<String> registeredEvents = new ArrayList<>();
         registeredEvents.add("evt_swim");
         registeredEvents.add("evt_dance");
 
-        // Events where the entrant was selected ("won" the lottery)
         List<String> wonEvents = new ArrayList<>();
         wonEvents.add("evt_swim"); // entrant won swim lessons
 
-        // Compute "lost" events = registered but not in won list
         List<String> lostEvents = new ArrayList<>();
         for (String eventId : registeredEvents) {
             if (!wonEvents.contains(eventId)) {
                 lostEvents.add(eventId);
             }
         }
-
-        // Assertions: we registered for 2 events total
         assertEquals(2, registeredEvents.size());
 
-        // Swim is a win
         assertTrue(wonEvents.contains("evt_swim"));
-        // Dance is not a win
         assertFalse(wonEvents.contains("evt_dance"));
 
-        // Exactly one "lost" event, and it is the dance class
         assertEquals(1, lostEvents.size());
         assertTrue(lostEvents.contains("evt_dance"));
     }
 
-    // ============================================================
-    // US 01.05.04: Entrant sees total waiting list size
-    // ============================================================
+    /**
+     * Tests that the displayed waiting list count matches the actual
+     * number of entrants in the waiting list.
+     */
     @Test
     public void waitingListCountReflectsNumberOfEntrants() {
         List<String> waitingList = new ArrayList<>();
@@ -250,11 +241,7 @@ public class EntrantFeaturesTest {
 
         int count = waitingList.size();
         String displayText = count + " entrants on waiting list";
-
-        // Raw count is correct
         assertEquals(3,count);
-
-        // Display text matches expected format
         assertEquals("3 entrants on waiting list",displayText);
     }
 

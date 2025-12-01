@@ -32,13 +32,9 @@ public class OrganizerLogicTest {
 
         List<String> waitingList = new ArrayList<>(Arrays.asList("A", "B", "C", "D", "E"));
         int spotsAvailable = 2;
-
-
-        Collections.shuffle(waitingList, new Random(123)); // Fixed seed for deterministic test
+        Collections.shuffle(waitingList, new Random(123));
         List<String> selected = waitingList.subList(0, spotsAvailable);
-
         assertEquals(2, selected.size());
-
         assertTrue(!selected.get(0).equals(selected.get(1)));
     }
 
