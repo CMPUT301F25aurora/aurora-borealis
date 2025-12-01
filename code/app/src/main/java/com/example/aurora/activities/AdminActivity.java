@@ -112,7 +112,8 @@ public class AdminActivity extends AppCompatActivity {
     private LinearLayout tabEvents, tabProfiles, tabImages, tabLogs;
     private LinearLayout listContainer;
     private ImageButton buttonSearch;
-    private TextView btnBack;
+    private ImageView btnLogout;
+
 
     private FirebaseFirestore db;
 
@@ -146,21 +147,21 @@ public class AdminActivity extends AppCompatActivity {
         tabLogs     = findViewById(R.id.tabLogs);
 
         buttonSearch = findViewById(R.id.buttonSearch);
-        btnBack = findViewById(R.id.btnBackAdmin);
+        btnLogout = findViewById(R.id.btnLogoutAdmin);
 
-        // Back Button Logic
-        if (btnBack != null) {
-            btnBack.setOnClickListener(v -> {
-                FirebaseAuth.getInstance().signOut();
-                SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
-                sp.edit().clear().apply();
 
-                Intent intent = new Intent(AdminActivity.this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
-            });
-        }
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+
+            SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
+            sp.edit().clear().apply();
+
+            Intent intent = new Intent(AdminActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
+
 
         // Tab Listeners
         tabEvents.setOnClickListener(v -> switchMode(Mode.EVENTS));
