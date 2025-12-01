@@ -84,6 +84,7 @@ public class OrganizerActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         bindViews();
+        bottomAlerts.setVisibility(View.GONE);
         setupTopBar();
         setupTabs();
         setupBottomNav();
@@ -161,8 +162,9 @@ public class OrganizerActivity extends AppCompatActivity {
                 startActivity(new Intent(OrganizerActivity.this, OrganizerProfileActivity.class))
         );
 
+        // Disable Alerts for organizers
         bottomAlerts.setOnClickListener(v ->
-                startActivity(new Intent(OrganizerActivity.this, OrganizerNotificationsActivity.class))
+                Toast.makeText(this, "Organizer alerts are not available.", Toast.LENGTH_SHORT).show()
         );
     }
 
