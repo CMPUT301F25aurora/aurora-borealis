@@ -31,32 +31,46 @@
                 android:orientation="vertical"
                 android:paddingTop="24dp">
 
-                <TextView
-                    android:id="@+id/adminTitle"
-                    android:layout_width="wrap_content"
+                <!-- ROW: Admin Panel + Logout Icon -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Admin Panel"
-                    android:textColor="#fe7f2d"
-                    android:textSize="43sp"
-                    android:fontFamily="@font/titanone_regular"
-                    android:letterSpacing="-0.01"/>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/btnBackAdmin"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="← Go Back"
-                    android:textColor="#B0BEC5"
-                    android:textSize="14sp"
-                    android:padding="4dp"
-                    android:layout_marginTop="4dp"
-                    android:clickable="true"
-                    android:focusable="true"/>
+                    <!-- Admin Panel Title (keep font from main) -->
+                    <TextView
+                        android:id="@+id/adminTitle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Admin Panel"
+                        android:textColor="#fe7f2d"
+                        android:textSize="43sp"
+                        android:fontFamily="@font/titanone_regular"
+                        android:letterSpacing="-0.01" />
 
+                    <!-- Logout Icon -->
+                    <ImageView
+                        android:id="@+id/btnLogoutAdmin"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_logout"
+                        android:contentDescription="Logout"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:tint="#fe7f2d"/>
+                </LinearLayout>
+
+
+                <!-- Subtitle -->
                 <TextView
                     android:id="@+id/adminSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
                     android:layout_marginBottom="24dp"
                     android:text="System management dashboard"
                     android:textColor="#B0BEC5"
@@ -208,6 +222,7 @@
                 android:background="@drawable/bg_input_sharp"
                 android:backgroundTint="#2f4858">
 
+                <!-- EVENTS TAB -->
                 <LinearLayout
                     android:id="@+id/tabEvents"
                     android:layout_width="0dp"
@@ -215,9 +230,16 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:background="?attr/selectableItemBackground">
-                    <TextView android:text="📅" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_calendar"
+                        android:contentDescription="Events"
+                        android:tint="#fe7f2d"/>
                 </LinearLayout>
 
+                <!-- PROFILES TAB -->
                 <LinearLayout
                     android:id="@+id/tabProfiles"
                     android:layout_width="0dp"
@@ -225,9 +247,16 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:background="?attr/selectableItemBackground">
-                    <TextView android:text="👥" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_people"
+                        android:contentDescription="Profiles"
+                        android:tint="#fe7f2d"/>
                 </LinearLayout>
 
+                <!-- IMAGES TAB -->
                 <LinearLayout
                     android:id="@+id/tabImages"
                     android:layout_width="0dp"
@@ -235,9 +264,16 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:background="?attr/selectableItemBackground">
-                    <TextView android:text="🖼️" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_adminimages"
+                        android:contentDescription="Images"
+                        android:tint="#fe7f2d"/>
                 </LinearLayout>
 
+                <!-- LOGS TAB -->
                 <LinearLayout
                     android:id="@+id/tabLogs"
                     android:layout_width="0dp"
@@ -245,9 +281,17 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:background="?attr/selectableItemBackground">
-                    <TextView android:text="📄" android:textSize="24sp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_logs"
+                        android:contentDescription="Logs"
+                        android:tint="#fe7f2d"/>
                 </LinearLayout>
+
             </LinearLayout>
+
 
             <TextView
                 android:id="@+id/textSectionTitle"
