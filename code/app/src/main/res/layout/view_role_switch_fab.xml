@@ -12,4 +12,4 @@
     app:iconTint="@android:color/white"
     app:iconPadding="8dp"
     app:iconGravity="start"
-    android:layout_gravity="bottom|end"/>
+    android:layout_gravity="bottom|start"/>
