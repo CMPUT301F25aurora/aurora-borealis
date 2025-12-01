@@ -463,7 +463,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
      * Switches to the selected tab and loads its entrant list.
      */
     private void setActiveTab(Tab tab) {
-
         currentTab = tab;
         resetTabStyles();
 
@@ -471,25 +470,29 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
         switch (tab) {
             case WAITING:
-                highlightTab(tabWaiting);
+                // Highlight with Light Blue (#29B6F6)
+                highlightTab(tabWaiting, Color.parseColor("#29B6F6"));
                 loadEntrantsForEmails(waitingEmails, "Waiting");
                 btnNotify.setText("Notify All");
                 break;
 
             case SELECTED:
-                highlightTab(tabSelected);
+                // Highlight with Green (#66BB6A)
+                highlightTab(tabSelected, Color.parseColor("#66BB6A"));
                 loadEntrantsForEmails(selectedEmails, "Selected");
                 btnNotify.setText("Notify All Selected");
                 break;
 
             case CANCELLED:
-                highlightTab(tabCancelled);
+                // Highlight with Red (#EF5350)
+                highlightTab(tabCancelled, Color.parseColor("#EF5350"));
                 loadEntrantsForEmails(cancelledEmails, "Cancelled");
                 btnNotify.setText("Notify All Cancelled");
                 break;
 
             case FINAL:
-                highlightTab(tabFinal);
+                // Highlight with Orange (#fe7f2d)
+                highlightTab(tabFinal, Color.parseColor("#fe7f2d"));
                 loadEntrantsForEmails(finalEmails, "Final");
                 btnNotify.setVisibility(View.GONE);
                 break;
@@ -515,10 +518,11 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
     /** Highlights the selected tab visually. */
-    private void highlightTab(TextView tab) {
-        int accent = getResources().getColor(R.color.purple_500, getTheme());
-        tab.setTextColor(accent);
-        tab.setBackgroundResource(R.drawable.bg_tab_selected);
+    private void highlightTab(TextView tab, int textColor) {
+        tab.setTextColor(textColor);
+        tab.setBackgroundResource(R.drawable.bg_input_sharp);
+        tab.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        tab.setTypeface(null, android.graphics.Typeface.BOLD);
     }
 
     /**
