@@ -276,7 +276,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                     }
 
                     Toast.makeText(this,
-                            "Notified ALL selected entrants (" + selectedEmails.size() + ")",
+                            "Notified all selected entrants.",
                             Toast.LENGTH_SHORT).show();
                 });
     }
