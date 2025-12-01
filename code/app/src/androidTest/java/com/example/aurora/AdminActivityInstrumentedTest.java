@@ -144,7 +144,6 @@ public class AdminActivityInstrumentedTest {
         onView(withId(R.id.tabEvents)).check(matches(isDisplayed()));
         onView(withId(R.id.tabEvents)).perform(click());
 
-        // Switch to Profiles tab
         onView(withId(R.id.tabProfiles)).perform(click());
 
         // Switch to Logs tab (or whatever your third tab is called)
