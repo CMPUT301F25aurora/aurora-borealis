@@ -36,9 +36,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Admin Panel"
-                    android:textSize="28sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="#fe7f2d" />
+                    android:textColor="#fe7f2d"
+                    android:textSize="43sp"
+                    android:fontFamily="@font/titanone_regular"
+                    android:letterSpacing="-0.01"/>
 
                 <TextView
                     android:id="@+id/btnBackAdmin"

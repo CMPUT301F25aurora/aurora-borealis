@@ -25,26 +25,28 @@
             android:paddingEnd="16dp"
             android:paddingBottom="12dp">
 
-            <TextView
-                android:id="@+id/dashboardTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+        <TextView
+            android:id="@+id/dashboardTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Organizer Dashboard"
+            android:textColor="#fe7f2d"
+            android:textSize="40sp"
+            android:fontFamily="@font/titanone_regular"
+            android:letterSpacing="-0.01"/>
 
-                android:text="Organizer Dashboard"
-                android:textColor="#fe7f2d"
-                android:fontFamily="sans-serif-medium"
-                android:textSize="26sp" />
-            <ImageButton
-                android:id="@+id/btnLogoutOrganizer"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_input_sharp"
-                android:backgroundTint="#2f4858"
-                android:src="@drawable/ic_logout"
-                android:tint="#fe7f2d"
-                android:padding="8dp"
-                android:contentDescription="Logout"/>
+        <ImageButton
+            android:id="@+id/btnLogoutOrganizer"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_input_sharp"
+            android:backgroundTint="#2f4858"
+            android:src="@drawable/ic_logout"
+            android:tint="#fe7f2d"
+            android:padding="8dp"
+    android:contentDescription="Logout"/>
+
 
         </LinearLayout>
 
