@@ -1,3 +1,19 @@
+/**
+ * OrganizerActivity
+ *
+ * Main screen for organizers.
+ * Lets organizers:
+ *  View events they created
+ *  Create new events
+ *  Run lotteries
+ *  View maps / manage entrants / show QR codes
+ *  Switch to entrant mode
+ *  Delete events
+ *
+ * Loads all events owned by the current organizer and builds
+ * cards dynamically into a vertical list.
+ */
+
 package com.example.aurora.activities;
 
 import android.content.Intent;
@@ -55,9 +71,6 @@ public class OrganizerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer);
 
-        // -----------------------------
-        // CRITICAL: SESSION CHECK
-        // -----------------------------
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         String docId = sp.getString("user_doc_id", null);
         organizerEmail = sp.getString("user_email", null);
@@ -68,7 +81,6 @@ public class OrganizerActivity extends AppCompatActivity {
             finish();
             return;
         }
-
         db = FirebaseFirestore.getInstance();
 
         bindViews();
@@ -80,9 +92,8 @@ public class OrganizerActivity extends AppCompatActivity {
 
         ExtendedFloatingActionButton fab = findViewById(R.id.roleSwitchFab);
 
-        // Show entrant mode on organizer side
         fab.setText("Entrant Mode");
-        // Fix overlapping UI
+
         fab.setTranslationY(-30);
 
         fab.setOnClickListener(v -> {
@@ -93,6 +104,7 @@ public class OrganizerActivity extends AppCompatActivity {
 
     }
 
+    /** Connects XML views to Java fields. */
     private void bindViews() {
         myEventsButton = findViewById(R.id.myEventsButton);
         createEventButton = findViewById(R.id.createEventButton);
@@ -103,16 +115,17 @@ public class OrganizerActivity extends AppCompatActivity {
         bottomAlerts = findViewById(R.id.bottomAlerts);
     }
 
+    /** Sets up logout and back button behavior in the top bar. */
     private void setupTopBar() {
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
         }
-
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> logoutUser());
         }
     }
 
+    /** Logs the organizer out and clears saved session. */
     private void logoutUser() {
         FirebaseAuth.getInstance().signOut();
 
@@ -125,6 +138,7 @@ public class OrganizerActivity extends AppCompatActivity {
         finish();
     }
 
+    /** Top tab buttons: My Events + Create Event. */
     private void setupTabs() {
         myEventsButton.setOnClickListener(v ->
                 Toast.makeText(this, "Events", Toast.LENGTH_SHORT).show()
@@ -135,6 +149,7 @@ public class OrganizerActivity extends AppCompatActivity {
         );
     }
 
+    /** Bottom navigation bar for Home, Profile, Alerts. */
     private void setupBottomNav() {
         bottomHome.setOnClickListener(v -> {
             Intent intent = new Intent(OrganizerActivity.this, OrganizerActivity.class);
@@ -153,6 +168,7 @@ public class OrganizerActivity extends AppCompatActivity {
         );
     }
 
+    /** Loads all events created by this organizer from Firestore. */
     private void loadEventsFromFirebase() {
         eventListContainer.removeAllViews();
 
@@ -175,6 +191,16 @@ public class OrganizerActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show());
     }
 
+    /**
+     * Creates a clickable event card for one event document.
+     * Card contains:
+     *  title, date, stats
+     *  Show QR
+     *  Manage Entrants
+     *  Lottery
+     *  Map View
+     *  Delete
+     */
     private void addEventCard(DocumentSnapshot doc) {
         View eventView = LayoutInflater.from(this)
                 .inflate(R.layout.item_event_card, eventListContainer, false);
@@ -238,10 +264,12 @@ public class OrganizerActivity extends AppCompatActivity {
         btnLottery.setOnClickListener(v -> runLotteryDialog(eventId));
         btnDelete.setOnClickListener(v -> confirmDelete(eventId));
 
-
         eventListContainer.addView(eventView);
     }
 
+    /**
+     * Shows "Run Lottery" input dialog where organizer enters amount to draw.
+     */
     private void runLotteryDialog(String eventId) {
 
         View view = getLayoutInflater().inflate(R.layout.dialog_run_lottery, null);
@@ -275,7 +303,14 @@ public class OrganizerActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
+    /**
+     * Performs the actual lottery:
+     *  shuffles waitingList
+     *  picks N winners
+     *  marks the rest as losers
+     *  updates Firestore fields
+     *  sends notifications
+     */
     private void runLottery(String eventId, int n) {
         db.collection("events").document(eventId)
                 .get()
@@ -326,6 +361,9 @@ public class OrganizerActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Sends notifications to entrants who were *not selected*.
+     */
     private void sendNotSelectedNotifications(String eventId, List<String> allEntrants, List<String> winners) {
 
         for (String email : allEntrants) {
@@ -355,6 +393,9 @@ public class OrganizerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sends notification to entrants who *won* the lottery.
+     */
     private void sendWinnerNotifications(String eventId, List<String> winners) {
         for (String email : winners) {
 
@@ -381,22 +422,22 @@ public class OrganizerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Pops a dialog listing all winners after the lottery finishes.
+     */
     private void showWinnersDialog(List<String> winners) {
 
-        // Inflate custom view
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_winners, null);
 
         TextView tvList = view.findViewById(R.id.dialogList);
         MaterialButton btnOk = view.findViewById(R.id.btnConfirm);
 
-        // Build formatted list
         StringBuilder sb = new StringBuilder();
         for (String w : winners) {
             sb.append("• ").append(w).append("\n");
         }
         tvList.setText(sb.toString());
 
-        // Build dialog
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.TransparentDialog)
                 .setView(view)
                 .setCancelable(true)
@@ -404,15 +445,14 @@ public class OrganizerActivity extends AppCompatActivity {
 
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-
-
-        // Button closes dialog
         btnOk.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }
 
-
+    /**
+     * Generates and displays a QR code from the event's deepLink.
+     */
     private void showQrPopup(String deepLink) {
         try {
             int size = 800;
@@ -444,6 +484,9 @@ public class OrganizerActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Asks organizer to confirm deleting an event.
+     */
     private void confirmDelete(String eventId) {
         new androidx.appcompat.app.AlertDialog.Builder(this)
                 .setTitle("Delete Event?")
@@ -453,9 +496,14 @@ public class OrganizerActivity extends AppCompatActivity {
                 .show();
     }
 
+    /**
+     * Deletes:
+     *  waitingLocations subcollection
+     *  notifications for this event
+     *  the event document itself
+     */
     private void deleteEvent(String eventId) {
 
-        // 1) DELETE SUBCOLLECTION: waitingLocations
         db.collection("events")
                 .document(eventId)
                 .collection("waitingLocations")
@@ -466,7 +514,6 @@ public class OrganizerActivity extends AppCompatActivity {
                         d.getReference().delete();
                     }
 
-                    // 2) DELETE USER NOTIFICATIONS (but keep notificationLogs!)
                     db.collection("notifications")
                             .whereEqualTo("eventId", eventId)
                             .get()
@@ -476,7 +523,6 @@ public class OrganizerActivity extends AppCompatActivity {
                                     d.getReference().delete();
                                 }
 
-                                // 3) DELETE EVENT ITSELF
                                 db.collection("events").document(eventId)
                                         .delete()
                                         .addOnSuccessListener(v -> {

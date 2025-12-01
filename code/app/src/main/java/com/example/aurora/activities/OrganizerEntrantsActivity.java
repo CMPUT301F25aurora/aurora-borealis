@@ -52,54 +52,37 @@ import com.google.firebase.storage.StorageReference;
  */
 
 public class OrganizerEntrantsActivity extends AppCompatActivity {
-
     private FirebaseFirestore db;
-
-    // Header
     private ImageButton btnBack;
     private TextView tvEventTitle;
     private TextView tvEventSubtitle;
-
-    // Stat cards
     private TextView tvWaitingCount;
     private TextView tvSelectedCount;
     private TextView tvCancelledCount;
     private TextView tvTotalSpots;
-
-    // Buttons
-
     private Button btnNotify;
-
-    // Tabs
     private TextView tabWaiting;
     private TextView tabSelected;
     private TextView tabCancelled;
     private TextView tabFinal;
-
-    // List
     private RecyclerView recyclerEntrants;
     private EntrantsAdapter entrantsAdapter;
-
     private String eventId;
     private ImageView imgEventPoster;
     private Button btnUpdatePoster;
-
     private Uri newPosterUri = null;
     private ActivityResultLauncher<Intent> posterPickerLauncher;
     private StorageReference posterStorageRef;
-
-
-    // Email lists from the event doc
     private List<String> waitingEmails = new ArrayList<>();
     private List<String> selectedEmails = new ArrayList<>();
     private List<String> cancelledEmails = new ArrayList<>();
     private List<String> finalEmails = new ArrayList<>();
     private long maxSpots = 0L;
-
-    // Current tab
     private enum Tab { WAITING, SELECTED, CANCELLED, FINAL }
     private Tab currentTab = Tab.WAITING;
     private String organizerEmail;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +99,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             return;
         }
 
-        // 🔥 Initialize storage
         posterStorageRef = FirebaseStorage.getInstance()
                 .getReference()
                 .child("event_posters");
@@ -133,35 +115,33 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
 
     }
 
+    /** Connects XML views to Java fields and sets back button listener. */
     private void bindViews() {
         imgEventPoster = findViewById(R.id.imgEventPoster);
         btnUpdatePoster = findViewById(R.id.btnUpdatePoster);
-
         btnBack = findViewById(R.id.btnBackEntrants);
         tvEventTitle = findViewById(R.id.tvEventTitle);
         tvEventSubtitle = findViewById(R.id.tvEventSubtitle);
-
         tvWaitingCount = findViewById(R.id.tvWaitingCount);
         tvSelectedCount = findViewById(R.id.tvSelectedCount);
         tvCancelledCount = findViewById(R.id.tvCancelledCount);
         tvTotalSpots = findViewById(R.id.tvTotalSpots);
-
-
         btnNotify = findViewById(R.id.btnNotify);
-
-
         tabWaiting = findViewById(R.id.tabWaiting);
         tabSelected = findViewById(R.id.tabSelected);
         tabCancelled = findViewById(R.id.tabCancelled);
         tabFinal = findViewById(R.id.tabFinal);
-
         recyclerEntrants = findViewById(R.id.recyclerEntrants);
-
         if (btnBack != null) {
             btnBack.setOnClickListener(v -> onBackPressed());
         }
     }
 
+    /**
+     * Sets up the RecyclerView and its listeners:
+     *  selection listener for notify button behavior
+     *  delete listener for removing entrants
+     */
     private void setupRecycler() {
         entrantsAdapter = new EntrantsAdapter(this, new ArrayList<>());
         recyclerEntrants.setLayoutManager(new LinearLayoutManager(this));
@@ -180,6 +160,11 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         });
 
     }
+
+    /**
+     * Configures logic for the Notify button based on current tab
+     * (Waiting / Selected / Cancelled).
+     */
     private void setupNotifyButtonLogic() {
 
         btnNotify.setText("Notify All");
@@ -212,7 +197,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // WAITING — notify ALL
+    /** Sends a message to all waiting entrants. */
     private void notifyAllWaiting(String msg) {
         if (waitingEmails.isEmpty()) {
             Toast.makeText(this, "No entrants in waiting list.", Toast.LENGTH_SHORT).show();
@@ -235,7 +220,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // WAITING — notify SELECTED (checkbox)
+    /** Sends message only to the selected waiting entrants. */
     private void notifySelectedEntrants_Waiting(String msg, List<EntrantsAdapter.EntrantItem> selected) {
 
         db.collection("events").document(eventId).get()
@@ -256,7 +241,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // SELECTED — notify ALL
+    /** Sends a message to all selected entrants. */
     private void notifyAllSelected(String msg) {
 
         if (selectedEmails.isEmpty()) {
@@ -282,7 +267,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // SELECTED — notify SELECTED (checkbox)
+    /** Sends message only to selected entrants in the Selected tab. */
     private void notifySelectedEntrants_SelectedTab(String msg, List<EntrantsAdapter.EntrantItem> selected) {
 
         db.collection("events").document(eventId).get()
@@ -303,7 +288,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // CANCELLED — notify ALL
+    /** Sends a message to all cancelled entrants. */
     private void notifyAllCancelled(String msg) {
         if (cancelledEmails.isEmpty()) {
             Toast.makeText(this, "No cancelled entrants.", Toast.LENGTH_SHORT).show();
@@ -320,7 +305,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                                 db, email, eventName, eventId, msg, organizerEmail
                         );
                     }
-
                     Toast.makeText(this,
                             "Notified all cancelled entrants.",
                             Toast.LENGTH_SHORT).show();
@@ -328,7 +312,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // CANCELLED — notify SELECTED (checkbox)
+    /** Sends to selected entrants in Cancelled tab. */
     private void notifySelectedEntrants_Cancelled(String msg, List<EntrantsAdapter.EntrantItem> selected) {
 
         db.collection("events").document(eventId).get()
@@ -349,18 +333,21 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
     }
 
 
-    // ⭐ ADDED — Automatically update button label based on selection state
+    /**
+     * Updates the Notify button text dynamically depending on:
+     *  current tab
+     *  number of selected entrants
+     */
     private void updateNotifyButtonMode() {
 
         List<EntrantsAdapter.EntrantItem> selected = entrantsAdapter.getSelectedEntrants();
 
         if (selected.isEmpty()) {
-
             if (currentTab == Tab.WAITING) {
                 btnNotify.setText("Notify All");
             } else if (currentTab == Tab.SELECTED) {
                 btnNotify.setText("Notify All Selected");
-            } else if (currentTab == Tab.CANCELLED) {   // ⭐ ADD THIS
+            } else if (currentTab == Tab.CANCELLED) {
                 btnNotify.setText("Notify All Cancelled");
             }
 
@@ -370,64 +357,13 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 btnNotify.setText("Notify Selected (" + selected.size() + ")");
             } else if (currentTab == Tab.SELECTED) {
                 btnNotify.setText("Notify Selected (" + selected.size() + ")");
-            } else if (currentTab == Tab.CANCELLED) {   // ⭐ ADD THIS
+            } else if (currentTab == Tab.CANCELLED) {
                 btnNotify.setText("Notify Selected (" + selected.size() + ")");
             }
         }
     }
 
-
-    private void cancelUnconfirmedEntrants(List<EntrantsAdapter.EntrantItem> toCancel) {
-        if (selectedEmails == null) selectedEmails = new ArrayList<>();
-        if (cancelledEmails == null) cancelledEmails = new ArrayList<>();
-
-        List<String> emailsToMove = new ArrayList<>();
-
-        for (EntrantsAdapter.EntrantItem item : toCancel) {
-            String email = item.getEmail();
-            if (email == null || email.isEmpty()) continue;
-
-            // Only move if currently in selected list
-            if (selectedEmails.remove(email)) {
-                if (!cancelledEmails.contains(email)) {
-                    cancelledEmails.add(email);
-                }
-                emailsToMove.add(email);
-            }
-        }
-
-        if (emailsToMove.isEmpty()) {
-            Toast.makeText(this,
-                    "No selected entrants to cancel.",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("selectedEntrants", selectedEmails);
-        updates.put("cancelledEntrants", cancelledEmails);
-
-        db.collection("events")
-                .document(eventId)
-                .update(updates)
-                .addOnSuccessListener(v -> {
-                    // Update stat cards
-                    tvSelectedCount.setText(String.valueOf(selectedEmails.size()));
-                    tvCancelledCount.setText(String.valueOf(cancelledEmails.size()));
-
-                    // Show them under the Cancelled tab
-                    setActiveTab(Tab.CANCELLED);
-
-                    Toast.makeText(this,
-                            "Cancelled " + emailsToMove.size() + " entrant(s) who did not sign up.",
-                            Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> Toast.makeText(this,
-                        "Failed to cancel entrants: " + e.getMessage(),
-                        Toast.LENGTH_SHORT).show());
-    }
-
-
+    /** Sets up click listeners for all tabs. */
     private void setupTabs() {
         View.OnClickListener listener = v -> {
             if (v.getId() == R.id.tabWaiting) {
@@ -447,6 +383,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         tabFinal.setOnClickListener(listener);
     }
 
+    /** Loads the event document then binds UI and lists. */
     private void loadEventAndLists() {
         db.collection("events")
                 .document(eventId)
@@ -457,6 +394,10 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 );
     }
 
+    /**
+     * Reads event data (title, lists, poster, stats) and updates the UI.
+     * Also loads entrant lists.
+     */
     private void bindEventData(DocumentSnapshot doc) {
         if (!doc.exists()) {
             Toast.makeText(this, "Event not found", Toast.LENGTH_SHORT).show();
@@ -464,7 +405,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             return;
         }
 
-        // Title
         String title = doc.getString("title");
         if (title == null) title = doc.getString("name");
         if (title == null) title = "Event";
@@ -484,7 +424,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         }
         tvEventSubtitle.setText(subtitle);
 
-        // Poster URL 🔥🔥🔥
         String posterUrl = doc.getString("posterUrl");
         if (posterUrl != null && !posterUrl.isEmpty()) {
             Glide.with(this)
@@ -493,7 +432,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                     .into(imgEventPoster);
         }
 
-        // Lists
         waitingEmails = (List<String>) doc.get("waitingList");
         if (waitingEmails == null) waitingEmails = new ArrayList<>();
 
@@ -506,32 +444,29 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         finalEmails = (List<String>) doc.get("finalEntrants");
         if (finalEmails == null) finalEmails = new ArrayList<>();
 
-        // Capacity
         Long max = doc.getLong("maxSpots");
         if (max == null) max = 0L;
         maxSpots = max;
 
-        // Cards
         tvWaitingCount.setText(String.valueOf(waitingEmails.size()));
         tvSelectedCount.setText(String.valueOf(selectedEmails.size()));
         tvCancelledCount.setText(String.valueOf(cancelledEmails.size()));
         tvTotalSpots.setText(String.valueOf(maxSpots));
 
-        // Default tab
         setActiveTab(Tab.WAITING);
     }
 
+    /**
+     * Switches to the selected tab and loads its entrant list.
+     */
     private void setActiveTab(Tab tab) {
 
         currentTab = tab;
         resetTabStyles();
 
-        // Always show the notify button for Waiting, Selected, and Cancelled
-        // Only hide for Final
         btnNotify.setVisibility(View.VISIBLE);
 
         switch (tab) {
-
             case WAITING:
                 highlightTab(tabWaiting);
                 loadEntrantsForEmails(waitingEmails, "Waiting");
@@ -547,19 +482,20 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
             case CANCELLED:
                 highlightTab(tabCancelled);
                 loadEntrantsForEmails(cancelledEmails, "Cancelled");
-                btnNotify.setText("Notify All Cancelled");   // ⭐ NEW
+                btnNotify.setText("Notify All Cancelled");
                 break;
 
             case FINAL:
                 highlightTab(tabFinal);
                 loadEntrantsForEmails(finalEmails, "Final");
-                btnNotify.setVisibility(View.GONE);  // FINAL should NOT notify anyone
+                btnNotify.setVisibility(View.GONE);
                 break;
         }
 
-        updateNotifyButtonMode(); // always recalc label based on selection
+        updateNotifyButtonMode();
     }
 
+    /** Resets all tab styles to inactive mode. */
     private void resetTabStyles() {
         int normalColor = getResources().getColor(android.R.color.darker_gray);
         int normalBg = getResources().getColor(android.R.color.transparent);
@@ -575,12 +511,17 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         tabFinal.setBackgroundColor(normalBg);
     }
 
+    /** Highlights the selected tab visually. */
     private void highlightTab(TextView tab) {
         int accent = getResources().getColor(R.color.purple_500, getTheme());
         tab.setTextColor(accent);
         tab.setBackgroundResource(R.drawable.bg_tab_selected);
     }
 
+    /**
+     * Loads entrant data for a list of emails.
+     * Looks up name from users collection and adds to the RecyclerView.
+     */
     private void loadEntrantsForEmails(List<String> emails, String statusLabel) {
         entrantsAdapter.clearItems();
 
@@ -592,13 +533,12 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         for (String email : emails) {
             if (email == null || email.isEmpty()) continue;
 
-            // For each email, lookup name from users collection
             db.collection("users")
                     .whereEqualTo("email", email)
                     .limit(1)
                     .get()
                     .addOnSuccessListener(snap -> {
-                        String name = email; // default fallback
+                        String name = email;
 
                         if (!snap.isEmpty() && snap.getDocuments().get(0) != null) {
                             DocumentSnapshot u = snap.getDocuments().get(0);
@@ -607,7 +547,6 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                                 name = n;
                             }
                         }
-
                         EntrantsAdapter.EntrantItem item =
                                 new EntrantsAdapter.EntrantItem(name, email, statusLabel);
 
@@ -619,6 +558,8 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show());
         }
     }
+
+    /** Sets up ActivityResultLauncher for poster image picking. */
     private void setupPosterPicker() {
         posterPickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -633,6 +574,7 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         );
     }
 
+    /** Opens gallery to pick a new event poster image. */
     private void openPosterPicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -641,6 +583,10 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * Uploads new poster image to Firebase Storage
+     * and updates event document with new URL.
+     */
     private void uploadNewPoster() {
         if (newPosterUri == null) return;
 
@@ -668,10 +614,15 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 );
     }
 
+    /** Callback interface for custom notification messages. */
     private interface CustomMessageCallback {
         void onMessage(String msg);
     }
 
+    /**
+     * Shows dialog for typing a custom message.
+     * Returns message through callback when "Send" pressed.
+     */
     private void showCustomMessageDialog(CustomMessageCallback callback) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Send Message");
@@ -695,6 +646,9 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         builder.show();
     }
 
+    /**
+     * Exports the FINAL entrants list as a CSV file.
+     */
     private void exportFinalListAsCsv() {
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(doc -> {
@@ -713,6 +667,10 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Fetches name/phone for each email in final list
+     * and builds CSV string.
+     */
     private void fetchEntrantDetails(List<String> emails) {
         StringBuilder csv = new StringBuilder("Name,Email,Phone\n");
 
@@ -749,6 +707,9 @@ public class OrganizerEntrantsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Saves built CSV content into Downloads folder.
+     */
     private void saveCsvToFile(String csvData) {
         try {
             File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);

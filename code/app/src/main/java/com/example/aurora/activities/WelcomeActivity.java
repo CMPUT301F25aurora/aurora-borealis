@@ -36,10 +36,14 @@ import com.example.aurora.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class WelcomeActivity extends AppCompatActivity {
-
     private View root;
     private View tapAnywhere;
 
+    /**
+     * Sets up the welcome screen, handles deep-link events,
+     * checks whether the user is already logged in,
+     * and routes them either to the correct home/dashboard or to LoginActivity.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +52,6 @@ public class WelcomeActivity extends AppCompatActivity {
         root = findViewById(R.id.welcomeRoot);
         tapAnywhere = findViewById(R.id.tapAnywhere);
 
-        // HANDLE DEEP LINK if opened from QR
         Intent incomingIntent = getIntent();
         if (incomingIntent != null && incomingIntent.getData() != null) {
             Uri uri = incomingIntent.getData();
@@ -61,7 +64,6 @@ public class WelcomeActivity extends AppCompatActivity {
             }
         }
 
-        // IF USER ALREADY LOGGED IN, GO STRAIGHT TO HOME / EVENT
         SharedPreferences sp = getSharedPreferences("aurora_prefs", MODE_PRIVATE);
         String role = sp.getString("user_role", null);
 
@@ -80,8 +82,6 @@ public class WelcomeActivity extends AppCompatActivity {
                 finish();
                 return;
             }
-
-            // route to correct dashboard if no pending event
             Intent next;
             if (role.equalsIgnoreCase("organizer")) next = new Intent(this, OrganizerActivity.class);
             else if (role.equalsIgnoreCase("admin")) next = new Intent(this, AdminActivity.class);
@@ -91,8 +91,6 @@ public class WelcomeActivity extends AppCompatActivity {
             finish();
             return;
         }
-
-
         View.OnClickListener goToLogin = v -> {
             Intent i = new Intent(WelcomeActivity.this, LoginActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -103,5 +101,4 @@ public class WelcomeActivity extends AppCompatActivity {
         root.setOnClickListener(goToLogin);
         tapAnywhere.setOnClickListener(goToLogin);
     }
-
 }

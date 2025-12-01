@@ -19,9 +19,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-
+/**
+ * SignUpActivity
+ *
+ * Handles new user registration.
+ * Features:
+ *  Validates signup form fields.
+ *  Creates a Firebase Auth account.
+ *  Stores user profile data in Firestore.
+ *  Saves session preferences.
+ *  Navigates the user to the entrant home screen.
+ */
 public class SignUpActivity extends AppCompatActivity {
-
     private EditText signupName, signupEmail, signupPhone, signupPassword;
     private Button signupButton;
     private FirebaseAuth mAuth;
@@ -49,7 +58,10 @@ public class SignUpActivity extends AppCompatActivity {
         );
     }
 
-
+    /**
+     * Enables tap-to-show / tap-to-hide functionality
+     * for the password input field.
+     */
     private void setupPasswordToggle() {
         final boolean[] visible = {false};
         ImageView toggle = findViewById(R.id.passwordToggleSignup);
@@ -67,14 +79,15 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Reads all signup form fields, validates them,
+     * and if valid, begins account creation.
+     */
     private void attemptSignup() {
         String name = signupName.getText().toString().trim();
         String email = signupEmail.getText().toString().trim().toLowerCase();
         String phone = signupPhone.getText().toString().trim();
         String password = signupPassword.getText().toString().trim();
-
-
 
         if (name.isEmpty() || email.isEmpty() || password.isEmpty()) {
             toast("Please fill in all Required fields");
@@ -95,7 +108,10 @@ public class SignUpActivity extends AppCompatActivity {
         createAuthAccount(name, email, phone, password);
     }
 
-
+    /**
+     * Creates a FirebaseAuth account using the provided email and password.
+     * On success, continues by writing a Firestore profile document.
+     */
     private void createAuthAccount(String name, String email, String phone, String password) {
 
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -105,18 +121,19 @@ public class SignUpActivity extends AppCompatActivity {
                         handleAuthFailure(task.getException());
                         return;
                     }
-
                     FirebaseUser firebaseUser = mAuth.getCurrentUser();
                     if (firebaseUser == null) {
                         toast("Could not create account.");
                         return;
                     }
-
                     writeUserToFirestore(firebaseUser.getUid(), name, email, phone, password);
                 });
     }
 
-
+    /**
+     * Handles FirebaseAuth creation errors such as
+     * duplicate emails or invalid credentials.
+     */
     private void handleAuthFailure(Exception e) {
 
         if (e instanceof FirebaseAuthUserCollisionException) {
@@ -128,7 +145,11 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-
+    /**
+     * Writes a new user profile document to Firestore.
+     * Sets default values such as role, permissions, and counters.
+     * On success, saves local session preferences and navigates to home.
+     */
     private void writeUserToFirestore(String uid, String name, String email, String phone,
                                       String password) {
 
@@ -138,13 +159,10 @@ public class SignUpActivity extends AppCompatActivity {
         user.put("phone", phone);
         user.put("password", password);
 
-        // Always entrant on signup
         user.put("role", "entrant");
 
-        // Organizer mode allowed by default
         user.put("organizer_allowed", true);
 
-        // Required defaults
         user.put("entrant_notifications_enabled", true);
         user.put("joinedCount", 0);
         user.put("winsCount", 0);
@@ -162,8 +180,10 @@ public class SignUpActivity extends AppCompatActivity {
                         toast("Error: " + e.getMessage()));
     }
 
-
-
+    /**
+     * Stores basic user session info in SharedPreferences
+     * so the user stays logged in after signup.
+     */
     private void savePreferences(String name, String email, String uid) {
 
         getSharedPreferences("aurora_prefs", MODE_PRIVATE)
@@ -176,7 +196,10 @@ public class SignUpActivity extends AppCompatActivity {
                 .apply();
     }
 
-
+    /**
+     * Redirects the user to the entrant home screen
+     * after signup is fully completed.
+     */
     private void navigateAfterSignup(String name, String email, String phone) {
 
         Intent intent = new Intent(this, EntrantNavigationActivity.class);
@@ -190,7 +213,9 @@ public class SignUpActivity extends AppCompatActivity {
         finish();
     }
 
-
+    /**
+     * Helper for showing short Toast messages.
+     */
     private void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }

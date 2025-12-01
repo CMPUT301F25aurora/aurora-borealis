@@ -1,3 +1,17 @@
+
+/**
+ * LoginActivity
+ *
+ * Handles user login. Supports:
+ *  Email/password login
+ *  Phone/password login
+ *  Auto-login if user session already stored
+ *  Password visibility toggle
+ *
+ * After login, redirects the user to the correct home screen
+ * based on their role (admin / organizer / entrant).
+ */
+
 package com.example.aurora.activities;
 
 import android.content.Intent;
@@ -23,6 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView createAccountButton;
     private FirebaseFirestore db;
 
+    /** Sets up the login screen, handles auto-login, binds UI, and listeners. */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +70,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // No auto-login → show login screen
         setContentView(R.layout.activity_login);
 
         loginEmail = findViewById(R.id.loginEmail);
@@ -74,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         );
     }
 
+    /** Handles the eye-icon toggle for showing/hiding password text. */
     private void setupPasswordToggle() {
         ImageView toggle = findViewById(R.id.passwordToggle);
         final boolean[] visible = {false};
@@ -91,6 +106,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Attempts login:
+     * Try using email + password
+     * If not found, try phone + password
+     */
     private void loginUser() {
         String input = loginEmail.getText().toString().trim();
         String password = loginPassword.getText().toString().trim();
@@ -100,7 +120,6 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // 1) Try login by email
         db.collection("users")
                 .whereEqualTo("email", input)
                 .whereEqualTo("password", password)
@@ -125,6 +144,12 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Saves user session to SharedPreferences and redirects:
+     *  admin → AdminActivity
+     *  organizer → OrganizerActivity
+     *  entrant → EntrantNavigationActivity
+     */
     private void handleLogin(DocumentSnapshot doc) {
 
         String name = doc.getString("name");
@@ -141,7 +166,6 @@ public class LoginActivity extends AppCompatActivity {
                 .putString("user_role",  role)
                 .putString("user_doc_id", doc.getId())
 
-                // ALWAYS set last mode
                 .putString("user_last_mode",
                         role.equals("organizer") ? "organizer" : "entrant"
                 )
