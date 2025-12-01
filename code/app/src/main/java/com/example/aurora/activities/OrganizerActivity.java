@@ -4,15 +4,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,6 +23,7 @@ import com.example.aurora.R;
 import com.example.aurora.map.EventMapActivity;
 import com.example.aurora.models.NotificationModel;
 import com.example.aurora.notifications.FirestoreNotificationHelper;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -238,26 +242,38 @@ public class OrganizerActivity extends AppCompatActivity {
     }
 
     private void runLotteryDialog(String eventId) {
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setTitle("Run Lottery");
 
-        final android.widget.EditText input = new android.widget.EditText(this);
-        input.setHint("Number of entrants to pick");
-        input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
-        builder.setView(input);
+        View view = getLayoutInflater().inflate(R.layout.dialog_run_lottery, null);
 
-        builder.setPositiveButton("Run", (dialog, which) -> {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .setCancelable(true)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+
+        EditText input = view.findViewById(R.id.inputNumber);
+        Button btnCancel = view.findViewById(R.id.btnCancelLottery);
+        Button btnRun = view.findViewById(R.id.btnRunLottery);
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnRun.setOnClickListener(v -> {
             String s = input.getText().toString().trim();
             if (s.isEmpty()) {
                 Toast.makeText(this, "Enter a number", Toast.LENGTH_SHORT).show();
                 return;
             }
+
             runLottery(eventId, Integer.parseInt(s));
+            dialog.dismiss();
         });
 
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+        dialog.show();
     }
+
 
     private void runLottery(String eventId, int n) {
         db.collection("events").document(eventId)
@@ -365,15 +381,36 @@ public class OrganizerActivity extends AppCompatActivity {
     }
 
     private void showWinnersDialog(List<String> winners) {
-        StringBuilder sb = new StringBuilder();
-        for (String w : winners) sb.append("• ").append(w).append("\n");
 
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Selected Entrants")
-                .setMessage(sb.toString())
-                .setPositiveButton("OK", null)
-                .show();
+        // Inflate custom view
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_winners, null);
+
+        TextView tvList = view.findViewById(R.id.dialogList);
+        MaterialButton btnOk = view.findViewById(R.id.btnConfirm);
+
+        // Build formatted list
+        StringBuilder sb = new StringBuilder();
+        for (String w : winners) {
+            sb.append("• ").append(w).append("\n");
+        }
+        tvList.setText(sb.toString());
+
+        // Build dialog
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.TransparentDialog)
+                .setView(view)
+                .setCancelable(true)
+                .create();
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+
+        // Button closes dialog
+        btnOk.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
+
 
     private void showQrPopup(String deepLink) {
         try {
