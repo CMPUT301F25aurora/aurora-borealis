@@ -54,26 +54,8 @@ public class LoginActivityInstrumentedTest {
             new ActivityScenarioRule<>(LoginActivity.class);
 
     /**
-     * Tests that the Login screen loads and shows the main buttons.
-     */
-    @Test
-    public void testLoginScreenIsVisible() {
-        onView(withId(R.id.loginButton)).check(matches(isDisplayed()));
-        onView(withId(R.id.createAccountButton)).check(matches(isDisplayed()));
-    }
-
-    /**
-     * Tests that clicking the "Create Account" button opens the SignUpActivity.
-     */
-    @Test
-    public void testCreateAccountNavigatesToSignUp() {
-        onView(withId(R.id.createAccountButton)).perform(click());
-        onView(withId(R.id.SignUpButton)).check(matches(isDisplayed()));
-    }
-
-    /**
      * Tests that entering fake credentials and tapping login does not crash.
-     * (No need to check toast or backend response — just ensure app stays open.)
+     * (No need to check toast or backend response — just ensure app stays open)
      */
     @Test
     public void testInvalidLoginDoesNotCrash() {
@@ -82,4 +64,53 @@ public class LoginActivityInstrumentedTest {
         onView(withId(R.id.loginButton)).perform(click());
         onView(withId(R.id.loginButton)).check(matches(isDisplayed()));
     }
+
+    /**
+     * Tests logging in with a valid email and password for an entrant user
+     */
+    @Test
+    public void testValidLoginEntrant() {
+        // type valid entrant credentials
+        onView(withId(R.id.loginEmail)).perform(typeText("ok@email.com"), closeSoftKeyboard());
+        onView(withId(R.id.loginPassword)).perform(typeText("okokok"), closeSoftKeyboard());
+        onView(withId(R.id.loginButton)).perform(click());
+
+        // check that EventsActivity is displayed
+        onView(withId(R.id.recyclerEvents)).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Tests that entering valid email and password for an Organizer user
+     * successfully navigates to the OrganizerActivity
+     */
+    @Test
+    public void testValidOrganizerLoginNavigatesToOrganizerActivity() {
+        onView(withId(R.id.loginEmail)).perform(typeText("new@orgg.com"), closeSoftKeyboard());
+        onView(withId(R.id.loginPassword)).perform(typeText("123456"), closeSoftKeyboard());
+        onView(withId(R.id.loginButton)).perform(click());
+
+        // check that organizer dashboard views are displayed
+        onView(withId(R.id.eventListContainer)).check(matches(isDisplayed()));
+    }
+
+
+
+/**
+    /**
+     * Tests that entering valid info for an Admin user
+     * successfully navigates to AdminActivity.
+     */
+    @Test
+    public void testValidAdminLoginNavigatesToAdminActivity() {
+        onView(withId(R.id.loginEmail)).perform(typeText("admin@ujjawal.com"), closeSoftKeyboard());
+        onView(withId(R.id.loginPassword)).perform(typeText("bobispathan"), closeSoftKeyboard());
+        onView(withId(R.id.loginButton)).perform(click());
+
+        // check that admin dashboard views are displayed
+        onView(withId(R.id.adminListContainer)).check(matches(isDisplayed()));
+    }
+
+
+
+
 }

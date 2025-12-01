@@ -40,12 +40,13 @@ public class EntrantFeaturesTest {
         userId = "user_555";
     }
 
+    // ==================================================================
+    // US 01.01.01: Join Waiting List
+    // ================================================================\
+
     /**
-     * Test: Joining the waitlist should add the user once.
-     *
-     * Verifies:
-     *  user is added to list
-     *  list size increments
+     * Verifies that an entrant can successfully join an event's waiting list
+     * when not already subscribed.
      */
     @Test
     public void testJoinWaitlist_Success() {
@@ -55,13 +56,9 @@ public class EntrantFeaturesTest {
         assertTrue(event.getWaitingList().contains("user_555"));
         assertEquals(1, event.getWaitingList().size());
     }
-
     /**
-     * Test: Joining twice should not duplicate the user.
-     *
-     * Verifies:
-     *  duplicate entries prevented
-     *  final size remains 1
+     * Ensures duplicate users are not added to the waiting list more than once,
+     * preventing inflated entrant counts.
      */
     @Test
     public void testJoinWaitlist_PreventDuplicates() {
@@ -75,12 +72,11 @@ public class EntrantFeaturesTest {
         assertEquals(1, event.getWaitingList().size());
     }
 
+    // ==================================================================
+    // US 01.01.02: Leave Waiting List
+    // ==================================================================
     /**
-     * Test: Leaving removes user from list.
-     *
-     * Verifies:
-     *  user removed from waitlist
-     *  size becomes zero
+     * Tests that an entrant can successfully remove themselves from an event’s waiting list.
      */
     @Test
     public void testLeaveWaitlist_Success() {
@@ -92,12 +88,13 @@ public class EntrantFeaturesTest {
         assertEquals(0, event.getWaitingList().size());
     }
 
+    // ==================================================================
+    // US 01.02.01 & 01.02.02: Profile Data & Updates
+    // ==================================================================
+
     /**
-     * Test: Updating profile info should store new data.
-     *
-     * Verifies:
-     *  updated name matches
-     *  updated phone matches
+     * Tests basic profile editing logic used in the ProfileActivity for updating
+     * entrant information such as name and phone number.
      */
     @Test
     public void testProfile_UpdateInfo() {
@@ -108,13 +105,8 @@ public class EntrantFeaturesTest {
         assertEquals("Alice Cooper", name);
         assertEquals("123-456-7890", phone);
     }
-
     /**
-     * Test: Email validation logic should reject missing "@".
-     *
-     * Verifies:
-     *  valid emails contain "@"
-     *  invalid emails do not
+     * Simulates email validation used during profile updates and signup processes.
      */
     @Test
     public void testProfile_EmailValidation_Logic() {
@@ -126,12 +118,13 @@ public class EntrantFeaturesTest {
         assertFalse(invalid.contains("@"));
     }
 
+    // ==================================================================
+    // US 01.05.02: Accept Invitation (Win -> Enroll)
+    // =================================================================
+
     /**
-     * Test: Accepting invitation moves user from selected → enrolled.
-     *
-     * Verifies:
-     *  removed from selectedEntrants
-     *  added to enrolledEntrants
+     * When a user is selected in the lottery and accepts the invitation,
+     * they should be transferred from "selected" → "enrolled".
      */
     @Test
     public void testAcceptInvitation_MovesToEnrolled() {
@@ -146,12 +139,13 @@ public class EntrantFeaturesTest {
         assertTrue("Should be added to Enrolled", event.getEnrolledEntrants().contains("user_555"));
     }
 
+    // ==================================================================
+    // US 01.05.03: Decline Invitation (Win -> Cancelled)
+    // ==================================================================
+
     /**
-     * Test: Declining invitation moves user from selected → cancelled.
-     *
-     * Verifies:
-     *  removed from selectedEntrants
-     *  added to cancelledEntrants
+     * When a selected entrant declines, they should be moved from
+     * "selected" → "cancelled".
      */
     @Test
     public void testDeclineInvitation_MovesToCancelled() {
@@ -167,11 +161,13 @@ public class EntrantFeaturesTest {
         assertTrue(event.getCancelledEntrants().contains("user_555"));
     }
 
+    // ==================================================================
+    // US 01.05.04: View Entrant Count
+    // ==================================================================
+
     /**
-     * Test: Counting entrants returns correct size.
-     *
-     * Verifies:
-     *  list size counting works
+     * Confirms that the waiting list size correctly reflects the number of entrants,
+     * allowing the entrant to see how many people are competing for a spot.
      */
     @Test
     public void testViewTotalEntrants_Logic() {
@@ -183,11 +179,12 @@ public class EntrantFeaturesTest {
         assertEquals(3, count);
     }
 
+    // ==================================================================
+    // US 01.07.01: Device Identification
+    // ==================================================================
     /**
-     * Test: Fallback logic uses device ID when no account is available.
-     *
-     * Verifies:
-     *  null account ID replaced by device ID
+     * Verifies fallback logic used when an entrant uses device-only authentication.
+     * If no account exists, the system must use a stable device identifier.
      */
     @Test
     public void testDeviceIdentification_Fallback() {

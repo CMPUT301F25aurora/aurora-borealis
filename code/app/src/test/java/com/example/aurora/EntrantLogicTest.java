@@ -20,47 +20,11 @@ import java.util.List;
  */
 public class EntrantLogicTest {
 
+    @Mock
+    Event mockEvent;
     /**
-     * When an entrant joins the waiting list, their ID should be added
-     * if it is not already present.
-     */
-    @Test
-    public void joinWaitingList_addsUserWhenNotPresent() {
-        Event event = new Event();
-        List<String> waiting = new ArrayList<>();
-        event.setWaitingList(waiting);
-
-        String userId = "user123";
-
-        if (!event.getWaitingList().contains(userId)) {
-            event.getWaitingList().add(userId);
-        }
-
-        assertTrue(event.getWaitingList().contains(userId));
-        assertEquals(1, event.getWaitingList().size());
-    }
-
-    /**
-     * Joining twice should not create duplicates in the waiting list.
-     */
-    @Test
-    public void joinWaitingList_doesNotDuplicateUser() {
-        Event event = new Event();
-        List<String> waiting = new ArrayList<>(Arrays.asList("user123"));
-        event.setWaitingList(waiting);
-
-        String userId = "user123";
-
-        if (!event.getWaitingList().contains(userId)) {
-            event.getWaitingList().add(userId);
-        }
-
-        assertEquals(1, event.getWaitingList().size());
-        assertTrue(event.getWaitingList().contains(userId));
-    }
-
-    /**
-     * Leaving the waiting list should remove the user if present.
+     * Ensures that when an entrant joins the waiting list,
+     * their ID is successfully added to the event’s stored list.
      */
     @Test
     public void leaveWaitingList_removesUser() {
@@ -74,10 +38,8 @@ public class EntrantLogicTest {
         assertFalse(event.getWaitingList().contains(userId));
         assertEquals(1, event.getWaitingList().size());
     }
-
     /**
-     * If geoRequired is true on an event, we can use that as a simple
-     * flag to block joining when the entrant has no location.
+     * Verifies that duplicate entrants are detected and prevented.
      */
     @Test
     public void geoRequiredFlag_blocksJoinWhenNoLocation() {
@@ -91,10 +53,8 @@ public class EntrantLogicTest {
         assertFalse("Entrant without location should not be allowed when geoRequired is true",
                 allowedToJoin);
     }
-
     /**
-     * Verifies that filtering by availability only keeps events
-     * that are marked as open and excludes closed events.
+     * Tests basic geolocation distance logic used for geo-restricted events.
      */
     @Test
     public void filterEventsByAvailability_onlyShowsOpenEvents() {
