@@ -194,4 +194,32 @@ public class AdminActivityInstrumentedTest {
         // For example, if you have a "Activity Logs" header:
         // onView(withText("Activity Logs")).check(matches(isDisplayed()));
     }
+
+    @Test
+    public void adminActivity_showsHeaderAndTabsOnLaunch() {
+        // ActivityScenarioRule<AdminActivity> in this class already launches AdminActivity.
+        // Here we just assert that key containers are visible.
+
+        // Scroll container
+        onView(withId(R.id.adminScroll))
+                .check(matches(isDisplayed()));
+
+        // Tab bar and its tabs
+        onView(withId(R.id.adminTabBar))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabEvents))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabProfiles))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabImages))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.tabLogs))
+                .check(matches(isDisplayed()));
+
+        // Section title + list container
+        onView(withId(R.id.textSectionTitle))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.adminListContainer))
+                .check(matches(isDisplayed()));
+    }
 }

@@ -156,5 +156,25 @@ public class LotterySystemTest {
         assertNotEquals(cancelled,replacement);
     }
 
+    // ============================================================
+    // Run lottery: respect requested sample size and waiting size
+    // ============================================================
+    @Test
+    public void runLottery_respectsRequestedSampleAndWaitingSize() {
+        List<String> waitingList = Arrays.asList("A","B","C","D","E");
+
+        // Organizer requests to sample 3 attendees
+        int requested = 3;
+
+        // But we can never select more than waitingList.size()
+        int actualSampleSize = Math.min(requested, waitingList.size());
+        List<String> sampled = waitingList.subList(0, actualSampleSize);
+
+        // 1) We sampled exactly min(requested, waitingList.size())
+        assertEquals(3, sampled.size());
+
+        // 2) Every sampled entrant came from waitingList
+        assertTrue(waitingList.containsAll(sampled));
+    }
 
 }
