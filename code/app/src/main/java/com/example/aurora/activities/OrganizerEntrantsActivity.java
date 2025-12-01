@@ -1,3 +1,35 @@
+/*
+ * source: Android Developers — "Save a file to external storage".
+ * url: https://developer.android.com/training/data-storage/shared/documents#create
+ * note: Used for the exportFinalListAsCsv() method to write data to the public Downloads directory.
+ *
+ * source: Stack Overflow user — "How to write CSV file in Android".
+ * url: https://stackoverflow.com/questions/5963554/how-to-write-csv-file-in-android
+ * note: Logic adapted for constructing the comma-separated string builder and using FileOutputStream.
+ *
+ * source: Firebase docs — "Cloud Firestore: arrays".
+ * url: https://firebase.google.com/docs/firestore/manage-data/add-data#update_elements_in_an_array
+ * note: Used for FieldValue.arrayRemove() when the organizer deletes an entrant from the "Selected" tab.
+ *
+ * source: Android Developers — "ActivityResultContracts".
+ * url: https://developer.android.com/training/basics/intents/result#register
+ * note: Used for registerForActivityResult() to handle the new poster image selection from the gallery.
+ *
+ * source: Glide Documentation — "Loading Images".
+ * url: https://bumptech.github.io/glide/doc/getting-started.html
+ * note: Used for loading the event poster URL into the ImageView efficiently.
+ *
+ * source: Android Developers — "AlertDialog".
+ * url: https://developer.android.com/develop/ui/views/components/dialogs
+ * note: Used for the "Custom Message" input dialog when notifying entrants.
+ *
+ * source: Stack Overflow user — "Android RecyclerView with multiple view types or tabs".
+ * url: https://stackoverflow.com/questions/43168545/how-to-implement-tabs-with-recyclerview
+ * note: Logic adapted for the manual "Tab" switching (setActiveTab) that refreshes the same RecyclerView adapter with different data lists.
+ */
+
+
+
 package com.example.aurora.activities;
 
 import android.graphics.Color;
