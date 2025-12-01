@@ -447,7 +447,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             qrView.setPadding(40, 40, 40, 40);
 
             new AlertDialog.Builder(this)
-                    .setTitle("🎟️ Event QR Code")
+                    .setTitle("Event QR Code")
                     .setView(qrView)
                     .setPositiveButton("Close", (d, w) -> d.dismiss())
                     .show();
