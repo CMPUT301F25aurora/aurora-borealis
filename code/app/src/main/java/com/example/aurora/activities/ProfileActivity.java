@@ -41,6 +41,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
+import com.google.android.material.button.MaterialButton;
+
+
 /**
  * Entrant profile screen.
  * Shows profile data loaded from Firestore (by email).
@@ -298,30 +306,58 @@ public class ProfileActivity extends AppCompatActivity {
         boolean enabled = getSharedPreferences("aurora_prefs", MODE_PRIVATE)
                 .getBoolean("entrant_notifications_enabled", true);
 
-        new AlertDialog.Builder(this)
-                .setTitle("Notifications")
-                .setMessage(enabled
-                        ? "Notifications are currently ENABLED. Do you want to disable them?"
-                        : "Notifications are currently DISABLED. Do you want to enable them?")
-                .setPositiveButton(enabled ? "Disable" : "Enable", (dialog, which) -> {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.TransparentDialog);
+        LayoutInflater inflater = getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_notification_settings, null);
 
-                    boolean newValue = !enabled;
+        TextView title = view.findViewById(R.id.dialogTitle);
+        TextView message = view.findViewById(R.id.dialogMessage);
+        MaterialButton btnCancel = view.findViewById(R.id.btnCancel);
+        MaterialButton btnAction = view.findViewById(R.id.btnAction);
 
-                    getSharedPreferences("aurora_prefs", MODE_PRIVATE)
-                            .edit()
-                            .putBoolean("entrant_notifications_enabled", newValue)
-                            .apply();
+        if (enabled) {
+            message.setText("Notifications are currently ENABLED. Do you want to disable them?");
+            btnAction.setText("Disable");
+        } else {
+            message.setText("Notifications are currently DISABLED. Do you want to enable them?");
+            btnAction.setText("Enable");
+        }
 
-                    if (userRef != null) {
-                        userRef.update("entrant_notifications_enabled", newValue);
-                    }
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
-                    Toast.makeText(this,
-                            newValue ? "Notifications enabled" : "Notifications disabled",
-                            Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+// ⭐ Force the dialog to stretch wider
+        dialog.getWindow().setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnAction.setOnClickListener(v -> {
+            boolean newValue = !enabled;
+
+            // Save to shared prefs
+            getSharedPreferences("aurora_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("entrant_notifications_enabled", newValue)
+                    .apply();
+
+            // Save to Firestore
+            if (userRef != null) {
+                userRef.update("entrant_notifications_enabled", newValue);
+            }
+
+            Toast.makeText(this,
+                    newValue ? "Notifications enabled" : "Notifications disabled",
+                    Toast.LENGTH_SHORT).show();
+
+            dialog.dismiss();
+        });
     }
 
     /**
