@@ -68,6 +68,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import android.graphics.Color;
+import android.view.View;
+import android.view.ViewGroup;
+import android.graphics.drawable.ColorDrawable;
+import com.google.android.material.button.MaterialButton;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -202,11 +208,7 @@ public class EventsActivity extends AppCompatActivity {
                         Boolean allowed = doc.getBoolean("organizer_allowed");
 
                         if (allowed == null || !allowed) {
-                            new androidx.appcompat.app.AlertDialog.Builder(this)
-                                    .setTitle("Access Denied")
-                                    .setMessage("Organizer privileges have been revoked.")
-                                    .setPositiveButton("OK", null)
-                                    .show();
+                            showAccessDeniedDialog();
                             return;
                         }
 
@@ -652,6 +654,25 @@ public class EventsActivity extends AppCompatActivity {
         resetHighlight(btnArts, iconArts, textArts);
         resetHighlight(btnTechnology, iconTech, textTech);
         resetHighlight(btnCommunity, iconCommunity, textCommunity);
+    }
+    private void showAccessDeniedDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.TransparentDialog);
+        View view = getLayoutInflater().inflate(R.layout.dialog_access_denied, null);
+
+        MaterialButton btnOk = view.findViewById(R.id.btnOk);
+
+        builder.setView(view);
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+
+        // Make it wide like your notification settings dialog
+        dialog.getWindow().setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
+        btnOk.setOnClickListener(v -> dialog.dismiss());
     }
 
 
