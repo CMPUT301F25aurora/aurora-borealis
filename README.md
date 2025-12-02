@@ -32,3 +32,19 @@ AuroraChance is a mobile application designed to streamline event registration a
 - Optional Geolocation Verification: When enabled by organizers, entrants’ join locations are captured from the device to verify authenticity and support location-based event rules.
 
 - Dedicated Organizer Map Console: A specialized map interface available exclusively to event creators. Organizers can set, validate, and manage precise event coordinates using an integrated place-picker, ensuring accurate location data for geolocation rules and event logistics.
+
+## Setup Instructions
+
+1. Clone the Repository  
+```
+git clone git@github.com:CMPUT301F25aurora/aurora-borealis.git
+```
+2. Open the Project in Android Studio
+- Open the cloned directory in Android Studio.  
+- Ensure all Gradle dependencies are synced successfully.  
+
+3. Run the Application  
+- Use an emulator or physical Android device to launch the app.
+- Log in as an entrant, organizer, or admin to explore role-based functionalities.
+
+
