@@ -48,3 +48,12 @@ git clone git@github.com:CMPUT301F25aurora/aurora-borealis.git
 - Log in as an entrant, organizer, or admin to explore role-based functionalities.
 
 
+## Documentation  
+- [App Wiki](https://github.com/CMPUT301F25aurora/aurora-borealis/wiki)
+- [User Interface Mockup Sequence](https://github.com/CMPUT301F25aurora/aurora-borealis/wiki/Project-Part-4#user-interface-mockup-sequence)
+- [User Interface Mockup Description](https://github.com/CMPUT301F25aurora/aurora-borealis/wiki/Project-Part-4#user-interface-mockup-description)
+- [UML Diagrams](https://github.com/CMPUT301F25aurora/aurora-borealis/wiki/Project-Part-4#uml)
+- [CRC Cards](https://github.com/CMPUT301F25aurora/aurora-borealis/wiki/Project-Part-2#crc-cards)
+
+
+
